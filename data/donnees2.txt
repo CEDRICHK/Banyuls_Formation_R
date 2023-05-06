@@ -1,0 +1,4 @@
+nom;age;taille
+ABC;25;165
+DEF;;163
+GHI;21;170

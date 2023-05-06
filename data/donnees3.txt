@@ -1,0 +1,4 @@
+nom;age;taille;sexe
+ABC;25;165;"M"
+DEF;22;163;"F"
+GHI;21;170;"M"
