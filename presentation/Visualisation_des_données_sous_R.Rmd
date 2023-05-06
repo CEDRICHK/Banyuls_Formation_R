@@ -1,0 +1,1289 @@
+---
+title: "Visualisation des données sous R"
+subtitle: "Jour 2"
+author: "Cédric Hassen-Khodja"
+institute: "BioCampus Montpellier, MRI"
+date: |
+  ![](logo_MRI.png){width=3in}
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE)
+```
+
+```{r logo, echo=FALSE}
+xaringanExtra::use_logo(image_url = "logo_cnrs.png")
+```
+
+# Objectifs d'apprentissage
+
+1. Apprendre les bases de la visualisation de données en utilisant `R`.
+
+2. Apprendre l'approche de la *grammaire des graphiques* en couches avec `ggplot2`.
+
+3. Créer et modifier des figures.
+
+4. Réfléchir de manière critique et discuter sur la représentation et la visualisation des données.
+
+---
+
+# Fonctions graphiques de base
+
+## Gestion des fenêtres graphiques
+
+<u> Exemple: </u>
+
+.pull-left[
+```{r gestion_fenêtre, eval=FALSE}
+x <- 1:12; y <- 12:1
+
+dev.new()
+dev.new()
+dev.list()
+
+dev.set(4)
+split.screen(c(2,1))
+screen(1)
+split.screen(c(1,2))
+screen(3)
+plot(x, 
+     main = "des points pour x")
+screen(4)
+plot(y, 
+     main = "des points pour y")
+screen(2)
+```
+]
+
+.pull-right[
+```{r gestion_fenêtre_2, eval=FALSE}
+split.screen(c(1,2))
+screen(5)
+plot(x, type = "l", 
+     main = "des lignes pour x")
+screen(6)
+plot(y, type = "l", 
+     main = "des lignes pour y")
+dev.set(5)
+plot(x, 
+     main = "placer un titre")
+text(3,9, "placer un texte ici")
+text(9,3, "placer un texte là")
+```
+]
+
+---
+
+## Gestion des fenêtres graphiques (suite)
+
+```{r add_defi-1, echo=FALSE, eval=TRUE, out.width="10%"}
+knitr::include_graphics("../images/defi.jpg")
+```
+
+A partir de l'exemple précédent,
+
+ - Créer un vecteur pour x et y respectivement.
+
+ - Créer une fenêtre graphique composé de deux lignes et trois colonnes.
+
+  - Sur la première colonne, affichez deux graphiques avec des points pour x et y.
+  
+  - Sur la deuxième colonne, affichez deux graphiques avec des lignes pour x et y.
+  
+  - Sur la troixième colonne, afiichez deux graphiques avec des tirets pour x et y.
+
+```{r, echo=FALSE}
+library(countdown)
+countdown(minutes = 10, seconds = 00)
+```
+
+---
+
+## La fonction plot
+
+- Fonction générique de `R`.
+- De base, un nuage de points d'une variable `y` en fonction d'une variable `x`.
+
+<u> Exemple: </u>
+
+```{r plot_1, fig.height = 2.8, fig.width = 6, fig.align = "center"}
+# Création d'un jeu de données de deux variables quantitatives :
+x <- c(2, 4, 6, 8, 10)
+y <- c(3, 5, 7, 9, 11)
+
+# Tracer un nuage de points (scatterplot) avec la fonction plot() :
+plot(x,y, 
+     main = "Nuage de points pour deux variables quantitatives", 
+     xlab = "Variable X", ylab = "Variable Y")
+
+```
+
+---
+
+## La fonction plot (suite)
+
+- La taille du symbole peut-être contrôlé via `cex`
+
+- La forme des points via `pch`.
+
+- Le type de tracé via `type`.
+
+--
+
+```{r add_defi-2, echo=FALSE, eval=TRUE, out.width="10%"}
+knitr::include_graphics("../images/defi.jpg")
+```
+
+1. Créez un vecteur `x` et un vecteur `y`.
+
+2. Tracez un graphique en nuage (scatterplot) avec la fonction `plot()`. Faites en sorte que les points soient représentés par des **triangles creux** et **augmentez leur taille**. Ajoutez des étiquettes pour les axes x et y avec les arguments xlab et ylab.
+
+```{r, echo=FALSE}
+library(countdown)
+countdown(minutes = 5, seconds = 00)
+```
+
+---
+
+## La fonction boxplot
+
+<u> Exemple: </u>
+
+```{r plot_2, fig.height = 4, fig.width = 4, fig.align = "center"}
+# Création d'un jeu de données de deux variables :
+x <- c(10, 20, 30, 40, 50, 60, 70, 80, 90, 100)
+y <- rep(c("Groupe A", "Groupe B"), each = 5)
+
+# Tracer un graphique en utilisant la fonction boxplot() :
+boxplot(x~y, main = "boites à moustaches", 
+     xlab = "Variable qualitative", ylab = "Variable quantitative")
+
+```
+
+---
+
+## La fonction spineplot
+
+```{r plot_3, fig.height = 4, fig.width = 4, fig.align = "center"}
+# Création d'un jeu de données de deux variables qualitatives :
+y <- factor(c("A", "B", "A", "B", "A", "B", "A", "B"))
+x <- factor(c("C", "C", "D", "D", "C", "C", "D", "D"))
+
+# Tracer un graphique en spineplot avec la fonction spineplot() :
+spineplot(y~x, 
+          main = "Diagramme en bandes", 
+          xlab = "Variable x", ylab = "Variable y")
+
+```
+
+---
+
+## Représentation d'une distribution
+
+- une variable quantitative: utilisation de la fonction `hist()`.
+
+- L'argument freq = FALSE permet de représenter un estimateur de la densité.
+
+<u> Exemple: </u>
+
+.pull-left[
+```{r hist_sans_prob, , fig.height=3, fig.width=4}
+# Créer un vecteur de données
+x <- c(2, 5, 7, 8, 8, 9, 10, 10, 10, 11, 11, 11, 11, 12, 13, 14)
+
+# Tracer un histogramme avec la fonction hist() sans probabilité
+hist(x, breaks = 6, main = "Histogramme sans probabilité", 
+     xlab = "Valeurs", ylab = "Fréquence", freq = TRUE)
+```
+]
+.pull-right[
+```{r hist_avec_prob, fig.height=3, fig.width=4}
+# Créer un vecteur de données
+x <- c(2, 5, 7, 8, 8, 9, 10, 10, 10, 11, 11, 11, 11, 12, 13, 14)
+
+# Tracer un histogramme avec la fonction hist() avec probabilité
+hist(x, main = "Histogramme avec probabilité", 
+   xlab = "Valeurs", ylab = "Densité", freq = FALSE)
+```
+]
+
+---
+
+## Représentation d'une distribution (suite)
+
+- Variable qualitative: utilisation de la fonction `barplot()`.
+
+- On calcule les occurences avec la fonction `table()`.
+
+```{r barplot, fig.height=3, fig.width=5}
+# Créer un vecteur de données
+x <- c("Chat", "Chien", "Poisson", "Oiseau", "Chat", 
+       "Chat", "Chien", "Chien", "Chien", "Poisson")
+# Calculer la fréquence de chaque catégorie
+freq <- table(x)
+# Tracer un diagramme en barres avec la fonction barplot()
+barplot(freq, main = "Distribution des animaux de compagnie", 
+        xlab = "Type d'animal", ylab = "Fréquence")
+```
+
+---
+
+## Représentation d'une distribution (suite)
+
+```{r add_defi-3, echo=FALSE, eval=TRUE, out.width="10%"}
+knitr::include_graphics("../images/defi.jpg")
+```
+
+1. Chargez le jeu de données mtcars.
+2. Tracez un histogramme pour la variable `mpg`.
+  - Ajoutez un titre approprié, ainsi qu'une étiquette pour l'axe x et l'axe y.
+3. Tracez un histogramme pour la variable `cyl`.
+  - Utilisez l'argument *breaks* pour spécifier le nombre de classes.
+  - Utilisez l'argument *col* pour changer la couleur de remplissage des barres.
+4. Tracez un histogramme pour la variable `wt`.
+  - Utilisez l'argument *xlim* pour spécifier les limites de l'axe x.
+  - Affichez une densité plutôt que des fréquences.
+
+```{r, echo=FALSE}
+library(countdown)
+countdown(minutes = 5, seconds = 00)
+```
+
+---
+
+## Ajouts aux graphiques
+
+<u> Exemple: </u>
+
+```{r p_fct, echo=TRUE, eval=FALSE}
+# Charger le jeu de données mtcars
+data(mtcars)
+
+# Créer un graphique de dispersion de mpg vs. hp
+plot(mtcars$hp, mtcars$mpg, xlab = "Puissance (hp)", 
+     ylab = "Consommation de carburant (mpg)", 
+     main = "Relation entre puissance et consommation de carburant")
+
+# Ajouter une ligne verticale pour la moyenne de hp
+abline(v = mean(mtcars$hp), col = "red")
+
+# Ajouter le nom de la voiture avec le plus haut et le plus bas mpg
+text(mtcars$hp[which.max(mtcars$mpg)], max(mtcars$mpg), 
+     labels = rownames(mtcars)[which.max(mtcars$mpg)])
+text(mtcars$hp[which.min(mtcars$mpg)], min(mtcars$mpg), 
+     labels = rownames(mtcars)[which.min(mtcars$mpg)])
+
+```
+
+---
+
+## Ajouts aux graphiques (suite)
+
+```{r p_fct_2, echo=FALSE}
+# Charger le jeu de données mtcars
+data(mtcars)
+
+# Créer un graphique de dispersion de mpg vs. hp
+plot(mtcars$hp, mtcars$mpg, xlab = "Puissance (hp)", 
+     ylab = "Consommation de carburant (mpg)", 
+     main = "Relation entre puissance et consommation de carburant")
+
+# Ajouter une ligne verticale pour la moyenne de hp
+abline(v = mean(mtcars$hp), col = "red")
+
+# Ajouter le nom de la voiture avec le plus haut et le plus bas mpg
+text(mtcars$hp[which.max(mtcars$mpg)], max(mtcars$mpg), 
+     labels = rownames(mtcars)[which.max(mtcars$mpg)])
+text(mtcars$hp[which.min(mtcars$mpg)], min(mtcars$mpg), 
+     labels = rownames(mtcars)[which.min(mtcars$mpg)])
+
+```
+
+---
+
+## Ajouts aux graphiques (suite)
+
+```{r add_defi-4, echo=FALSE, eval=TRUE, out.width="10%"}
+knitr::include_graphics("../images/defi.jpg")
+```
+
+1. Charger le jeu de données **airquality** inclus dans `R`.
+
+2. Tracer un graphique de **dispersion de la température (Temp) en fonction de la vitesse du vent (Wind)**. Ajouter des axes et une légende appropriés. Le titre du graphique doit être *"Relation entre température et vitesse du vent"*.
+
+3. Ajouter une **ligne horizontale** pour marquer la moyenne de Temp. Utiliser une **couleur différente** de celle du nuage de points pour la ligne.
+
+4. Ajouter le **Jour** (`Day`) où la température était la plus haute puis la plus basse en utilisant la fonction `text()`.
+
+```{r, echo=FALSE}
+library(countdown)
+countdown(minutes = 10, seconds = 00)
+```
+
+---
+
+## Scatterplot Matrices
+
+<u> Exemple: </u>
+
+```{r graph, echo = TRUE, fig.width=5, fig.height=4.5, fig.align='center'}
+# Charger le jeu de données iris
+data(iris)
+
+# Tracer un graphique en plusieurs dimensions de iris
+pairs(iris[1:4], main = "Matrice de visualisation des variables par paires", 
+      pch = 21, bg = c("red", "green3", "blue")[iris$Species])
+
+```
+
+---
+
+## Exportation de graphiques
+
+- Plusieurs formats d'échange: `jpeg`, `png`, `pdf`, `svg` ...
+
+- Avec `RStudio`, il suffit de cliquer sur l'onglet *Export* puis de choisir un format d'exportation.
+
+- Sinon, l'export suit toujours le même schéma:
+
+```{r export_graph, echo=TRUE, eval=FALSE}
+data(iris)
+pdf("pgraphik.pdf")
+# Tracer un graphique en plusieurs dimensions de iris
+pairs(iris[1:4], main = "Graphique en plusieurs dimensions de iris", 
+      pch = 21, bg = c("red", "green3", "blue")[unclass(iris$Species)])
+dev.off()
+```
+
+---
+
+## Plusieurs graphiques
+
+- On utilise la fonction `par()`.
+
+```{r graphs, echo=TRUE, fig.width=5, fig.height=4.5, fig.align='center'}
+par(mfrow = c(1,2))
+plot(1:10, 10:1, pch=0)
+plot(rep(1,4), type="l")
+```
+
+---
+
+## Plusieurs graphiques (suite)
+
+- Pour des graphiques de tailles différentes, on utilise la fonction `layout()`.
+
+```{r graphs_2, echo=TRUE, fig.width=5, fig.height=4.5, fig.align='center'}
+mat <- matrix(c(1,1,2,3), nrow = 2, ncol = 2, byrow = TRUE)
+layout(mat)
+plot(1:10, 10:1, pch=0)
+plot(rep(1,4), type="l")
+plot(c(2,3,-1,0),type = "b")
+```
+
+---
+
+## Plusieurs graphiques (suite)
+
+```{r add_defi-5, echo=FALSE, eval=TRUE, out.width="10%"}
+knitr::include_graphics("../images/defi.jpg")
+```
+
+1. Générer des données aléatoires pour quatre variables X1, X2, X3 et X4, chacune contenant 50 valeurs aléatoires tirées d'une distribution normale.
+
+2. Utiliser la fonction par() avec l'argument mfrow pour créer une grille de graphiques qui contient quatre sous-graphiques.
+
+3. Tracer un histogramme pour chaque variable en utilisant la fonction hist(). Vous pouvez spécifier des options telles que la couleur de remplissage, la couleur des bordures et la courbe de densité.
+
+4. Exporter le graphique en PNG en utilisant la fonction png().
+
+```{r, echo=FALSE}
+library(countdown)
+countdown(minutes = 5, seconds = 00)
+```
+
+---
+
+# Fonctions graphiques avec ggplot2
+
+## ggplot2 et la grammaire des graphiques
+
+.pull-left[
+- **Hadley Wickham**
+
+- Approche structurée en couches pour construire des graphiques.
+]
+
+.pull-right[
+```{r gg, echo=FALSE, eval=TRUE}
+knitr::include_graphics("../images/gglayers.png")
+```
+]
+
+---
+
+## ggplot2 et la grammaire des graphiques (suite)
+
+### Data
+
+.pull-left[
+- Le jeu de données. 
+
+- Essentiel pour créer la figure.
+
+- Une observation = une ligne de la table.
+
+> Astuce: `tidyverse`
+
+]
+
+.pull-right[
+```{r gg_2, echo=FALSE, eval=TRUE}
+knitr::include_graphics("../images/gglayers.png")
+```
+]
+
+---
+
+## ggplot2 et la grammaire des graphiques (suite)
+
+### aesthetics / aes()
+
+.pull-left[
+
+- Les variables à utiliser.
+
+- Rend les données visibles:
+
+  - `x`, `y`: variables.
+  - `colour`: colore les lignes des géométries.
+  - `fill`: remplit les géométries.
+  - `group`: regroupe les données en fonction des groupes.
+  - `shape`: définit la forme.
+  - `linetype`: définit le type de ligne.
+  - `size`: dfinit la taille des éléments.
+  - `alpha`: modifie la transparence.
+]
+
+.pull-right[
+```{r gg_3, echo=FALSE, eval=TRUE}
+knitr::include_graphics("../images/gglayers.png")
+```
+]
+
+---
+
+## ggplot2 et la grammaire des graphiques (suite)
+
+### Géométries / geom_*()
+
+- Fournit des formes aux données.
+
+- Le type de représentation graphique souhaité:
+
+
+|Geom|Description|Aesthetics|
+|----|-----------|----------|
+|`geom_point()`|Nuage de point|`x`, `y`, `shape`, `fill`|
+|`geom_line()`|Ligne (ordonnées selon x)|`x`, `y`, `linetype`|
+|`geom_abline()`|Droite|`slope`, `intercept`|
+|`geom_path()`|Ligne (ordre original)|`x`, `y`, `linetype`|
+|`geom_text()`|Texte|`x`, `y`, `label`, `hjust`, `vjust`|
+|`geom_rect()`|Rectangle|`xmin`, `ymin`, `xmax`, `ymax`, `fill`, `linetype`|
+|`geom_polygon()`|Polygone|`x`, `y`, `fill`, `linetype`|
+
+---
+
+## ggplot2 et la grammaire des graphiques (suite)
+
+### Géométries / geom_*()
+
+|Geom|Description|Aesthetics|
+|----|-----------|----------|
+|`geom_segment()`|Segment|`x`, `y`, `fill`, `linetype`|
+|`geom_bar()`|Diagramme en barres|`x`, `fill`, `linetype`, `weight`|
+|`geom_histogram()`|Histogramme|`x`, `fill`, `linetype`, `weight`|
+|`geom_boxplot()`|Boîtes à moustaches|`x`, `y`, `fill`, `weight`|
+|`geom_density()`|Densité|`x`, `y`, `fill`, `linetype`|
+|`geom_contour()`|Lignes de contour|`x`, `y`, `fill`, `linetype`|
+|`geom_smooth()`|Lissage|`x`, `y`, `fill`, `linetype`|
+
+---
+
+## ggplot2 et la grammaire des graphiques (suite)
+
+### Facets
+
+.pull-left[
+
+- Représente les sous-groupes dans des graphes différents.
+
+- Divise les figures entre les panneaux:
+
+  - `facet_wrap()` enchaîne des graphiques dans différents cadres basés sur une seule variable.
+  
+  - `facet_grid()` fait la même chose que ci-dessus, mais peut prendre différentes variables.
+]
+
+.pull-right[
+```{r gg_4, echo=FALSE, eval=TRUE}
+knitr::include_graphics("../images/gglayers.png")
+```
+]
+
+---
+
+## ggplot2 et la grammaire des graphiques (suite)
+
+### Statistiques / stat_*()
+
+.pull-left[
+
+- Permet de transformer les données:
+
+  - `stat_identity()` permet aucune transformation.
+  
+  - `stat_bin()` pour le comptage.
+  
+  - `stat_density()` pour exprimer la densité.
+  
+  - `stat_smooth()` pour le lissage.
+  
+  - `stat_boxplot()` pour les boîtes à moustaches.
+]
+
+.pull-right[
+```{r gg_5, echo=FALSE, eval=TRUE}
+knitr::include_graphics("../images/gglayers.png")
+```
+]
+
+---
+
+## ggplot2 et la grammaire des graphiques (suite)
+
+### Coordonnées / coord_*()
+
+.pull-left[
+
+- Représentation des données selon différentes coordonnées:
+
+  - `coord_cartesian()` pour le plan cartésien ;
+  
+  - `coord_polar()` pour les tracés circulaires ;
+  
+  - `coord_map()` pour les différentes projections cartographiques.
+]
+
+.pull-right[
+```{r gg_6, echo=FALSE, eval=TRUE}
+knitr::include_graphics("../images/gglayers.png")
+```
+]
+
+---
+
+## ggplot2 et la grammaire des graphiques (suite)
+
+### thèmes / theme_*()
+
+- Permet de changer le visuel.
+
+- Différents thèmes sont disponibles dans le package **ggtheme**:
+
+  - `theme_bw()` pour le thème classique ggplot2 dark-on-light; 
+  
+  - `theme_classic()` pour un thème d'aspect classique, avec des lignes d'axes x et y et pas de quadrillage;
+  
+  - `theme_gray()` pour le thème signature ggplot2 avec un fond gris et un quadrillage blanc, conçu pour mettre les données en avant tout en facilitant les comparaisons.
+  
+  - `theme_minimal()` pour un thème minimaliste sans annotations d'arrière-plan.
+
+---
+
+## Comment assembler les couches ?
+
+1. Créez un objet de graphique simple:
+
+  - > plot.object <- ggplot() # required
+
+2. Ajouter des couches géométriques:
+
+  - > plot.object <- plot.object + geom_*() # required
+
+3. Ajouter des couches d'apparence:
+
+  - > plot.object <- plot.object + coord_*() + theme() # not required
+
+4. Répétez les étapes 2 et 3 jusqu'à ce que vous soyez satisfait, puis affichez :
+
+  - > plot.object ou print(plot.object)
+
+---
+
+## Le jeu de données: mpg
+
+<u>Exemple</u>
+
+ - Nous allons utiliser le jeu de données `mpg` disponible dans `ggplot2`.
+
+```{r mpg, echo = TRUE, eval = FALSE}
+ggplot2::mpg
+```
+
+- Contient des informations sur la consommation de carburant de différents modèles de voitures.
+
+---
+
+## Le jeu de données: mpg (suite)
+
+Regardons les variables du jeu de données:
+
+```{r mpg_2}
+str(ggplot2::mpg)
+```
+
+---
+
+## Préparer les données
+
+`ggplot2` requiert un objet de la classe **data.frame** ou **tibble**.
+
+```{r mpg_3}
+class(ggplot2::mpg)
+```
+
+> Les données doivent être préparées au format long.
+
+---
+
+## Questions scientifiques à propos du jeu de données
+
+- Y a-t-il une relation entre la consommation de carburant en ville et la consommation de carburant sur autoroute pour les différents types de cylindrée ?
+
+> Comment pouvons nous répondre graphiquement à cette question ?
+
+---
+
+## Questions scientifiques à propos du jeu de données (suite)
+
+- Y a-t-il une relation entre la consommation de carburant en ville et la consommation de carburant sur autoroute pour les différents types de cylindrée ?
+
+> ggplot(): couche **Data**
+
+.pull-left[
+```{r data, eval=FALSE}
+library(ggplot2)
+ggplot(data = mpg)
+```
+]
+
+.pull-right[
+```{r data_2, echo = FALSE, fig.height=4.5, fig.width=5}
+library(ggplot2)
+ggplot(data = mpg)
+```
+]
+
+
+---
+
+## Questions scientifiques à propos du jeu de données (suite)
+
+- Y a-t-il une relation entre la consommation de carburant en ville et la consommation de carburant sur autoroute pour les différents types de cylindrée ?
+
+> ggplot(): couche **Aesthetics**
+
+.pull-left[
+```{r data_3, eval=FALSE}
+library(ggplot2)
+ggplot(data = mpg,
+       aes(x = cty, 
+           y = hwy))
+```
+]
+
+.pull-right[
+```{r data_4, echo = FALSE, fig.height=4.5, fig.width=4.5}
+library(ggplot2)
+ggplot(data = mpg,
+       aes(x = cty, y = hwy))
+```
+]
+
+---
+
+## Questions scientifiques à propos du jeu de données (suite)
+
+- Y a-t-il une relation entre la consommation de carburant en ville et la consommation de carburant sur autoroute pour les différents types de cylindrée ?
+
+> ggplot(): couche **Geometries**
+
+.pull-left[
+```{r data_6, eval=FALSE}
+library(ggplot2)
+ggplot(data = mpg,
+       aes(x = cty, y = hwy)) +
+  geom_point()
+```
+]
+
+.pull-right[
+```{r data_7, echo = FALSE, fig.height=4.5, fig.width=4.5}
+library(ggplot2)
+ggplot(data = mpg,
+       aes(x = cty, y = hwy)) +
+  geom_point()
+```
+]
+
+---
+
+## Questions scientifiques à propos du jeu de données (suite)
+
+- Y a-t-il une relation entre la consommation de carburant en ville et la consommation de carburant sur autoroute pour les différents types de cylindrée ?
+
+> ggplot(): couche **Facets**
+
+.pull-left[
+```{r data_8, eval=FALSE}
+library(ggplot2)
+ggplot(data = mpg,
+       aes(x = cty, y = hwy)) +
+  geom_point() +
+  facet_wrap(~cyl)
+```
+]
+
+.pull-right[
+```{r data_9, echo = FALSE, fig.height=4.5, fig.width=4.5}
+library(ggplot2)
+ggplot(data = mpg,
+       aes(x = cty, y = hwy)) +
+  geom_point() +
+  facet_wrap(~cyl)
+```
+]
+
+## Questions scientifiques à propos du jeu de données (suite)
+
+- Y a-t-il une relation entre la consommation de carburant en ville et la consommation de carburant sur autoroute pour les différents types de cylindrée ?
+
+> ggplot(): couche **Facets**
+
+.pull-left[
+```{r data_10, eval=FALSE}
+library(ggplot2)
+ggplot(data = mpg,
+       aes(x = cty, y = hwy)) +
+  geom_point() +
+  facet_wrap(~cyl) +
+  theme_classic()
+```
+]
+
+.pull-right[
+```{r data_11, echo = FALSE, fig.height=4.5, fig.width=4.5}
+library(ggplot2)
+ggplot(data = mpg,
+       aes(x = cty, y = hwy)) +
+  geom_point() +
+  facet_wrap(~cyl) +
+  theme_classic()
+```
+]
+
+---
+
+## Tout mettre ensemble, en une seule figure
+
+```{r data_12, echo=FALSE}
+library(ggplot2)
+ggplot(data = mpg,
+       aes(x = cty, y = hwy, col = factor(cyl))) +
+  geom_point(size = 5, alpha = 0.8) +
+  labs(title = "Relation entre la consommation de carburant en ville\net la consommation de carburant sur autoroute.",
+    x = "Consommation de carburant en ville", 
+       y = "Consommation de carburant sur autoroute",
+       color = "Nombre de cylindres") +
+  theme_classic()
+```
+
+---
+
+## Codez et représentez votre premier objet ggplot()
+
+```{r add_defi-6, echo=FALSE, eval=TRUE, out.width="10%"}
+knitr::include_graphics("../images/defi.jpg")
+```
+
+- Comment varie la consommation de carburant en ville en fonction de la classe de voiture et du type de transmission ?
+
+<br>
+
+.center[Paramètres à prendre en compte pour répondre à cette question :]
+
+ données | géométrie | valeurs x | valeurs y | colour
+:-------------:|:-------------:|:-------------:|:-------------:
+`mpg`|`geom_col()`|`class`|`cty`|`trans`
+
+```{r, echo=FALSE}
+library(countdown)
+countdown(minutes = 5, seconds = 00)
+```
+
+---
+
+## Esthétique
+
+Distinguer les classes, les groupes et la structure
+
+```{r aes, echo=FALSE, warning=FALSE, fig.height=4, fig.width=14}
+library(ggplot2)
+ggp1 <- ggplot(data = mpg,
+       aes(x = cty, y = hwy, col = factor(cyl))) +
+  geom_point(size = 5, alpha = 0.8) +
+  labs(title = "Colour",
+    x = "Consommation de carburant en ville", 
+       y = "Consommation de carburant sur autoroute") +
+  theme_classic()
+
+ggp2 <- ggplot(data = mpg,
+       aes(x = cty, y = hwy, alpha = factor(cyl))) +
+  geom_point(size = 5) +
+  labs(title = "Alpha",
+    x = "Consommation de carburant en ville", 
+       y = "Consommation de carburant sur autoroute") +
+  theme_classic()
+
+ggp3 <- ggplot(data = mpg,
+       aes(x = cty, y = hwy, shape = factor(cyl))) +
+  geom_point(size = 5) +
+  labs(title = "Shape",
+    x = "Consommation de carburant en ville", 
+       y = "Consommation de carburant sur autoroute") +
+  theme_classic()
+
+gridExtra::grid.arrange(ggp1, ggp2, ggp3, ncol = 3)
+```
+
+### Couleur
+
+- différencier entre des groupes.
+- représenter les valeurs des données.
+- mettre en évidence des éléments spécifiques.
+
+> Couleurs qualitatives pour des groupes.
+
+> Gradients de couleurs pour des valeurs.
+
+---
+
+## Esthétique (suite)
+
+### Changer les couleurs manuellement
+
+.pull-left[
+```{r col_default, fig.height=5}
+library(ggplot2)
+ggp <- ggplot(data = mpg) +
+  geom_point(aes(x = cty, 
+                 y = hwy, 
+                 col = factor(cyl)))
+ggp + labs(title = "Défaut")
+```
+]
+
+.pull-right[
+```{r col_pers, fig.height=5}
+ggp + 
+scale_colour_manual(
+  values = c("grey55", 
+             "orange",
+             "skyblue", 
+             "green")) +
+labs(title = "Personnalisé")
+```
+]
+
+---
+
+## Esthétique (suite)
+
+### Utililser une palette de couleur
+
+```{r pal, out.width="60%"}
+library(RColorBrewer)
+display.brewer.all()
+```
+
+---
+
+## Esthétique (suite)
+
+### Utililser une palette de couleur
+
+```{r pal_2, out.width="45%"}
+ggp +
+  scale_colour_brewer(palette = "Dark2") +
+  labs(title = "Palette pour des groupes")
+```
+
+---
+
+## Esthétique (suite)
+
+```{r add_defi-7, echo=FALSE, eval=TRUE, out.width="10%"}
+knitr::include_graphics("../images/defi.jpg")
+```
+
+- Créer un graphique informatif à partir de jeu de données disponible de R, comme `CO2`, `msleep` ou `ToothGrowth`.
+
+- Utiliser les esthétiques appropriés pour différents types de données
+
+
+<br><qr>
+
+Données | x | y | Esthétiques
+:-------------:|:-------------:|:-------------:|:-------------:
+CO2 |*conc* |*uptake* | *Treatment* et *Type*
+msleep |log10(*bodywt*) |*awake* | *vore* et *conservation*
+ToothGrowth | *dose* | *len* | *supp*
+
+
+```{r, echo=FALSE}
+library(countdown)
+countdown(minutes = 10, seconds = 00)
+```
+
+---
+
+## Changer l'échelle des axes
+
+```{r,update_scale, fig.height=4}
+donnees <- mtcars
+library(ggplot2)
+ggplot(donnees, aes(x = hp, y = mpg)) +
+  geom_point(color = "steelblue") +
+  xlab("Puissance (hp)") + ylab("Miles par gallon (mpg)") +
+  ggtitle("Relation entre la puissance et les miles par gallon") +
+  coord_trans(y = "log10")
+```
+
+---
+
+## Utiliser le theme()
+
+![](./ggthemes.png)
+
+---
+
+## Les facettes pour diviser votre graphique
+
+### Facettes selon une variable 
+
+```{r wrap, out.width="32%"}
+donnees <- mtcars
+library(ggplot2)
+ggplot(donnees, aes(x = hp, y = mpg)) +
+  geom_point(color = "steelblue") +
+  xlab("Puissance (horsepower)") + 
+  ylab("Miles par gallon (mpg)") +
+  ggtitle("Relation entre la puissance et les miles par gallon") +
+  facet_wrap(~ cyl)
+```
+
+---
+
+## Les facettes pour diviser votre graphique
+
+### Facettes selon deux variables 
+
+```{r grid, out.width="30%"}
+data(mtcars)
+ggplot(mtcars, aes(x = wt, y = hp, color = factor(cyl))) +
+    geom_point() +
+    labs(title = "Relation entre la puissance et le poids des voitures",
+         x = "Poids (1000 lbs)", y = "Puissance (hp)",
+         color = "Nombre de cylindres") +
+    facet_grid(am ~ vs)
+```
+
+---
+
+## Reproduire un graphique
+
+```{r add_defi-8, echo=FALSE, eval=TRUE, out.width="10%"}
+knitr::include_graphics("../images/defi.jpg")
+```
+
+Utilisez les données `iris` qui se trouvent dans `data` pour reproduire le graphique ci-dessous.
+
+> *Astuce*: Allez-y étape par étape! Commencez par `theme_classic()` et ajoutez `theme()` pour faire vos changements supplémentaires.
+
+```{r, echo=FALSE, fig.width=10, fig.height=4}
+library(ggplot2)
+data(iris)
+ggplot(iris, aes(x=Sepal.Length, y=Petal.Width, color=Species)) +
+geom_point() +
+labs(title = "Relation entre la longueur des sépales et la largeur des pétales",
+x = "Longueur des sépales", y = "Largeur des pétales") +
+theme_classic() +
+theme(axis.title = element_text(size = 16,
+colour = "navy"),
+axis.text = element_text(size = 12),
+plot.title = element_text(size = 16,
+colour = "orange3",face = "bold"),
+strip.text.x = element_text(size = 14, face ="bold")) +
+facet_grid(. ~ Species)
+
+```
+
+```{r, echo=FALSE}
+library(countdown)
+countdown(minutes = 10, seconds = 00)
+```
+
+---
+
+## Créer différents type de graphique
+
+### Histogramme: geom_histogram()
+
+Définit la répartition des valeurs d'une variable donnée.
+
+```{r, echo=TRUE, fig.height=4}
+ggplot(mpg,
+       aes(x = cty)) +
+  geom_histogram(bins = 16) +
+  ggtitle("Histogramme de la consommation de carburant en ville")
+```
+
+---
+
+## Créer différents type de graphique (suite)
+
+### Nuage de points et régression linéaire: geom_point() et geom_smooth()
+
+.small[
+.pull-left[
+```{r, fig.width=5.5, fig.height=4.5}
+ggplot(mpg, aes(displ, hwy)) +
+  geom_point() +
+  labs(title = "Nuage de points")
+```
+]
+
+.pull-right[
+```{r, fig.width=5.5, fig.height=4.5, message=FALSE}
+ggplot(mpg, aes(displ, hwy)) +
+  geom_point() +
+  labs(title = "Régression linéaire") +
+  geom_smooth(method = lm)
+```
+]
+]
+
+---
+
+## Créer différents type de graphique (suite)
+
+### Diagramme en boîte: geom_boxplot()
+
+```{r, echo=TRUE, fig.align="center", fig.height=4}
+ggplot(data = iris,
+       aes(x = Species,
+           y = Sepal.Length,
+           fill = Species)) +
+  geom_boxplot() +
+  labs(title = "Diagramme en boîte")
+```
+
+---
+
+## Créer différents type de graphique (suite)
+
+### Diagramme en boîte avec annotations: geom_boxplot() et geom_signif()
+
+.pull-left[
+```{r, echo=TRUE, eval=FALSE, fig.align="center", fig.height=4}
+library(ggsignif)
+ggplot(data = iris,
+       aes(x = Species,
+           y = Sepal.Length,
+           fill = Species)) +
+  geom_boxplot() +
+  labs(title = "Diagramme en boîte") +
+  geom_signif(comparisons = list(c("setosa", "versicolor", "virginica")),
+              map_signif_level=TRUE)
+```
+]
+
+.pull-right[
+```{r, echo=FALSE, fig.align="center", fig.height=8}
+library(ggsignif)
+ggplot(data = iris,
+       aes(x = Species,
+           y = Sepal.Length,
+           fill = Species)) +
+  geom_boxplot() +
+  labs(title = "Diagramme en boîte") +
+  geom_signif(comparisons = list(c("setosa", "versicolor")),
+              map_signif_level=TRUE) +
+  geom_signif(comparisons = list(c("versicolor", "virginica")), y_position = 8.5,
+              map_signif_level=TRUE) +
+  geom_signif(comparisons = list(c("setosa", "virginica")), y_position = 9,
+              map_signif_level=TRUE)
+```
+]
+
+---
+
+## Créer différents type de graphique (suite)
+
+### Diagramme en violon: geom_violin()
+
+Un diagramme en violon est utilisé pour visualiser la distribution des données et leur densité de probabilité.
+
+```{r, fig.align="center", fig.height=3.5}
+violin <- ggplot(data = iris,
+                 aes(x = Species, y = Sepal.Length)) +
+  geom_violin(trim = FALSE, fill = "grey70", alpha = .5) +
+  labs(title = "Violin plot")
+violin
+```
+
+---
+
+## Créer différents type de graphique (suite)
+
+### Diagramme en violon: geom_violin() + _boxplot() + _jitter()
+
+```{r, fig.align="center", fig.height=5}
+violin +
+  geom_jitter(shape = 16, position = position_jitter(0.2), alpha = .3) +
+  geom_boxplot(width = .05)
+```
+
+---
+
+## Créer différents type de graphique (suite)
+
+### Graphique de densité: geom_density()
+
+```{r, echo=TRUE, fig.align='center', fig.height=4}
+(cars.dens <-
+   ggplot(cars,
+          aes(x = dist)) +
+   geom_density())
+```
+
+---
+
+## Créer différents type de graphique (suite)
+
+### Dendogramme: ggdendrogram()
+
+```{r, fig.height=3.8}
+library(ggplot2)
+library(ggdendro)
+data(mtcars)
+dist_mtcars <- dist(mtcars)
+hc_mtcars <- hclust(dist_mtcars, method = "ward.D")
+dend_mtcars <- as.dendrogram(hc_mtcars)
+ggdendrogram(dend_mtcars, rotate = TRUE, theme_dendro = FALSE)
+
+```
+
+---
+
+## Résumer des valeurs: stat_summary()
+
+.pull-left[
+```{r, fig.height=5, fig.width=4}
+ggplot(mtcars, aes(cyl, mpg)) +
+  geom_point() +
+  stat_summary(fun = "mean", geom = "point",
+               colour = "red", size = 3) +
+  labs(title = "Moyenne")
+```
+]
+
+.pull-right[
+```{r, fig.height=5, fig.width=4}
+ggplot(mtcars, aes(cyl, mpg)) +
+  geom_point() +
+  stat_summary(fun.data = "mean_cl_boot",
+               colour = "red", size = 0.5) +
+  labs(title = "Moyenne et intervalle de confiance")
+```
+]
+
+---
+## Résumer des valeurs (suite)
+
+Pour afficher d'autres statistiques, consultez:
+
+- `geom_errorbar()`
+- `geom_pointrange()`
+- `geom_linerange()`
+- `geom_crossbar()`
+- et autres!
+
+---
+
+## Créer différents type de graphique (suite)
+
+```{r add_defi-9, echo=FALSE, eval=TRUE, out.width="10%"}
+knitr::include_graphics("../images/defi.jpg")
+```
+
+1. Importez le jeu de données `mtcars`.
+
+2. Créez un graphique à barres avec la consommation d'essence moyenne (mpg) par cylindres (cyl). Calculez la moyenne de la consommation d'essence (mpg) pour chaque valeur unique de cylindre (cyl). Ajoutez un titre au graphique et nommez les axes x et y.
+
+3. Créez un graphique en boîte avec la consommation d'essence (mpg) pour chaque valeur unique de cylindre (cyl). Calculez la médiane de la consommation d'essence (mpg) pour chaque valeur unique de cylindre (cyl). Ajoutez un titre au graphique et nommez les axes x et y.
+
+4. Créez un graphique à barres empilées avec la consommation d'essence (mpg) par cylindres (cyl) et par nombre de vitesses (gear). Calculez la moyenne de la consommation d'essence (mpg) pour chaque combinaison unique de cylindre (cyl) et de nombre de vitesses (gear). Ajoutez un titre au graphique et nommez les axes x et y.
+
+```{r, echo=FALSE}
+library(countdown)
+countdown(minutes = 10, seconds = 00)
+```
+
+---
+
+## Graphiques interactifs avec plotly()
+
+```{r, echo = TRUE, fig.width=10, fig.height=4.5, message=FALSE}
+library(plotly)
+p <- ggplot(data = mpg) +
+  geom_point(aes(x = cty, 
+                 y = hwy, 
+                 col = factor(cyl)))
+ggplotly(p)
+```
+
+---
+
+## Sauvegarder des graphiques à l'aide de fonction R
+
+ggsave() écrit directement dans votre répertoire de travail et vous permet de spécifier le nom du fichier, les dimensions du graphique, la résolution, etc.
+
+```{r, eval=FALSE}
+mon_graph <- ggplot(data = mpg) +
+  geom_point(aes(x = cty, 
+                 y = hwy, 
+                 col = factor(cyl)))
+
+ggsave("mon_graph.pdf",
+       mon_graph,
+       height = 8.5, width = 11, units = "in", res = 300)
+```

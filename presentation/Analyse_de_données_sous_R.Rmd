@@ -1,0 +1,1679 @@
+---
+title: "Analyse de données sous R"
+subtitle: "Jour 3"
+author: "Cédric Hassen-Khodja"
+institute: "BioCampus Montpellier, MRI"
+date: |
+  ![](logo_MRI.png){width=3in}
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE)
+knitr::opts_chunk$set(
+  comment = "#",
+  collapse = TRUE,
+  #cache = TRUE,
+  warning = FALSE,
+  message = FALSE,
+  fig.width=6, fig.height=6,
+  fig.retina = 3,
+  fig.align = 'center'
+)
+```
+
+```{r logo, echo=FALSE}
+xaringanExtra::use_logo(image_url = "logo_cnrs.png")
+```
+
+# Objectifs d'apprentissage
+
+1. Apprendre les tests paramétriques pour analyses univariées.
+
+2. Apprendre les tests non paramétriques pour analyses univariées.
+
+3. Apprendre comment identifier un modèle dont les conditions d'application ne sont pas rencontrées et comment régler le problème.
+
+4. Identifier les situations où il est approprié d'utiliser des modèles linéaires généralisés.
+
+5. Tester les hypothèses des modèles linéaires généralisés.
+
+6. Implémenter et executer des modèles linéaires généralisés avec des données binaires, de proportion, et d'abondance.
+
+7. Valider, interpreter et visualiser les résultats de modèles linéaires généralisés.
+
+---
+
+# Régression linéaire avec R
+
+## Cas d'étude
+
+> Nous souhaitons analyser la relation entre le maximum journalier de la concentration en ozone (en $\mu/m^3$) et la température. Nous disposons de 112 données relevées durant l'été 2001 à Rennes.
+
+## Formulation du modèle
+
+$$Y = \beta_0 + \beta_1X + \epsilon$$
+où:
+
+- La variable $\epsilon$ = erreur de mesure.   
+- Le coefficient $\beta_0$ =  ordonnée à l'origine.   
+- Le coefficient $\beta_1$ =  pente.
+---
+
+## Formulation du modèle (suite)
+
+$$y_i = \beta_0 + \beta_1x_i + \epsilon_i$$
+
+$$\min_{\beta_0,\beta1}\sum_{i=1}^{n}(y_i - \beta_0-\beta_1x_i)²$$
+
+$$f(x) = \widehat{\beta_0} + \widehat{\beta_1}x$$
+
+$$\widehat{y_i} = \widehat{\beta_0} + \widehat{\beta_1}x_i$$
+
+$$\widehat{\epsilon_i} = y_i - \widehat{y_i}$$
+
+--
+
+## Equation du modèle
+
+$$\textrm{maxO3}_i = \beta_0 + \beta1 \times \textrm{T12}_i + \epsilon_i $$
+---
+
+## Estimation de la relation
+
+```{r, echo=FALSE, fig.height=6}
+ozone <- read.table("../data/ozone.txt")
+plot(ozone$T12, ozone$maxO3)
+abline(coef = c(-27.4, 5.5),  lwd = 1.5, lty = 2, col = palette()[2])
+abline(coef = c(-77.4, 7.5), lwd = 1.5, lty = 2, col = palette()[4])
+abline(coef = c(-97.4, 10.5),  lwd = 1.5, lty = 2, col = palette()[6])
+```
+
+---
+
+## Hypothèses nulles
+
+$\{^{H_0: R^2 = 0}_{H_0:\beta_0 = 0 \textrm{et} \beta_1=0}$
+
+## Fonction R
+
+```{r, echo=TRUE, eval=FALSE}
+lm{stats}
+ResuLM <- lm(Variable_dependante ~ Facteur, tableau)
+```
+
+Formule du modèle sous `R` ?
+
+--
+
+```{r, echo=TRUE, eval=FALSE}
+lm(maxO3 ~ T12, data = ozone)
+```
+
+---
+
+# Régression linéaire avec R (suite)
+
+**Etape 1:** Formuler et exécuter un modèle linéaire basé sur une hypothèse.
+
+**Etape 2:** Vérifier les conditions d'application du modèle linéaire.
+
+.pull-left[
+
+*Conditions sont satisfaits ?*
+
+**Etape 3:**
+
+- Analyser les paramètres de régression.
+
+- Tracer le modèle.
+
+- Interpréter le modèle.
+]
+
+.pull-right[
+
+*Conditions non satisfaites ?*
+
+- Envisager l'utilisation d'un <u>Modèle linéaire généralisé</u> (`GLM`).
+
+- <u>Transformer les données</u>: Retourner à l'Étape 1 avec des variables transformées.
+]
+
+---
+
+# Régression linéaire avec R (suite)
+
+## Étape 1. Formuler et exécuter un modèle linéaire
+
+```{r, echo=TRUE, eval=FALSE}
+reg.s <- lm(maxO3 ~ T12, data = ozone)
+```
+
+- `reg.s`: Nouvel objet contenant le modèle linéaire.
+
+- `maxO3 ~ T12`: Formule du modèle.
+
+- `ozone`: objet contenant les variables.
+
+---
+
+## Étape 1. Formuler et exécuter un modèle linéaire
+
+```{r, echo=TRUE}
+reg.s <- lm(maxO3 ~ T12, data = ozone)
+reg.s
+```
+
+.center[
+*Comment les paramètres se comparent-ils à nos prédictions ?*
+]
+
+--
+
+.center[
+**Peut-on se fier aux estimations du modèle ?**
+]
+
+---
+
+## Étape 2. Vérifier les conditions d'application avec les graphiques diagnostics
+
+
+```{r, echo = TRUE, fig.height=5.5, fig.width=5.5}
+par(mfrow=c(2,2))
+plot(reg.s)
+```
+
+---
+
+## Étape 2. Vérifier les conditions d'application avec les graphiques diagnostics
+
+### Evaluation de l'hypothèse de normalité des résidus
+
+
+.pull-left[
+```{r, echo = FALSE}
+plot(reg.s,2)
+```
+]
+
+.pull-right[
+```{r, echo = TRUE}
+shapiro.test(residuals(reg.s))
+```
+]
+
+---
+
+## Étape 2. Vérifier les conditions d'application avec les graphiques diagnostics
+
+### Evaluation de l'hypothèse d'homogénéité des résidus
+
+.pull-left[
+```{r, echo = FALSE}
+plot(reg.s,3)
+```
+]
+
+.pull-right[
+```{r, echo = TRUE}
+car::ncvTest(reg.s)
+```
+]
+
+---
+
+## Étape 2. Vérifier les conditions d'application avec les graphiques diagnostics
+
+### Evaluation de points aberrants ou d'influenceurs dans un modèle de régression
+
+```{r, echo = FALSE}
+plot(reg.s,5)
+```
+
+---
+
+## Étape 2. Vérifier les conditions d'application avec les graphiques diagnostics
+
+Quand les conditions ne sont pas remplies :
+
+1. Utiliser un **autre type de modèle** mieux adapté à l'hypothèse et aux données.
+
+2. Essayer de **transformer** la réponse et / ou les prédicteurs
+
+---
+
+## Étape 3. Analyser les paramètres
+
+```{r, echo = TRUE}
+summary(reg.s)
+```
+
+---
+
+## Étape 3. Tracer le modèle
+
+```{r, echo = TRUE}
+plot(maxO3~T12, ozone)
+abline(reg.s)
+```
+
+---
+
+## Étape 3. Interpréter le modèle
+
+Le coefficient de régression $\beta_1$ = 5.5 est significatif (p < 2e-16; t = 13.26), ainsi que $\beta_0$ = -27.4 (p = 0.003; t = -3.035). 61% de la variabilité de *maxO3* est expliquée par *T12*. La droite de régression est donc définie par l'équation:
+
+$$ y = 5.5 \times x -27.4$$
+
+---
+
+# Régression linéaire avec R (suite)
+
+```{r add_defi, echo=FALSE, eval=TRUE, out.width="10%", fig.align='left'}
+knitr::include_graphics("../images/defi.jpg")
+```
+
+Dans cet exercice, nous allons nous concentrer sur la relation entre la température de l'eau (T_degC) et la salinité (Salnty). Les données figurent dans le fichier csv *bottle.csv*.
+
+1. Importez le dataset dans R.
+
+2. Formuler une hypothèse à partir de l'observation des données.
+
+3. Ajuster un modèle pour évaluer cette hypothèse.
+
+4. Vérifier les conditions d'application du modèle linéaire.
+
+5. Interpréter et tracer le modèle.
+
+```{r, echo=FALSE}
+library(countdown)
+countdown(minutes = 8, seconds = 00)
+```
+
+---
+
+# Régression linéaire multiple
+
+## Formulation du modèle
+
+$$y_i = \beta_0 + \beta_1x_{i1} + \beta_2x_{i2} + ... + \beta_px_{ip} + \epsilon_i,$$
+
+- Le paramètre $\beta_0$ est **l'ordonnée à l'origine**.
+
+- Le paramètre $\beta_1$ quantifie **l'effet** de x sur y.
+
+- Le résidu $\epsilon_i$ représente la variation **non expliquée**.
+
+- La **valeur prédite** de $y_i$ se définit comme : $\hat{y}_i = \beta_0 + \beta_1x_{i1}+\beta_2x_{i2}+\beta_3x_{i3}+...+\beta_px_{ip}$.
+
+---
+
+# Régression linéaire multiple (suite)
+
+## Conditions d'utilisation
+
+- Les résidus de l'analyse doivent suivre une distribution normale.
+
+- Les variables explicatives ne doivent pas être corrélés entre eux.
+
+---
+
+# Régression linéaire multiple (suite)
+
+## Cas d'étude
+
+> Nous souhaitons analyser ici la relation entre le maximum journalier de la concentration en ozone (en $\mu/m^3$) et la température à différentes heures de la journée, la projection du vent sur l'axe Est-Ouest à différentes heures de la journée et la concentration maximale de la veille du jour considéré.
+
+---
+
+# Régression linéaire multiple (suite)
+
+## Importer les données
+
+```{r, echo=TRUE}
+ozone <- read.table("../data/ozone.txt", header = TRUE)
+ozone.m <- ozone[,1:11]
+summary(ozone.m)
+```
+
+---
+
+# Régression linéaire multiple (suite)
+
+## Représenter les variables
+
+.pull-left[
+```{r, echo=TRUE, eval=FALSE}
+library(GGally)
+ggpairs(ozone.m) 
+```
+]
+
+.pull-right[
+```{r, echo=FALSE}
+library(GGally)
+ggpairs(ozone.m) 
+```
+]
+
+---
+
+## Evaluation de la linéarité entre la réponse et les variables explicatives numériques
+
+
+.pull-left[
+```{r, echo=TRUE, eval=FALSE}
+library(car)
+scatterplotMatrix(ozone.m) 
+```
+]
+
+.pull-right[
+```{r, echo=FALSE, fig.width=10}
+library(car)
+scatterplotMatrix(ozone.m) 
+```
+]
+
+---
+
+## Estimer les paramètres
+
+```{r, echo=TRUE, eval=FALSE}
+reg.mul <- lm(maxO3 ~ ., data = ozone.m)
+summary(reg.mul)
+```
+
+---
+
+## Estimer les paramètres (suite)
+
+```{r, echo=FALSE}
+reg.mul <- lm(maxO3 ~ ., data = ozone.m)
+summary(reg.mul)
+```
+
+---
+
+## Quel modèle choisir ?
+
+<u>Principe de parcimonie</u>: expliquer le plus de variation avec le plus petit nombre de termes dans votre modèle -> enlevez la variable qui est la moins significative.
+
+```{r, echo=TRUE, fig.height=4}
+library(leaps)
+choix <- regsubsets(maxO3 ~ ., data = ozone.m, 
+                    nbest = 1, nvmax = 11)
+plot(choix, scale = "bic")
+```
+
+---
+
+## Estimer les paramètres du modèle parcimonieux
+
+```{r, echo=TRUE}
+reg.fin <- lm(maxO3~T12+Ne9+Vx9+maxO3v, data = ozone.m)
+summary(reg.fin)
+```
+
+---
+
+## Evaluer les conditions d'application du modèle parcimonieux
+
+```{r, echo=TRUE}
+library(performance)
+check_model(reg.fin)
+```
+
+---
+
+## Evaluer les conditions d'application du modèle parcimonieux (suite)
+
+```{r, echo=TRUE}
+check_normality(reg.fin)
+check_heteroscedasticity(reg.fin)
+```
+
+---
+
+## Transformer les données et Estimation des paramètres du modèle parcimonieux
+
+```{r, echo=TRUE}
+reg.fin2 <- lm(log(maxO3)~T12+Ne9+Vx9+maxO3v, data = ozone.m)
+summary(reg.fin2)
+```
+
+---
+
+## Interprétation du modèle
+
+L'analyse de régression linéaire multiple incluant les quatre régresseurs potentiels est significative (R² = 0.7359; p < 2.2e-16; F = 74.54; $ddl_{numérateur} = 4$;
+$ddl_{dénominateur} = 107$).La relation rend compte de 73,59% de la variance de la concentration en ozone. La concentration en ozone peut-être prédit par l'équation suivante:
+
+$$log(maxO3) = 0.026 \times T12 - 0.027 \times Ne9 + 0.016 \times Vx9 + 0.0036 \times maxO3v + 3.72$$
+
+---
+
+# Régression linéaire multiple (suite)
+
+```{r add_defi2, echo=FALSE, eval=TRUE, out.width="10%", fig.align='left'}
+knitr::include_graphics("../images/defi.jpg")
+```
+
+Dans cet exercice, nous allons étudier la relation entre une variable dépendante (price) et plusieurs variables explicatives (horsepower, curb-weight, engine-size et highway-mpg). Les données figurent dans le fichier csv *auto.csv*.
+
+1. Importez le dataset dans R. Sélectionnez ensuite les variables d'intérêt pour la régression linéaire.
+
+2. Formuler une hypothèse à partir de l'observation des données.
+
+3. Ajuster un modèle pour évaluer cette hypothèse.
+
+4. Vérifier les conditions d'application du modèle linéaire.
+
+5. Interpréter le modèle.
+
+6. Prédiction: Trouver le prix pour une voiture avec 150 horsepower, un curb weight de 3000, une engine size de 200 et une highway mpg de 30
+
+```{r, echo=FALSE}
+library(countdown)
+countdown(minutes = 10, seconds = 00)
+```
+
+---
+
+# Test de Student
+
+## Utilisation
+
+Comparer les moyennes de deux groupes indépendants.
+
+## Conditions d'application
+
+- **Normalité**: les échantillons (n < 30) issus de populations suivent une distribution normale.
+
+- **Homogénéité de variances**: la variance des groupes sont homogènes.
+
+---
+
+# Test de Student
+
+## Fonction R
+
+```{r, echo=TRUE, eval=FALSE}
+# t.test{stats}
+
+# Test bilatéral:
+t.test(groupe1, groupe2)
+
+# Tests unilatéraux:
+t.test(groupe1, groupe2, alternative = "greater")
+t.test(groupe1, groupe2, alternative = "less`")
+```
+
+Le test `t` est un modèle linéaire et un cas spécifique de l'ANOVA.
+
+Vous pouvez donc aussi utiliser la fonction `lm()`.
+```{r, echo=TRUE, eval=FALSE}
+lm.t <- lm(Y ~ X2, data = data)
+anova(lm.t)
+```
+
+---
+
+# Test de Student (suite)
+
+## Cas d'étude
+
+> Nous allons comparer les poids de poulpes mâles et femelles au stade adulte. Nous disposons pour cela des données de poids pour 13 poulpes femelles (population notée 1) et 15 poulpes mâles (population notée 2) pêchés au large des côtes mauritaniennes.
+
+### Importer les données
+
+```{r, echo=TRUE}
+data <- read.table("../data/poulpe.csv", header = T, sep = ",")
+summary(data)
+```
+
+---
+
+### Visualiser les données
+
+```{r eval=TRUE,fig.height=5.2, fig.width=6.5}
+boxplot(Poids ~ Sexe,
+        data = data, xlab = "Sexe", ylab = "Poids")
+```
+
+---
+
+## Vérifier les conditions d'application
+
+### Tester la normalité des données
+
+```{r, echo=TRUE}
+select.males <- data$Poids[data$Sexe == "Male"]
+select.femelles <- data$Poids[data$Sexe == "Femelle"]
+
+shapiro.test(select.males)
+shapiro.test(select.femelles)
+```
+
+---
+
+## Vérifier les conditions d'application
+
+### Tester l'égalité des variances
+
+- Un test d'hétérogéneité de variance précédé l'utilisation du t-test.
+
+- La **correction de Welch** rend cette étape inutile.
+
+---
+
+## Réalisation du test
+
+### Tester l'égalité des moyennes
+
+```{r, echo = TRUE}
+t.test(Poids~Sexe, var.equal = FALSE, data = data)
+```
+
+---
+
+## Interprétation
+
+Les résultats montrent que les moyennes observées dans l'échantillon (1405g pour les femelles et 2700 pour les mâles) sont suffisamment différentes et significative (p = 0.001107; t = 3.74; dll = 22.021; test t de Student unilatéral pour chantillons indépendants avec correction de Welch).   
+
+--
+
+```{r, echo=TRUE}
+t.test(Poids~Sexe, var.equal = FALSE, data = data, alternative = "greater")
+```
+
+On accepte $H_0$ selon laquelle les femelles sont plus légères que les mâles.
+
+---
+
+# Test de Student (suite)
+
+## Non respect des conditions
+
+- **Correction de Welch**: par défaut dans R.
+
+- **Test de Mann-Whitney**: équivalent non paramétrique.
+
+- **Test de t apparié**: lorsque les deux groupes ne sont pas indépendants (par exemple, des mesures sur la même personne récoltées lors de 2 années différentes).
+
+---
+
+# Test de Student (suite)
+
+```{r add_defi3, echo=FALSE, eval=TRUE, out.width="10%", fig.align='left'}
+knitr::include_graphics("../images/defi.jpg")
+```
+
+<u>But de l'exercice</u>: Déterminer s'il y a une différence significative entre les scores de mathématiques des étudiants en fonction de leur sexe.
+
+<u>Dataset</u>:  Le dataset contient les scores de mathématiques de 100 étudiants (50 femmes et 50 hommes). Les données figurent dans le fichier csv *math.csv*. 
+
+1. Importez le dataset dans R et examinez les données.
+
+2. Effectuez un test de normalité pour déterminer si les scores de mathématiques suivent une distribution normale pour les deux groupes (hommes et femmes).
+
+3. Effectuez un test de Student pour déterminer s'il y a une différence significative entre les scores de mathématiques des hommes et des femmes.
+
+4. Interprétez les résultats et concluez si les scores de mathématiques diffèrent significativement en fonction du sexe.
+
+```{r, echo=FALSE}
+library(countdown)
+countdown(minutes = 5, seconds = 00)
+```
+
+---
+
+# ANOVA à un facteur
+
+## Utilisation
+
+- Comparer les moyennes de plus de deux groupes.
+
+## Conditions d'utilisation
+
+- **Normalité des résidus**: les échantillons doivent être issus de populations suivant une distribution normale. 
+
+- **Homogénéité de variances**: sinon appliqué une correction de Welch.
+
+## Hypothèse nulle
+
+$H_0: F = 1$
+
+---
+
+# ANOVA à un facteur(suite)
+
+## Fonction R
+
+> aov{stats}
+
+- ANOVA avec correction de Welch:
+
+> oneway.test{stats}
+
+```{r, echo=TRUE, eval=FALSE}
+# Effectue l'analyse et stocke les résultats
+resAOV <- aov(Variable_dependante ~ Facteur)
+# Permet de lire les résultats
+summary(resAOV)
+# ANOVA avec correction de Welch
+oneway.test(Variable_dependante ~ Facteur)
+```
+
+---
+
+# ANOVA à un facteur(suite)
+
+## Test de comparaison par paires
+
+- Lorsque l'ANOVA détecte une différence significative entre les groupes, l'analyse n'indique pas quel(s) groupe(s) diffère(nt) de(s) l'autre(s)
+
+> TukeyHSD{stats}   
+> Tukey{resAOV}
+
+- si variance hétérogène:
+
+> rstatix::games_howell_test()
+
+- si témoin:
+
+> DescTools::DunnettTest()
+
+---
+
+# ANOVA à un facteur(suite)
+
+## Cas d'étude
+
+> Nous reprenons le jeu de données ozone. Nous souhaitons analyser ici la relation entre le maximum journalier de la concentration en ozone (en $\mu/m^3$) avec la précipitation classée en deux modalités : Sec et Pluie
+
+### Importer les données
+
+```{r, echo=TRUE}
+ozone <- read.table("../data/ozone.txt", header = TRUE)
+summary(ozone[,c("maxO3", "pluie")])
+```
+
+---
+
+### Visualiser les données
+
+```{r, echo=TRUE}
+boxplot(maxO3~pluie, data = ozone)
+```
+
+---
+
+### Réalisation du test
+
+
+```{r, echo=TRUE}
+anova.simple <- aov(maxO3~pluie, data = ozone)
+summary(anova.simple)
+```
+
+---
+
+## Vérifier les conditions d'application du test
+
+### Tester la normalité des résidus
+
+```{r, echo=TRUE}
+shapiro.test(resid(anova.simple))
+```
+
+---
+
+## Vérifier les conditions d'application du test (suite)
+
+### Tester l'égalité de variance entre les groupes
+
+```{r, echo=TRUE}
+bartlett.test(maxO3~pluie, data = ozone)
+```
+
+---
+
+## Non respect des conditions
+
+- **Transformer vos données** : pourrait égaliser les variances et normaliser les résidus, et peut convertir un effet multiplicatif en un effet additif.
+
+  - ré-exécuter votre modèle avec la variable transformée et vérifier à nouveau les hypothèses.
+
+- **Test de Kruskal-Wallis**: équivalent non paramétrique de l'ANOVA si vous ne pouvez pas (ou ne voulez pas) transformer les données.
+
+---
+
+## Test de Kruskal-Wallis
+
+### Fonction R
+
+> kruskal.test{stats}   
+> kruskal.test{Variable_dependante ~ Facteur}
+
+---
+
+### Réalisation du test
+
+```{r, echo=TRUE}
+kw <- kruskal.test(maxO3~pluie, data = ozone)
+kw
+```
+
+### Interprétation
+
+Le test de Kruskal-Wallis montre un effet significatif du facteur `pluie` (p=2.128e-08; KS = 31.374; ddl = 1).
+
+---
+
+# ANOVA à deux facteurs
+
+## Utilisation
+
+- Déterminer si deux facteurs interagissent statistiquement.
+
+- Les facteurs ont-ils un effet sur la variable quantitative dépendante ?
+
+## Conditions d'utilisation
+
+Voir ANOVA à un facteur.
+
+---
+
+## Fonction R
+
+- Plan équilibré:
+> aov{stats}   
+>resAOV <- aov(Variable_dependante ~ Facteur 1 * Facteur 2)   
+>summary(resAOV)
+
+- Plan déséquilibré:
+> Anova{car}   
+resType3 <- Anova((VarDep ~ Facteur1 * Facteur2, data = Donnees,
+contrast = list(Facteur1 = "contr.sum", Facteur2 = "contr.sum")), type = "III")
+
+---
+
+# ANOVA à deux facteurs (suite)
+
+## Cas d'étude
+
+> Nous souhaitons analyser ici la relation entre le maximum de journalier de la concentration en ozone (en $\mu/m^3$) avec la précipitation classée en deux modalités : Sec et Pluie et avec la direction du vent classée en secteur: Nord, Sud, Est, Ouest.
+
+### Importer les données
+
+```{r, echo=TRUE}
+ozone <- read.table("../data/ozone.txt", header = TRUE)
+summary(ozone[,c("maxO3", "vent", "pluie")])
+```
+
+---
+
+### Visualiser les données
+
+```{r, echo=TRUE, fig.height=4, fig.width=10}
+boxplot(maxO3~vent*pluie, data = ozone)
+```
+
+---
+
+### Prévisualisation des interactions
+
+```{r, echo=TRUE, fig.width=8, fig.height=5}
+par(mfrow=c(1,2))
+interaction.plot(ozone$vent, ozone$pluie, ozone$maxO3, 
+                 type = "b", pch = 1:3, ylab = "ozone", 
+                 xlab = "vent", bty = "n")
+interaction.plot(ozone$pluie, ozone$vent, ozone$maxO3, 
+                 type = "b", pch = 1:3, ylab = "ozone", 
+                 xlab = "pluie", bty = "n")
+```
+
+---
+
+### Choix du test
+
+```{r, echo=TRUE}
+table(ozone$pluie, ozone$vent)
+```
+
+---
+
+### Réalisation du test
+
+
+```{r, echo=TRUE}
+library(car)
+Res <- lm(maxO3~pluie*vent, data = ozone)
+Anova(Res, contrast = list(pluie = "contr.sum", vent = "contr.sum"),type = "III")
+```
+
+### Interprétation
+
+La probabilité critique (0.65) est supérieure à 5% donc on ne peut pas rejeter $H_0$ et on conclut à la non significativité de l'interaction. Nous estimons donc le modèle sans interaction
+
+---
+
+### Réalisation du test (modèle sans interaction)
+
+```{r, echo=TRUE}
+library(car)
+Res <- lm(maxO3~pluie+vent, data = ozone)
+Anova(Res, contrast = list(pluie = "contr.sum", vent = "contr.sum"),type = "III")
+```
+
+### Interprétation
+
+La probabilité critique associée à l'effet `vent` (0.10) est supérieure à 5% donc on conclut à la non-significativité de ce facteur: il n'y a pas d'effet de la direction du vent sur le maximum d'ozone journalier. Avant de conclure sur l'effet du facteur `pluie`, nous devons ajuster le modèle d'ANOVA à un facteur -> Voir chapitre correspondant.
+
+---
+
+# ANOVA pour plans mixtes
+
+## Utilisation
+
+Etude des effets et de l'interaction entre au moins un facteur **fixe** et au moins un facteur  **aléatoire**.
+
+## Conditions d'utilisation
+
+Voir ANOVA à un facteur.
+
+## Stratégie
+
+1. définir un modèle dit *nul*.
+
+2. définir un modèle mixte avec effet aléatoire sans interaction.
+
+3. définir un modèle mixte considérant une interaction entre l'effet fixe et l'effet aléatoire.
+
+---
+
+# ANOVA pour plans mixtes (suite)
+
+## Fonction R
+
+> lmer{lmeTest} (lmerTest nécessite lme4)
+
+- Modèle sans interaction
+
+>ResMixNoInt <- lmer(VarDep ~ FactFix + (1|FactAlea), data = Donnee)
+
+- Modèle avec interaction
+
+>ResMixInt <- lmer(VarDep ~ FactFix + (1+FactFix|FactAlea), data = Donnee)
+
+---
+
+# ANOVA pour plans mixtes (suite)
+
+## Cas d'étude
+
+> On cherche à évaluer l'effet de la température sur la consommation d'oxygène des crustacés d'une région.
+
+### Importer les données
+
+```{r, echo=TRUE}
+crustace <- read.table("../data/Crustace.txt", 
+                       header = TRUE)
+crustace$Temper <- as.factor(crustace$Temper)
+summary(crustace)
+```
+
+---
+
+### Visualiser les données
+
+```{r, echo=TRUE, fig.height=4, fig.width=10}
+par(mfrow=c(1,2))
+boxplot(Oxyg~Temper, data = crustace)
+abline(h = median(crustace$Oxyg))
+boxplot(Oxyg~EspS, data = crustace)
+abline(h = median(crustace$Oxyg))
+```
+
+---
+
+### Définition des modèles à comparer
+
+```{r, echo=TRUE}
+library(lmerTest)
+
+ResIntNULL <- lm(Oxyg ~ Temper, data = crustace)
+ResNoInt <- lmer(Oxyg ~ Temper + (1|EspS), data = crustace)
+ResInt <- lmer(Oxyg ~ Temper + (1+Temper|EspS), data = crustace)
+```
+
+---
+
+### Choix du modèle
+
+```{r, echo=TRUE}
+anova(ResInt, ResNoInt, ResIntNULL)
+```
+
+<u>Interprétation:</u> L'effet aléatoire *espèce* améliore significativement le modèle (p=4.268e-14), en revanche l'interaction ne semble pas améliorer le modèle (p = 0.106).
+
+---
+
+### Analyse de variance de type 2 sur le meilleur modèle
+
+```{r, echo=TRUE}
+anova(ResNoInt, type = 2)
+```
+
+<u>Interprétation:</u> L'effet fixe *températue* est significatif, il existe bien un effet de la température sur la consommation en oxygène des crustacés.
+
+---
+
+### Représentation graphique du modèle
+
+```{r, echo=TRUE}
+library(effects)
+
+# Fit the mixed effects model
+model <- lmer(Oxyg ~ Temper + (1|EspS), data = crustace)
+
+# Calculate the marginal effects
+plot(allEffects(model))
+
+```
+
+---
+
+### Représentation graphique du modèle (suite)
+
+```{r, echo=TRUE}
+library(ggplot2)
+
+# Obtenir les prédictions pour chaque espèce
+crustace$predicted <- fitted(ResNoInt)
+
+# Tracer un graphique en ligne pour chaque espèce
+ggplot(crustace, aes(x = Temper, y = predicted, group = as.factor(EspS), color = as.factor(EspS))) +
+  geom_line() +
+  xlab("Température") +
+  ylab("Oxygène prédit") +
+  ggtitle("Effet de la température sur l'oxygène par espèce")
+```
+
+---
+
+# ANOVA pour plans mixtes (suite)
+
+```{r add_defi4, echo=FALSE, eval=TRUE, out.width="10%", fig.align='left'}
+knitr::include_graphics("../images/defi.jpg")
+```
+
+<u>Objectif</u>: Réaliser une analyse de variance (ANOVA) mixte en choisissant le meilleur modèle à partir du jeu de données *sleepstudy*, de la librairie lme4, qui contient les temps de réaction de sujets à un test de sommeil en fonction de deux facteurs: la durée du sommeil et le sujet lui-même.
+
+<u>Instructions</u>:
+
+1. Importez le jeu de données.
+2. Explorer les données.
+3. Créer les différents modèles.
+4. Comparer les modèles.
+5. Analyser les effets fixes du modèle.
+6. Interprétation.
+7. Représentation graphique.
+
+```{r, echo=FALSE}
+library(countdown)
+countdown(minutes = 20, seconds = 00)
+```
+
+---
+
+# Les modèles linéaires généralisés (GLM)
+
+## Utilisation et principe de fonctionnement
+
+- Généralisation de la régression linéaire.
+- Alternative à l'ANOVA lorsque la variable dépendante ne suit pas une distribution normale.
+  - Observations comme variables quantitatives discrètes.
+  - Observations comme variables qualitatives binaires.
+- Fait intervenir une fonction de lien.
+  - Adapter une famille de loi de distribution de la variable dépendante.
+- Pour les données de comptage:
+  - Loi de Poisson ou loi binomiale négative.
+- Pour les données binaires:
+  - Loi binomiale.
+- Le test de significativité fait intervenir la loi de $\chi^2$.
+
+---
+
+# Les modèles linéaires généralisés (GLM)
+
+## Distribution de Poisson
+
+- **Poisson** est une distribution discrète avec un seul paramètre, $\lambda$ (lambda), qui détermine la moyenne et la variance de la distribution:
+
+```{r,echo=FALSE,fig.width=15}
+x = seq(1, 50, 1)
+par(mfrow = c(1, 3), cex = 1.4)
+plot(x, dpois(x, lambda = 1), type = 'h', lwd = 3,
+     xlab = '# species', ylab = 'Probabilité', main = 'lambda = 1')
+plot(x, dpois(x, lambda = 10), type = 'h', lwd = 3,
+     xlab = '# species', ylab = 'Probabilité', main = 'lambda = 10')
+plot(x, dpois(x, lambda = 30), type = 'h', lwd = 3,
+     xlab = '# species', ylab = 'Probabilité', main = 'lambda = 30')
+```
+
+---
+
+# Les modèles linéaires généralisés (GLM)
+
+## Distribution de Bernouilli
+
+- N'inclut que deux issues possibles dans son ensemble: succès (`1`) ou échec (`0`)
+- N'a qu'un paramètre, $p$, la probabilité de succès
+
+<br>
+```{r,echo=-F,fig.width=15,fig.height=4}
+  par(mfrow = c(1, 3), cex=1.4)
+  barplot(setNames(c(.9, .1), c('absent (0)', 'present (1)')), ylim = c(0, 1), xlab = 'pa', ylab = 'probability', main = 'p = 0.1')
+  abline(h=0)
+  barplot(setNames(c(.5, .5), c('absent (0)', 'present (1)')), ylim = c(0, 1), xlab = 'pa', ylab = 'probability', main = 'p = 0.5')
+  abline(h=0)
+  barplot(setNames(c(.1, .9), c('absent (0)', 'present (1)')), ylim = c(0, 1), xlab = 'pa', ylab = 'probability', main = 'p = 0.9')
+  abline(h=0)
+```
+
+---
+
+# Les modèles linéaires généralisés (GLM)
+
+## Distribution binomiale
+
+Lorsqu'il y a plusieurs épreuves (chacune avec un succès/échec), la loi de Bernoulli devient la loi binomiale
+
+- Inclut le paramètre additionel $n$, le nombre d'épreuves
+- Prédit la probabilité d'observer une certaine proportion de succès, $p$, sur le nombre total d'épreuves, $n$
+
+```{r,echo=F,fig.width=15}
+x = seq(1, 50, 1)
+par(mfrow = c(1, 3), cex = 1.4)
+plot(x, dbinom(x, size = 50, prob = 0.1), type = 'h', lwd = 3, xlab = '# exp', ylab = 'Probabilité', main = 'p = 0.1 n = 50')
+plot(x, dbinom(x, size = 50, prob = 0.5), type = 'h', lwd = 3, xlab = '# exp', ylab = 'Probabilité', main = 'p = 0.5 n = 50')
+plot(x, dbinom(x, size = 50, prob = 0.9), type = 'h', lwd = 3, xlab = '# exp', ylab = 'Probabilité', main = 'p = 0.9 n = 50')
+```
+
+---
+
+# Les modèles linéaires généralisés (GLM)
+
+## glm() avec R
+
+Dans `R`, on peut estimer un modèle linéaire généralisé avec la fonction `glm()`, qui ressemble beaucoup à la fonction `lm()`: 
+.pull-left[
+```{r, eval = FALSE, echo = TRUE}
+glm(formula, 
+    family = gaussian(link = "identity"), 
+    data,
+    ...)
+``` 
+]
+.pull-right[
+```{r, eval = FALSE, echo = TRUE}
+lm(formula, 
+    data,
+    ...)
+#
+``` 
+
+]
+
+<br>
+
+avec l'argument `family` (voir `?family`) qui prend le nom de la **fonction lien** (à l'intérieur de `link()`) et la **fonction de variance**.
+
+Cette approche s'applique à d'autres distributions!
+
+---
+
+# Les modèles linéaires généralisés (GLM)
+
+## Fonction de liens
+
+| Distribution de $Y$ | Nom du fonction lien | Fonction lien | Modèle | `R` |
+|---------------------|--------------------|---------------|------------|-----|
+| Normale | Identité | $g(\mu) = \mu$  | $\mu = \mathbf{X} \boldsymbol{\beta}$ | `gaussian(link="identity")` | 
+| Binomiale  | Logit  | $g(\mu) = \log\left(\dfrac{\mu}{1-\mu}\right)$  | $\log\left(\dfrac{\mu}{1-\mu}\right) = \mathbf{X} \boldsymbol{\beta}$ | `binomial(link="logit")`| 
+| Poisson   | Log | $g(\mu) = \log(\mu)$ | $\log(\mu) = \mathbf{X} \boldsymbol{\beta}$ | `poisson(link="log")`|
+| Exponentielle | Inverse négative  | $g(\mu) = -\mu^{-1}$  | $-\mu^{-1} = \mathbf{X} \boldsymbol{\beta}$ | `Gamma(link="inverse")` |
+
+---
+
+# GLM avec des données binaires
+
+- Un GLM pour les données de présence / absence est également appelé une **régression logistique**.
+
+- La fonction de lien **logit** est définie par:
+
+$$logit(p) = \log\frac{p}{1-p}$$
+
+```{r, eval = FALSE, echo = TRUE}
+glm(formula, 
+    family = binomial(link = "logit"), # aussi nommé "logistique"
+    data,
+    ...)
+```
+
+---
+
+# GLM avec des données binaires (suite)
+
+## Cas d'étude
+
+> On va ici s'intéresser à modéliser la probabilité de défaut de paiement d'un emprunteur. Un exemple de jeu de données "Default" disponible dans le package R (ISLR) contient des données sur le défaut de paiement de crédit pour 10000 clients.
+
+## Import et inspection les données
+
+```{r, echo=TRUE}
+library(ISLR)
+data <- ISLR::Default
+data <- data[, c("default", "student")]
+table(data$student, data$default)
+```
+
+---
+
+## Réalisation du test
+
+```{r, echo=TRUE}
+RES <- glm(default ~ student, data = data, family = "binomial")
+summary(RES)
+```
+
+---
+
+## Conditions d'application
+
+### Nombre de cas suffisants
+
+- Pour réaliser une régression logistique, il est nécessaire d’avoir un nombre suffisant de données. En pratique, il est recommandé d’avoir au moins 10 fois plus d’événements que de paramètres dans le modèle.
+
+```{r, echo=TRUE}
+table(data$default)
+```
+
+### Absence de surdispersion
+
+$$\widehat{\phi} = \frac{{deviance\; residuelle}} {nddl}$$
+$$\widehat{\phi} = \frac{{2908.7}} {9998} = 0.29$$
+
+---
+
+## Interprétation du modèle
+
+<u>Equation du modèle:</u> $\log\frac{p_{default}}{1 - p_{default}} = \beta_0 + \beta_1 \times student$
+
+$\log\frac{p_{default}}{1 - p_{default}} = -3.5041 + 0.4049 \times student$
+
+<u>Interprétation:</u> Le coefficient pour "studentYes" indique l'effet de l'indicateur binaire "student" sur la probabilité de défaut de paiement. Dans ce cas, la variable "student" indique si l'emprunteur est un étudiant ou non. Nous pouvons voir que le coefficient est positif, ce qui suggère que les étudiants ont une probabilité de défaut de paiement plus élevée que les non-étudiants.
+
+La fonction inverse de la transformation logit est donnée par:
+
+> p_default = exp(logit) / (1 + exp(logit))
+
+Ainsi, si nous voulons calculer la probabilité de défaut de paiement pour un emprunteur qui est un étudiant, nous avons:
+
+> logit = -3.5041 + 0.4049 * 1 = -3.0992   
+> p_default = exp(-3.0992) / (1 + exp(-3.0992)) = 0.045
+
+Cela signifie qu'un emprunteur qui est un étudiant a une probabilité de défaut de paiement d'environ 4,5%.
+
+---
+
+## Interprétation du modèle (suite)
+
+De même, pour un emprunteur qui n'est pas un étudiant, nous avons:
+
+> logit = -3.5041 + 0.4049 * 0 = -3.5041   
+> p_default = exp(-3.5041) / (1 + exp(-3.5041)) = 0.029
+
+Cela signifie qu'un emprunteur qui n'est pas un étudiant a une probabilité de défaut de paiement d'environ 2,9%.
+
+---
+
+## Prédiction du modèle
+
+```{r, echo=TRUE}
+newdata <- data.frame(student = c("No", "Yes"))
+pred <- predict(RES, newdata, type = "link", se = TRUE)
+pred
+```
+
+---
+
+## Intervalles de confiance
+
+$$IC_{sup0.05} = \frac{e^{Coefficient+1.96*Erreur-type}}{1+e^{Coefficient+1.96*Erreur-type}}$$
+
+$$IC_{inf0.05} = \frac{e^{Coefficient-1.96*Erreur-type}}{1+e^{Coefficient-1.96*Erreur-type}}$$
+
+
+```{r, echo=TRUE}
+Prob1_SE_sup <- exp(pred$fit[1]+1.96*pred$se.fit[1])/(1+exp(pred$fit[1]+1.96*pred$se.fit[1]))
+Prob1_SE_inf <- exp(pred$fit[1]-1.96*pred$se.fit[1])/(1+exp(pred$fit[1]-1.96*pred$se.fit[1]))
+Prob2_SE_sup <- exp(pred$fit[2]+1.96*pred$se.fit[2])/(1+exp(pred$fit[2]+1.96*pred$se.fit[2]))
+Prob2_SE_inf <- exp(pred$fit[2]-1.96*pred$se.fit[2])/(1+exp(pred$fit[2]-1.96*pred$se.fit[2]))
+```
+
+---
+## Intervalles de confiance (suite)
+
+### Représentation graphique
+
+```{r, echo=TRUE}
+GRAPH <- barplot(c(0.029, 0.045), ylim = c(0,1), names.arg = c("Non-Etudiant", "Etudiant"))
+segments(x0=GRAPH[1], y0=c(Prob1_SE_inf), x1 = GRAPH[1], y1 = c(Prob1_SE_sup))
+segments(x0=GRAPH[2], y0=c(Prob2_SE_inf), x1 = GRAPH[2], y1 = c(Prob2_SE_sup))
+```
+
+---
+## Test de signification statistique
+
+```{r, echo=TRUE}
+anova(RES, test = "Chi")
+```
+
+<u>Interprétation:</u> La différence est significative. Le défaut de paiement est donc bien plus élevé chez les étudiants que les non-étudiants.
+
+---
+
+# Analyse de la déviance sur notre modèle
+
+```{r, echo=TRUE}
+# Modèle nul
+null_model <- glm(default ~ 1, data = data, family = "binomial")
+
+# Modèle ajusté
+fit <- glm(default ~ student, data = data, family = "binomial")
+
+# Analyse de la déviance
+anova(null_model, fit, test = "Chisq")
+```
+
+
+---
+# GLM avec des données de comptage
+
+Les données de comptage sont caractérisées par:
+  - des valeurs **positives**.
+  - des valeurs **entières**.
+  - une plus grande **variance** pour les grandes valeurs.
+
+Généralement la distribution qui modèle le mieux ces données est la distribution de **Poisson**.
+
+---
+## Cas d'étude
+
+> Supposons que vous êtes responsable de la production de fruits dans une entreprise de vente de fruits. Vous voulez comprendre comment la température affecte la production de fruits et prédire la production en fonction de la température. Vous avez recueilli des données sur la température moyenne quotidienne (en degrés Celsius) et le nombre de fruits produits chaque jour pendant un mois. Vous voulez utiliser ces données pour créer un modèle GLM Poisson pour prédire le nombre de fruits produits en fonction de la température.
+
+## Import et inspection les données
+
+```{r, echo=TRUE}
+fruit_data <- read.csv("../data/fruit.csv")
+str(fruit_data)
+```
+
+---
+
+## Réalisation du test
+
+```{r, echo=TRUE}
+fruit_model <- glm(nb_fruits ~ temperature, data = fruit_data, 
+                   family = "poisson")
+summary(fruit_model)
+```
+
+---
+## Conditions d'application
+ 
+### Distribution des réponses selon une loi de Poisson
+
+.pull-left[
+```{r, echo=TRUE, eval=FALSE}
+set.seed(1234) # permet de simuler toujours les mêmes comptages.
+theoretic_count <-rpois(31,mean(fruit_data$nb_fruits))
+
+# on incorpore ces comptages théoriques dans un data frame
+tc_df <-data.frame(theoretic_count)
+
+# on plot simultanémaent les comptages observés et les comptages théoriques
+library(ggplot2)
+ggplot(fruit_data,aes(nb_fruits))+
+   geom_bar(fill="#1E90FF")+
+   geom_bar(data=tc_df, aes(theoretic_count,fill="#1E90FF", alpha=0.5))+
+   theme_classic()+
+   theme(legend.position="none") 
+```
+]
+
+.pull-right[
+```{r, echo=FALSE, eval=TRUE}
+set.seed(1234) # permet de simuler toujours les mêmes comptages.
+theoretic_count <-rpois(31,mean(fruit_data$nb_fruits))
+
+# on incorpore ces comptages théoriques dans un data frame
+tc_df <-data.frame(theoretic_count)
+
+# on plot simultanémaent les comptages observés et les comptages théoriques
+library(ggplot2)
+ggplot(fruit_data,aes(nb_fruits))+
+   geom_bar(fill="#1E90FF")+
+   geom_bar(data=tc_df, aes(theoretic_count,fill="#1E90FF", alpha=0.5))+
+   theme_classic()+
+   theme(legend.position="none") 
+```
+]
+
+---
+## Conditions d'application (suite)
+
+### Evaluation de la surdispersion
+
+$$\widehat{\phi} = \frac{{deviance\; residuelle}} {nddl}$$
+$$\widehat{\phi} = \frac{{4.1903}} {29} = 0.14$$
+```{r disp, echo=FALSE, eval=TRUE, out.width="60%", fig.align='center'}
+knitr::include_graphics("../images/dispParam.png")
+```
+
+---
+
+## Test de signification statistique
+
+$log(\mu_{nbfruits}) = \beta_0 + \beta_1 \times temperature$
+
+$log(\mu_{nbfruits}) = 1.67 + 0.07 \times temperature$
+
+```{r, echo=TRUE}
+anova(fruit_model, test="Chi")
+```
+
+<u>Interprétation:</u>Nous pouvons remarquer que la température influe significativement et positivement au seuil de 5%.
+
+---
+
+## Prédiction et représentation graphique
+
+Supposons que nous voulons prédire le nombre de fruits produits pour une température de 25 degrés Celsius.
+
+```{r, echo=TRUE}
+newdata <- data.frame(temperature = 25)
+pred <- predict(fruit_model, newdata, type = "link", se = TRUE)
+pred
+```
+
+---
+
+## Prédiction et représentation graphique (suite)
+
+
+```{r, echo=TRUE, eval=FALSE}
+library(ggplot2)
+
+# Prediction de la production de fruits pour chaque température
+newdata <- data.frame(temperature = seq(min(fruit_data$temperature), max(fruit_data$temperature), length.out = 100))
+pred <- predict(fruit_model, newdata = newdata, type = "response", se.fit = TRUE)
+
+# Création du data frame avec les prédictions et intervalles de confiance
+pred_df <- data.frame(temp = newdata$temperature, pred = pred$fit, lower = pred$fit - qnorm(0.975) * pred$se.fit, upper = pred$fit + qnorm(0.975) * pred$se.fit)
+
+# Création du graphique
+ggplot() +
+  geom_point(data = fruit_data, aes(x = temperature, y = nb_fruits)) +
+  geom_line(data = pred_df, aes(x = temp, y = pred)) +
+  geom_ribbon(data = pred_df, aes(x = temp, ymin = lower, ymax = upper), alpha = 0.2) +
+  xlab("Température (°C)") +
+  ylab("Nombre de fruits produits") +
+  ggtitle("Production de fruits en fonction de la température") +
+  theme_bw()
+
+```
+
+---
+
+## Prédiction et représentation graphique (suite)
+
+
+```{r, echo=FALSE}
+library(ggplot2)
+
+# Prediction de la production de fruits pour chaque température
+newdata <- data.frame(temperature = seq(min(fruit_data$temperature), max(fruit_data$temperature), length.out = 100))
+pred <- predict(fruit_model, newdata = newdata, type = "response", se.fit = TRUE)
+
+# Création du data frame avec les prédictions et intervalles de confiance
+pred_df <- data.frame(temp = newdata$temperature, pred = pred$fit, lower = pred$fit - qnorm(0.975) * pred$se.fit, upper = pred$fit + qnorm(0.975) * pred$se.fit)
+
+# Création du graphique
+ggplot() +
+  geom_point(data = fruit_data, aes(x = temperature, y = nb_fruits)) +
+  geom_line(data = pred_df, aes(x = temp, y = pred)) +
+  geom_ribbon(data = pred_df, aes(x = temp, ymin = lower, ymax = upper), alpha = 0.2) +
+  xlab("Température (°C)") +
+  ylab("Nombre de fruits produits") +
+  ggtitle("Production de fruits en fonction de la température") +
+  theme_bw()
+
+```
+
+
+---
+
+# GLM (suite)
+
+```{r add_defi5, echo=FALSE, eval=TRUE, out.width="10%", fig.align='left'}
+knitr::include_graphics("../images/defi.jpg")
+```
+
+<u>Contexte:</u>Vous êtes un biologiste qui étudie les facteurs qui influencent la survie des plantes. Vous avez mené une étude pour évaluer les effets de trois traitements (A, B et C) sur la survie de plantes sur une période de deux mois. Vous avez mesuré la survie de chaque plante toutes les deux semaines et vous avez également enregistré les variables suivantes pour chaque plante : la hauteur de la plante (en cm), le diamètre du tronc (en cm) et la quantité de lumière reçue chaque jour (en lux).
+
+1. Importez le jeu de données "Plantes.csv" contenant les données de l'étude.
+2. Visualisez les données pour comprendre la relation entre la survie des plantes et les différentes variables disponibles.
+3. Formulez un modèle GLM pour évaluer les effets des traitements, de la hauteur, du diamètre et de la quantité de lumière sur la survie des plantes. Quelle distribution serait la plus appropriée pour ce modèle ? Justifiez votre choix.
+
+```{r, echo=FALSE}
+library(countdown)
+countdown(minutes = 20, seconds = 00)
+```
+
+---
+
+# Test du $\chi^2$ d'indépendance
+
+## Cas d'étude
+
+> Nous souhaitons savoir si la répartition du dauphin bleu et blanc, du rorqual et de la baleine à bosse par rapport à la profondeur de la zone sont les mêmes. Pour répondre à cette question des observateurs partent patrouiller différentes zones, comptent les individus rencontrés en surface et notent la profondeurau lieu d'observation.   
+
+## Utilisation
+
+Tester l'indépendance entre variables catégorielles.
+
+---
+
+## Conditions d'utilisation
+
+- Les observations sont indépendantes.
+
+- Les effectifs doivent-être importants.
+
+## Fonction R
+
+> chisq.test{stats}   
+
+- si les données sont présentées sous forme de tableau:
+
+> chisq.test(colonne1, colonne2)
+
+- si les données sont sous forme de table de contingence:
+
+> chisq.test(table_de_contingence)
+
+---
+
+## Résolution du cas d'étude
+
+### Création de la table de contingence
+
+```{r, echo=TRUE}
+Data <- as.table(rbind(c(117, 104, 149), c(17, 29, 86), c(22, 15, 8)))
+dimnames(Data) <- list(Mammifere = c("Dauphin", "Rorqual", "Baleine_A_Bosse"),
+                       Bathymetrie = c("PeuProfond", "Moyen", "Profond"))
+Data
+```
+
+---
+
+### Test du $\chi^2$
+
+```{r, echo=TRUE}
+Xsq <- chisq.test(Data)
+Xsq
+```
+
+<u>Interprétation:</u>L'analyse de la table de contingence montre un lien significatif entre l'espèce et la localisation sur zone bathymétrique (p=1.26e-08; $\chi^2$ = 42.582; dll = 4).
+
+---
+
+# Test de Fisher
+
+## Cas d'étude
+
+> Nous souhaitons savoir si il existe un lien entre la couleur des yeux et celle des cheveux ? Les résultts présentés sont ceux d'une enquête menée sur 161 étudiants.
+
+## Utilisation
+
+Tester l'indépendance entre variables catégorielles.
+
+---
+
+## Conditions d'utilisation
+
+- Les observations sont indépendantes.
+
+- Les effectifs peuvent être faibles.
+
+## Fonction R
+
+> fisher.test{stats}   
+
+- si les données sont présentées sous forme de tableau:
+
+> fisher.test(colonne1, colonne2)
+
+- si les données sont sous forme de table de contingence:
+
+> fisher.test(table_de_contingence)
+
+---
+
+## Résolution du cas d'étude
+
+### Création de la table de contingence
+
+```{r, echo=TRUE}
+amphi <- as.table(rbind(c(13, 11, 0, 0), c(2, 2, 0, 1), c(3, 60, 26, 1),
+                        c(0, 1, 10, 1), c(1, 20, 7, 1)))
+dimnames(amphi) <- list(Yeux = c("Bleu", "Gris", "Marron",
+                                 "Noir", "Vert"),
+                       Cheveux = c("Blond", "Châtain", "Noir", "Roux"))
+amphi
+```
+
+---
+
+### Test de Fisher
+
+```{r, echo=TRUE}
+fisher.test(amphi, workspace = 20000000)
+```
+
+<u>Interprétation:</u>L'analyse de la table de contingence montre un lien significatif entre la couleur des yeux et celle des cheveux (p=2.5e-12; CPE de Fisher).
+
+---
+
+
+# Comparer plusieurs proportions
+
+## Cas d'étude
+
+> Nous reprenons l'exemple précédent pour nous intéresser à la répartition des dauphins en fonction de la zone bathymétrique, par rapport aux autres espèces de mammifères rencontrées.
+
+## Utilisation
+
+Tester l'hypothèse qu'au moins une proportion diffère des autres.
+
+---
+
+## Conditions d'utilisation
+
+- Les observations sont indépendantes.
+
+- Nous mesurons une proportion d'événements considérés comme étant des "succès".
+
+## Fonction R
+
+> prop.test{stats}   
+
+- Hypothèse bilatérale:
+
+> prop.test(vecteur_succes_observes, vecteur_evenements_enregistres)   
+> prop.test(matrice)
+
+- Hypothèse unilatérale:
+
+> prop.test(matrice, alternative="greater")
+
+---
+
+## Résolution du cas d'étude
+
+### Création de la matrice
+
+```{r, echo=TRUE}
+matri <- c(117, 104, 149, 39, 44, 94)
+dim(matri) <- c(3, 2)
+matri
+```
+
+### Test de comparaison de proportions
+
+```{r, echo=TRUE}
+prop.test(matri)
+```
+
+<u>Interprétation:</u>Le test de comparaison de proportion est significatif, ce qui indique qu'au risque d'erreur alpha de 5%, au moins une des proportions diffère des autres(p=0.012; $\chi^2$ = 8.77; dll = 2).
+
+---
+
+## Test de proportions
+
+```{r add_defi6, echo=FALSE, eval=TRUE, out.width="10%", fig.align='left'}
+knitr::include_graphics("../images/defi.jpg")
+```
+
+A partir de l'exemple du cas d'étude précédent:
+
+1. Nous souhaitons savoir si la proportion de dauphins par rapport aux autres espèces observées est différente entre les zones peu profonde et moyennement profonde.
+
+2. Connaissons le régime alimentaire des dauphins et l'abondance des proies dans les différentes zones, nous formulons l'hypothèse que la proportion de dauphins par rapport aux autres mammifères doit être supérieure dans la zone peu profonde par rapport à la zone profonde.
+
+```{r, echo=FALSE}
+library(countdown)
+countdown(minutes = 10, seconds = 00)
+```

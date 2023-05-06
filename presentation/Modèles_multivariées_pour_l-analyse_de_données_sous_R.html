@@ -1,0 +1,1746 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Modèles multivariées pour l’analyse de données sous R</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Cédric Hassen-Khodja" />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <link href="libs/remark-css/default.css" rel="stylesheet" />
+    <link href="libs/remark-css/default-fonts.css" rel="stylesheet" />
+    <link href="libs/countdown/countdown.css" rel="stylesheet" />
+    <script src="libs/countdown/countdown.js"></script>
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# Modèles multivariées pour l’analyse de données sous R
+]
+.subtitle[
+## Jour 4
+]
+.author[
+### Cédric Hassen-Khodja
+]
+.institute[
+### BioCampus Montpellier, MRI
+]
+.date[
+### <p><img src="logo_MRI.png" style="width:3in" /></p>
+]
+
+---
+
+
+
+
+<div>
+<style type="text/css">.xaringan-extra-logo {
+width: 110px;
+height: 128px;
+z-index: 0;
+background-image: url(logo_cnrs.png);
+background-size: contain;
+background-repeat: no-repeat;
+position: absolute;
+top:1em;right:1em;
+}
+</style>
+<script>(function () {
+  let tries = 0
+  function addLogo () {
+    if (typeof slideshow === 'undefined') {
+      tries += 1
+      if (tries < 10) {
+        setTimeout(addLogo, 100)
+      }
+    } else {
+      document.querySelectorAll('.remark-slide-content:not(.title-slide):not(.inverse):not(.hide_logo)')
+        .forEach(function (slide) {
+          const logo = document.createElement('div')
+          logo.classList = 'xaringan-extra-logo'
+          logo.href = null
+          slide.appendChild(logo)
+        })
+    }
+  }
+  document.addEventListener('DOMContentLoaded', addLogo)
+})()</script>
+</div>
+
+# Objectifs d'apprentissage
+
+1. Apprendre les bases de l'analyse multivariée pour révéler des patrons dans les données.
+
+2. Utiliser `R` pour effectuer une ordination sans contrainte.
+
+3. Utiliser `R` pour créer des dendrogrammes.
+
+4. Utiliser `R` pour effectuer une ordination sous contrainte.
+
+---
+
+# La classification ascendante hierarchique (CAH)
+
+- **Regrouper** des individus en fonction de leur *similarité*.
+
+- Permet **d'évaluer** des degrés de *proximité* ou *d'appartenance* à ces groupes.
+
+- Vise à **subdiviser** une population en *groupes (classes) d'individus* les plus semblables possibles.
+
+- La réalisation d'une **CAH** se déroule en deux étapes:
+
+  - Calcul de la matrice de distance entre individus.
+  
+  - Regroupement en classes.
+  
+- Les résultats sont représentés sous la forme d'un **dendrogramme**.
+
+---
+
+# La classification ascendante hierarchique (CAH)
+
+## Le choix de la distance
+
+- **La distance euclidienne:**
+
+  - Variables quantitatives;
+  
+  - Il peut-être nécessaire de centrer réduire les variables.
+  
+  - Le principe est de faire la racine carrée de la somme des carrés des différences entre les coordonnées des points
+
+- **La distance de Bray-Curtis:**
+
+  - Echelle comprise entre 0 et 1;
+  
+  - Abandance ou de comptage;
+  
+  - Le principe est de faire la somme des différence de la mesure pour chacune des variables entre deux individus statistiques rapportée à la mesure totale.
+  
+---
+
+## Le choix de la distance (suite)
+  
+- **La distance de Jaccard:**
+
+  - Echelle comprise entre 0 et 1;
+  
+  - Variables binaires.
+  
+  - Le principe est de comparer les individus par paires en supprimant les variables pour lesquelles il y a co-absence puis de faire le rapport entre le nombre d'observations faites uniquement pour l'un des individus et le nombre d'observations totales.
+
+---
+
+## Le choix de la méthode pour regrouper
+
+- **Le lien moyen (UPGMA):**
+
+  - Calculer la distance moyenne entre toutes les paires de classe;
+  
+  - Sensible aux valeurs extrêmes.
+
+- **La méthode de Ward:**
+
+  - Calculer la distance au carré entre les éléments des classes et le barycentre de leur classe.
+
+  - Maximiser l'inertie inter classe à chaque étape et donc à minimiser l'inertie intra classe.
+
+---
+
+## Fonction R
+
+&gt; vegdist{vegan}
+
+- Arguments: *method=* `"euclidean"`, `"bray"`, `"jaccard"`
+
+&gt; hclust{stats}
+
+- Arguments: *method=* `"average"`, `"ward.D2"`
+
+Le fichier de données est un tableau avec les individus en ligne et les variables en colonnes.
+
+---
+
+## Cas d'étude
+
+&gt; Des scientifiques se rendent sur différents sites pour faire des comptages d'oiseaux.
+Ils disposent d'un tableau de présence / absence avec sur chaque ligne, les différentes stations de mesure et sur chaque colonne les espèces identifiées.
+
+---
+
+### Importation et observation des données
+
+
+```r
+oisPA &lt;- read.csv("../data/Ois_PA.csv", sep = ";")
+str(oisPA)
+# 'data.frame':	20 obs. of  16 variables:
+#  $ Site          : chr  "Ville" "Ville" "Ville" "Ville" ...
+#  $ Aigrette      : int  0 0 0 0 0 0 0 0 0 0 ...
+#  $ Buse          : int  0 0 0 0 1 1 0 1 1 0 ...
+#  $ Canard        : int  0 0 0 0 0 0 1 1 0 0 ...
+#  $ Coucou        : int  0 0 0 0 0 0 0 0 1 0 ...
+#  $ Engoulevent   : int  0 0 0 0 0 0 0 0 0 0 ...
+#  $ Geai          : int  0 0 0 0 0 0 0 0 0 1 ...
+#  $ Heron         : int  0 0 0 0 0 0 0 0 0 0 ...
+#  $ Martin_pecheur: int  0 0 0 0 0 0 0 0 0 0 ...
+#  $ Moineau       : int  1 1 1 1 1 0 0 0 0 0 ...
+#  $ Mouette       : int  0 1 1 0 0 0 1 1 1 0 ...
+#  $ Perdrix       : int  0 0 0 0 0 1 1 0 0 1 ...
+#  $ Pie           : int  1 1 1 0 1 0 0 1 1 0 ...
+#  $ Piegrieche    : int  0 0 0 0 0 1 1 0 0 0 ...
+#  $ Pigeon        : int  1 1 1 1 1 0 0 0 1 1 ...
+#  $ Tourterelle   : int  1 0 1 0 1 0 0 0 0 0 ...
+oisPA2 &lt;- oisPA[, -1]
+```
+
+---
+
+### Calcul de la matrice de distance
+
+
+```r
+library(vegan)
+DisJac &lt;- vegdist(oisPA2, 
+                  method = "jaccard")
+```
+
+---
+
+### Classification ascendante hiérarchique
+
+
+.pull-left[
+
+```r
+clustSite &lt;- hclust(DisJac, 
+                    method = "ward.D2")
+plot(clustSite,
+     hang = -1,
+     labels = oisPA[, 1])
+```
+
+&lt;img src="Modèles_multivariées_pour_l-analyse_de_données_sous_R_files/figure-html/unnamed-chunk-3-1.png" width="432" style="display: block; margin: auto;" /&gt;
+]
+
+--
+
+.pull-right[
+
+```r
+clustSite &lt;- hclust(DisJac, 
+                    method = "ward.D2")
+plot(clustSite,
+     hang = -1,
+     labels = oisPA[, 1])
+rect.hclust(clustSite, k=4, 
+            border = "black")
+```
+
+&lt;img src="Modèles_multivariées_pour_l-analyse_de_données_sous_R_files/figure-html/unnamed-chunk-4-1.png" width="432" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+#### Nombre de groupe
+
+
+```r
+inertie &lt;- sort(clustSite$height, decreasing = TRUE)
+plot(inertie, type = "s", xaxt = "n")
+```
+
+&lt;img src="Modèles_multivariées_pour_l-analyse_de_données_sous_R_files/figure-html/unnamed-chunk-5-1.png" width="432" style="display: block; margin: auto;" /&gt;
+
+---
+
+### Calcul de la matrice de distance (espèces)
+
+
+```r
+library(vegan)
+DisJac2 &lt;- vegdist(t(oisPA2), 
+                   method = "jaccard")
+```
+
+---
+
+### Classification ascendante hiérarchique (espèces)
+
+
+```r
+ClustOis &lt;- hclust(DisJac2, 
+                   method = "ward.D2")
+plot(ClustOis, 
+     hang = -1, 
+     xlab = "", 
+     sub = "")
+rect.hclust(ClustOis, k=4, 
+            border = "black")
+```
+
+&lt;img src="Modèles_multivariées_pour_l-analyse_de_données_sous_R_files/figure-html/unnamed-chunk-7-1.png" width="432" style="display: block; margin: auto;" /&gt;
+
+---
+
+# CAH
+
+&lt;img src="../images/defi.jpg" width="10%" style="display: block; margin: auto auto auto 0;" /&gt;
+
+- Vous allez utiliser le dataset "USArrests" qui contient les taux d'arrestation pour divers crimes aux États-Unis en 1973.
+
+- Vous allez réaliser la CAH pour regrouper les états en clusters et ainsi répondre à :
+
+  - Combien de clusters avez-vous identifiés ?
+  
+  - Comment interprétez-vous les résultats obtenus ?
+
+<div class="countdown" id="timer_e06db8d9" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
+<div class="countdown-controls"><button class="countdown-bump-down">&minus;</button><button class="countdown-bump-up">&plus;</button></div>
+<code class="countdown-time"><span class="countdown-digits minutes">08</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
+</div>
+
+
+---
+
+# Méthodes d'ordination sans contrainte
+
+- Nous allons examiner 4 méthodes **d'ordination sans contraintes**:
+
+  - L'**A**nalyse en **C**omposantes **P**rincipales (ACP)
+  
+  - L'**A**nalyse **F**actorielle des **C**orrespondancs (AFC)
+  
+  - L'**A**nalyse des **C**orrespondances **M**ultiples (ACM)
+  
+  - L'Analyse Hill-Smith
+  
+  - Le Positionnement multidimensionnel non métrique (NMDS)
+
+---
+
+# L'Analyse en composantes principales (ACP)
+
+- Technique de réduction de dimensionnalité.
+
+- Transforme les variables originales en **composantes principales**.
+
+- Les objectifs de l'ACP sont:
+
+  - Faire le bilan des corrélations entre variables;
+  
+  - Evaluer ls ressemblances et différences entre individus;
+  
+  - Etudier les relations entre les individus et les variables.
+
+---
+
+## Conditions d'utilisation
+
+- Données quantitatives continues.
+
+- Nombre d'individus élevés.
+
+- Les variables doivent-être centrées et réduites (optionnel).
+
+- Normalité des données.
+
+- Adapté aux gradients qui présentent une variation monotone.
+
+- Sensible au double zéro.
+
+---
+
+## En pratique
+
+- Les étapes de l'ACP sont les suivantes:
+
+  1. pré-traitement des données;
+  
+  2. choix du nombre d'axes à conserver;
+  
+  3. analyse de l'organisation des variables;
+  
+  4. analyse des individus.
+
+---
+
+## Fonction R
+
+&gt; dudi.pca{ade4}
+
+## Cas d'étude
+
+&gt; Reprenons le dataset "USArrests" pour résoudre une ACP et analyser les individus et l'organisation des variables.
+
+### Importation des données
+
+
+```r
+library(ade4)
+data(USArrests)
+```
+
+---
+
+### Vérification et pré-traitement des données
+
+- L'ACP se base sur la mesure de coefficients de corrélation de Pearson.
+
+- Les variables doivent-être misent à l'échelle.
+
+.pull-left[
+
+```r
+USArrests_standard &lt;- scale(USArrests)
+
+#Visualisation des corrélations
+table.value(cor(USArrests_standard))
+```
+
+&lt;img src="Modèles_multivariées_pour_l-analyse_de_données_sous_R_files/figure-html/unnamed-chunk-10-1.png" width="432" style="display: block; margin: auto;" /&gt;
+]
+
+.pull-right[
+
+```r
+#Visualisation de la linéarité
+pairs(USArrests_standard)
+```
+
+&lt;img src="Modèles_multivariées_pour_l-analyse_de_données_sous_R_files/figure-html/unnamed-chunk-11-1.png" width="432" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+### Choix du nombre d'axes à conserver
+
+- Se base sur les composantes principales.
+
+- Déterminer l'inertie.
+
+- Plusieurs méthodes existent:
+
+  - Critère du **coude de Catwell**.
+  
+  - **70% de l'inertie**.
+  
+  - Critère de **Kaiser**.
+
+
+```r
+pcaUSArrests &lt;- dudi.pca(USArrests, scannf = FALSE)
+inertia.dudi(pcaUSArrests)
+```
+
+---
+
+### Choix du nombre d'axes à conserver (suite)
+
+&lt;img src="../images/inertia_pca.png" width="256" style="display: block; margin: auto;" /&gt;
+
+---
+
+### Interprétation de l'espace factoriel
+
+L'analyse des variables se déroule de la façon suivante :
+
+1. L'analyse des `\(cos^2\)` et/ou du cercle des corrélations, 
+
+2. ce qui permet d'interpréter les axes,
+
+3. On étudie les corrélations entre variables.
+
+
+
+.pull-left[
+
+```r
+s.corcircle(pcaUSArrests$co)
+```
+
+&lt;img src="Modèles_multivariées_pour_l-analyse_de_données_sous_R_files/figure-html/unnamed-chunk-15-1.png" width="432" style="display: block; margin: auto;" /&gt;
+]
+
+.pull-right[
+&lt;u&gt;Interprétation:&lt;/u&gt; On voit que les trois variables *Murder*, *Assault* et *Rape* sont corrélées entre elles et explique la variabilité de la CP1.   
+En revanche, c'est *UrbanPop* qui explique majoritairement la variabilité de la CP2.
+]
+
+---
+
+### Interprétation de l'espace factoriel (suite)
+
+- Nous pouvons afficher également la valeur des **$\cos²**.
+
+- Plus la valeur du **$\cos²** d'une variable sur un axe est élevée, plus la variable contribue à l'axe.
+
+
+
+```r
+cos2 &lt;- inertia.dudi(pcaUSArrests, col.inertia = TRUE)
+cos2$col.rel
+#              Axis1     Axis2
+# Murder   -71.22962  17.30854
+# Assault  -84.35380   3.49769
+# UrbanPop -19.19463 -75.39938
+# Rape     -73.24611  -2.77090
+```
+
+&lt;u&gt;Interprétation:&lt;/u&gt; Les valeurs de `\(\cos²\)` confirme l'interprétation décrite plus haut, soit une forte contribution des variables *Murder*, *Assault* et *Rape* pour l'axe 1 et *UrbanPop* pour l'axe 2. 
+
+---
+
+### Analyse des individus
+
+- On analyse la contribution des individus aux axes en analysant le `\(\cos²\)`.
+
+- On cherche à identifier les ressemblances entre les individus.
+
+- On interprète les liaisons entre individus et variables.
+
+- On peut caractériser certains individus en particulier.
+
+---
+
+### Analyse des individus (suite)
+
+.pull-left[
+
+```r
+scatter(pcaUSArrests, 
+        posieig="none", 
+        xax = 1, 
+        yax = 2)
+```
+
+&lt;img src="Modèles_multivariées_pour_l-analyse_de_données_sous_R_files/figure-html/unnamed-chunk-17-1.png" width="432" style="display: block; margin: auto;" /&gt;
+
+```
+# NULL
+```
+]
+
+.pull-right[
+
+```r
+s.value(pcaUSArrests$li, 
+        scale(USArrests$Murder))
+```
+
+&lt;img src="Modèles_multivariées_pour_l-analyse_de_données_sous_R_files/figure-html/unnamed-chunk-18-1.png" width="432" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+### variables supplémentaires
+
+- Ajout d'une variable sans modifier l'analyse précédemment construite.
+
+- variables **supplémentaires** ou **passives**.
+
+- Aider à interpréter les axes.
+
+- Caractériser de nouvelles variables.
+
+- variable doit-être quantitative (autant d'individus).
+
+#### Fonction R
+
+&gt; supcol{ade4}
+&gt; supcol(ResultatACP, data.frame(scalewt(VariablesSuplementaires)))$cosup
+
+---
+
+#### Cas d'étude
+
+
+```r
+#ACP sur les variables actives
+pcaUSArrests &lt;- dudi.pca(USArrests, scannf = FALSE)
+
+#Création d'une variable supplémentaire
+score &lt;- as.numeric(apply(USArrests, MARGIN = 1, sum))
+
+#Graphique
+s.arrow(pcaUSArrests$co, xlim = c(-2, 1.5), ylim = c(-1.5, 1.5), clabel = 0.8)
+symbols(0, 0, circles = 1, inches = FALSE, add = TRUE)
+s.arrow(supcol(pcaUSArrests, data.frame(scalewt(score)))$co, label = "SCORE", add.p = TRUE, clabel = 1.1)
+```
+
+&lt;img src="Modèles_multivariées_pour_l-analyse_de_données_sous_R_files/figure-html/unnamed-chunk-19-1.png" width="432" style="display: block; margin: auto;" /&gt;
+
+---
+
+### individus supplémentaires
+
+- Les individus supplémentaires ont obtenu des valeurs sur chaque variable
+
+#### Fonction R
+
+&gt; suprow{ade4}
+
+---
+
+#### Cas d'étude
+
+
+```r
+# ACP sur les individus actifs
+pcaUSArrests &lt;- readRDS(file = "../../pcaUSArrests.rds")
+
+# Chargement des individus supplémentaires
+IndSup &lt;- data.frame(Murder = , Assault = , UrbanPop = , Rape = )
+row.names(IndSup)
+LocaSup &lt;- suprow(pcaUSArrests, IndSup)
+
+#Combine les individus
+pcaUSArrests$li &lt;- rbind(pcaUSArrests$li, LocaSup$lisup)
+
+#Graphique
+scatter(pcaUSArrests, posieig = "none", xax = 1, yax = 2)
+```
+
+---
+
+# L'Analyse en composantes principales (ACP)
+
+&lt;img src="../images/defi.jpg" width="10%" style="display: block; margin: auto auto auto 0;" /&gt;
+
+&lt;u&gt;Jeu de données:&lt;/u&gt; : "Iris" dataset disponible dans R. C'est un jeu de données bien connu en science des données qui contient des mesures de quatre variables (longueur et largeur des sépales et des pétales) pour trois espèces d'iris (setosa, versicolor et virginica).
+
+1. Chargez le jeu de données `Iris`.
+
+2. Sélectionnez les quatre variables numériques dans le jeu de données : longueur et largeur des sépales et des pétales.
+  
+3. Standardisez les données.
+  
+4. Effectuez l'ACP.
+  
+5. Analyse des résultats.
+
+
+<div class="countdown" id="timer_e524d6d5" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
+<div class="countdown-controls"><button class="countdown-bump-down">&minus;</button><button class="countdown-bump-up">&plus;</button></div>
+<code class="countdown-time"><span class="countdown-digits minutes">10</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
+</div>
+
+---
+
+# L'Analyse factorielle des correspondancs (AFC)
+
+- Etudier les relations entre les différentes modalités de **deux variables qualitatives**.
+
+- Permet d'analyser un tableau de contingence.
+
+- Utilise la métrique du `\(\chi^2\)`.
+
+## En pratique
+
+1. Test du `\(\chi²\)` d'indépendance.
+
+2. On étudie les composantes pour évaluer le nombre d'axes à conserver.
+
+3. On analyse les résultats.
+
+---
+
+## Fonction R
+
+&gt;dudi.coa{ade4}
+
+## Cas d'étude
+
+&gt; Nous allons reprendre le cas d'étude sur le comptage des oiseaux effecué par des scientifiques. A chaque fois qu'ils observent des oiseaux ils notent le lileu dans ils se trouvent ainsi que les espèces observées. 
+
+---
+
+### Importation et inspection des données
+
+
+```r
+library(ade4)
+Ois &lt;- read.csv("../data/Oiseaux.csv",
+                sep = ";", header = TRUE)
+str(Ois)
+# 'data.frame':	75 obs. of  2 variables:
+#  $ site  : chr  "Ville" "Ville" "Ville" "Ville" ...
+#  $ espece: chr  "Pigeon" "Moineau" "Tourterelle" "Pie" ...
+head(Ois)
+#    site      espece
+# 1 Ville      Pigeon
+# 2 Ville     Moineau
+# 3 Ville Tourterelle
+# 4 Ville         Pie
+# 5 Ville      Pigeon
+# 6 Ville     Moineau
+```
+
+---
+
+#### Création de la table de contingence
+
+
+```r
+tableOis &lt;- table(Ois$site, Ois$espece)
+tableOis
+#              
+#               Aigrette Buse Canard Coucou Engoulevent Geai Heron Martin_pecheur
+#   Champ              0    3      2      1           0    1     0              0
+#   Foret              1    0      1      3           2    3     1              1
+#   Ville              0    1      0      0           0    0     0              0
+#   Zone_humide        3    2      5      0           0    0     2              2
+#              
+#               Moineau Mouette Perdrix Pie Piegrieche Pigeon Tourterelle
+#   Champ             0       3       3   2          2      2           0
+#   Foret             0       1       0   0          4      2           0
+#   Ville             5       2       0   4          0      5           3
+#   Zone_humide       0       3       0   0          0      0           0
+```
+
+---
+
+#### Création de la table de contingence (autre visualisation)
+
+
+```r
+table.value(tableOis, col.labels = colnames(tableOis),
+            csize = 0.75, clegend = 0.75)
+```
+
+&lt;img src="Modèles_multivariées_pour_l-analyse_de_données_sous_R_files/figure-html/unnamed-chunk-24-1.png" width="432" style="display: block; margin: auto;" /&gt;
+
+---
+
+### Réalisation de l'AFC
+
+
+```r
+afc1 &lt;- dudi.coa(as.data.frame.matrix(tableOis))
+```
+
+#### Affichage de l'inertie
+
+
+```r
+#afc1 &lt;- readRDS("../../afc1.rds")
+afc1 &lt;- dudi.coa(as.data.frame.matrix(tableOis), scannf = FALSE)
+#Afficher l'inertie
+inertia.dudi(afc1)
+# Inertia information:
+# Call: inertia.dudi(x = afc1)
+# 
+# Decomposition of total inertia:
+#     inertia     cum  cum(%)
+# Ax1  0.6333  0.6333   49.63
+# Ax2  0.3999  1.0332   80.97
+# Ax3  0.2429  1.2760  100.00
+```
+
+---
+
+#### Graphique et contribution relative
+
+.pull-left[
+
+```r
+scatter(afc1, posieig = "bottomleft", clab.row = 1, clab.col = 0.75)
+```
+
+&lt;img src="Modèles_multivariées_pour_l-analyse_de_données_sous_R_files/figure-html/unnamed-chunk-27-1.png" width="432" style="display: block; margin: auto;" /&gt;
+]
+
+.pull-right[
+
+```r
+inertia.dudi(afc1, row.inertia = TRUE)[4]
+# $row.rel
+#                   Axis1       Axis2
+# Champ         0.4171275  -0.7268571
+# Foret        29.8337329 -60.3672054
+# Ville       -95.7456895   0.3451005
+# Zone_humide  35.2797305  60.3974866
+```
+]
+
+---
+
+#### Interprétation
+
+Le plan factoriel montre la séparation des milieux étudiés en 4 groupes. 
+- L'axe 1 sépare le milieu *Ville* des milieux *Zone humide* et *Forêt*.
+- Le milieu *Champ* se trouve en position centrale.
+- L'axe 2 sépare *Foret* de *Zone_humide*.
+
+Certaine espèces apprécient un milieu plutôt qu'un autre tandis que certaines en apprécient plusieurs.
+
+---
+
+# L'Analyse factorielle des correspondances (AFC)
+
+&lt;img src="../images/defi.jpg" width="10%" style="display: block; margin: auto auto auto 0;" /&gt;
+
+&lt;u&gt;Jeu de données:&lt;/u&gt; `HairEyeColor` contient des données sur la couleur des cheveux, des yeux et le sexe de 592 personnes.
+
+1. Chargez le jeu de données.
+
+2. Sélectionnez les variables `Hair`, `Eye` pour les Hommes.
+
+3. Effectuez l'AFC.
+
+4. Visualisez les résultats de l'AFC.
+
+
+<div class="countdown" id="timer_52e3916a" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
+<div class="countdown-controls"><button class="countdown-bump-down">&minus;</button><button class="countdown-bump-up">&plus;</button></div>
+<code class="countdown-time"><span class="countdown-digits minutes">08</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
+</div>
+
+---
+
+# L'Analyse des correspondances multiples (ACM)
+
+- Etudier les relations entre les différentes modalités de **plus de deux variables qualitatives**.
+
+- Utilise une métrique proche du `\(\chi^2\)`.
+
+---
+
+## En pratique
+
+Généralisation de l'AFC.
+
+---
+
+## Fonction R
+
+&gt;dudi.acm{ade4}
+
+---
+
+## Cas d'étude
+
+&gt; Des scientifiques ont reporté différentes variables environnementales relatives à son habitat telles que le dénivelé, la surface boisée... Ils ont également invéntorié les signalements de l'ours dans la région des Alpes Françaises depuis un siècle.
+
+---
+
+### Importation et inspection des données
+
+
+```r
+library(ade4)
+data("ours")
+str(ours)
+# 'data.frame':	38 obs. of  10 variables:
+#  $ altit : Factor w/ 3 levels "1","2","3": 2 1 3 3 3 3 2 1 2 2 ...
+#  $ deniv : Factor w/ 3 levels "1","2","3": 3 2 3 3 3 3 2 1 3 2 ...
+#  $ cloiso: Factor w/ 3 levels "1","2","3": 3 1 3 3 1 3 3 2 1 3 ...
+#  $ domain: Factor w/ 3 levels "1","2","3": 2 2 2 1 2 1 2 2 2 1 ...
+#  $ boise : Factor w/ 3 levels "1","2","3": 2 1 2 3 2 3 2 1 3 3 ...
+#  $ hetra : Factor w/ 3 levels "1","2","3": 3 1 2 3 3 3 1 1 2 3 ...
+#  $ favor : Factor w/ 3 levels "1","2","3": 3 2 3 3 2 3 2 3 3 2 ...
+#  $ inexp : Factor w/ 3 levels "1","2","3": 2 2 3 2 3 3 3 2 3 3 ...
+#  $ citat : Factor w/ 4 levels "1","2","3","4": 1 2 2 3 1 3 1 2 4 1 ...
+#  $ depart: Factor w/ 7 levels "AHP","AM","D",..: 5 5 5 5 7 7 7 7 7 7 ...
+```
+
+---
+
+### Réalisation de l'ACM
+
+
+```r
+acm1 &lt;- dudi.acm(ours[,1:8])
+```
+
+#### Affichage de l'inertie
+
+
+```r
+#acm1 &lt;- readRDS("../../acm1.rds")
+acm1 &lt;- dudi.acm(ours[,1:8], scannf = FALSE)
+inertia.dudi(acm1)
+# Inertia information:
+# Call: inertia.dudi(x = acm1)
+# 
+# Decomposition of total inertia:
+#       inertia     cum  cum(%)
+# Ax1  0.428310  0.4283   21.42
+# Ax2  0.278278  0.7066   35.33
+# Ax3  0.250110  0.9567   47.83
+# Ax4  0.188768  1.1455   57.27
+# Ax5  0.173300  1.3188   65.94
+# Ax6  0.164822  1.4836   74.18
+# Ax7  0.117065  1.6007   80.03
+# Ax8  0.084973  1.6856   84.28
+# Ax9  0.075813  1.7614   88.07
+# Ax10 0.058155  1.8196   90.98
+# Ax11 0.054441  1.8740   93.70
+# Ax12 0.047601  1.9216   96.08
+# Ax13 0.028391  1.9500   97.50
+# Ax14 0.026237  1.9763   98.81
+# Ax15 0.016874  1.9931   99.66
+# Ax16 0.006861  2.0000  100.00
+```
+
+---
+
+#### Graphique et rapports de corrélation
+
+.pull-left[
+
+```r
+scatter(acm1)
+```
+
+&lt;img src="Modèles_multivariées_pour_l-analyse_de_données_sous_R_files/figure-html/unnamed-chunk-33-1.png" width="432" style="display: block; margin: auto;" /&gt;
+]
+
+.pull-right[
+
+```r
+acm1$cr
+#              RS1       RS2
+# altit  0.4867906 0.1893131
+# deniv  0.2528392 0.2325247
+# cloiso 0.2598395 0.2724303
+# domain 0.1796741 0.6002266
+# boise  0.7317972 0.1429825
+# hetra  0.7233694 0.4699515
+# favor  0.5352790 0.0682467
+# inexp  0.2568897 0.2505504
+```
+]
+
+---
+
+#### Interprétation
+
+Nous pouvons voir que les régions qui ont la proportion la plus importante d'altitude comprise entre 800m et 2000m (3, *altit*) sont également celles qui présentent la surface boisée la plus importante (3, *boise*), celles où la surface de forêt mélangée est la plus importante (3, *hetra*), et ce sont celles qui possèdent la plus grande proportion d'habitat favorable à l'ours (3, *favor*).
+
+---
+
+### Variables supplémentaires
+
+- Comme l'ACP, on peut introduire des variables supplémentaires.
+
+---
+
+#### Cas d'étude
+
+&gt; On souhaite projeter la colonne **citat** sur le plan factoriel en tant que variable supplémentaire.
+
+
+```r
+s.label(acm1$li, clabel = 0, pch = 20)
+s.class(acm1$li, ours[,9], add.plot = TRUE)
+```
+
+&lt;img src="Modèles_multivariées_pour_l-analyse_de_données_sous_R_files/figure-html/unnamed-chunk-35-1.png" width="432" style="display: block; margin: auto;" /&gt;
+
+---
+
+# L'Analyse des correspondances multiples (ACM)
+
+&lt;img src="../images/defi.jpg" width="10%" style="display: block; margin: auto auto auto 0;" /&gt;
+
+&lt;u&gt;Jeu de données:&lt;/u&gt; `Titanic` contient des données sur le sort des passagers du voyage inaugural fatal du paquebot, résumé selon le statut économique (classe), le sexe, l'âge et la survie.
+
+1. Chargez le jeu de données.
+
+2. Effectuez l'ACM.
+
+3. Visualisez les résultats de l'ACM.
+
+<div class="countdown" id="timer_911acfc8" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
+<div class="countdown-controls"><button class="countdown-bump-down">&minus;</button><button class="countdown-bump-up">&plus;</button></div>
+<code class="countdown-time"><span class="countdown-digits minutes">05</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
+</div>
+
+---
+
+# CAH sur résultats d'analyse factorielle
+
+## Réalisons une AFC
+
+
+```r
+oisPA &lt;- read.csv("../data/Ois_PA.csv", sep = ";")
+oisPA2 &lt;- oisPA[, -1]
+
+library(ade4)
+afc2 &lt;- dudi.coa(oisPA2, scannf = FALSE, nf = 2)
+```
+
+## Calcul de la marice de distance
+
+
+```r
+library(vegan)
+DistAfc &lt;- vegdist(afc2$li, method = "euclidean")
+```
+
+---
+
+## Réalisation de la CAH
+
+
+```r
+ClustAfc &lt;- hclust(DistAfc, method = "ward.D2")
+```
+
+---
+
+## Visualisation de l'inertie et du dendrogramme
+
+.pull-left[
+
+```r
+plot(ClustAfc, hang = -1, labels = oisPA[,1], xlab = "", sub = "")
+rect.hclust(ClustAfc, k = 3, border = "black")
+```
+
+&lt;img src="Modèles_multivariées_pour_l-analyse_de_données_sous_R_files/figure-html/unnamed-chunk-40-1.png" width="432" style="display: block; margin: auto;" /&gt;
+]
+
+.pull-right[
+
+```r
+inertie2 &lt;- sort(ClustAfc$height, decreasing = TRUE)
+plot(inertie2, type = "s", xaxt = "n", ylab = "Inertie", xlab = "Nombre de groupes")
+```
+
+&lt;img src="Modèles_multivariées_pour_l-analyse_de_données_sous_R_files/figure-html/unnamed-chunk-41-1.png" width="432" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+## Visualisation du plan factoriel
+
+
+```r
+CutClustAfc &lt;- cutree(ClustAfc, k=3)
+data.frame(Site = oisPA[,1], Groupe = CutClustAfc)
+#           Site Groupe
+# 1        Ville      1
+# 2        Ville      1
+# 3        Ville      1
+# 4        Ville      1
+# 5        Ville      1
+# 6        Champ      2
+# 7        Champ      2
+# 8        Champ      1
+# 9        Champ      1
+# 10       Champ      2
+# 11       Foret      2
+# 12       Foret      2
+# 13       Foret      2
+# 14       Foret      2
+# 15       Foret      3
+# 16 Zone_humide      3
+# 17 Zone_humide      3
+# 18 Zone_humide      3
+# 19 Zone_humide      3
+# 20 Zone_humide      3
+```
+
+---
+
+## Visualisation du plan factoriel (suite)
+
+.pull-left[
+
+```r
+s.label(afc2$li, clabel = 0.75, boxes = FALSE, label = oisPA[,1])
+s.label(afc2$co, clabel = 0.75, add.plot = TRUE)
+s.class(afc2$li, as.factor(CutClustAfc), axesell = FALSE, add.plot = TRUE)
+```
+
+&lt;img src="Modèles_multivariées_pour_l-analyse_de_données_sous_R_files/figure-html/unnamed-chunk-43-1.png" width="432" style="display: block; margin: auto;" /&gt;
+]
+
+.pull-right[
+Le plan factoriel montre comment les espèces sont inféodés à certains milieux.
+]
+
+---
+
+# L'analyse Hill-Smith
+
+- Etudier les relations entre variables et de positionner les individus.
+
+---
+
+## En pratique
+
+Les étapes sont les mêmes que celles d'une ACP.
+
+## Fonction R
+
+&gt; dudi.mix{ade}
+
+---
+
+## Cas d'étude
+
+&gt; Une enquête founit les variables suivantes : âge, sexe, taille, pointure, lieu d'habitation à la naissance, poids réel, poids rêvé, couleur des yeux, couleur des cheveux.
+
+### Importation et inspection des données
+
+
+```r
+library(ade4)
+donnees &lt;- read.csv("../data/enquete.csv", stringsAsFactors = TRUE)
+str(donnees)
+# 'data.frame':	100 obs. of  9 variables:
+#  $ age            : int  20 20 27 19 23 28 22 21 23 26 ...
+#  $ sexe           : Factor w/ 2 levels "Femme","Homme": 2 1 2 2 2 2 2 2 2 1 ...
+#  $ taille         : int  162 155 157 181 185 163 165 172 182 189 ...
+#  $ pointure       : int  37 38 45 45 37 47 41 37 36 41 ...
+#  $ lieu_naissance : Factor w/ 2 levels "Campagne","Ville": 1 1 2 1 1 1 1 2 1 2 ...
+#  $ poids_reel     : num  77.8 76.9 53 81.1 66.9 ...
+#  $ poids_reve     : num  56.3 55.8 66.2 61.1 83.9 ...
+#  $ couleur_yeux   : Factor w/ 4 levels "Bleu","Marron",..: 1 4 4 3 3 4 1 3 4 2 ...
+#  $ couleur_cheveux: Factor w/ 5 levels "Blond","Brun",..: 5 4 2 5 4 5 4 3 1 3 ...
+```
+
+---
+
+### Réalisation de l'analyse et visualisation de l'inertie
+
+
+```r
+pcaEnq &lt;- dudi.mix(df = donnees, scannf = FALSE, nf = 4)
+inertia.dudi(pcaEnq)
+# Inertia information:
+# Call: inertia.dudi(x = pcaEnq)
+# 
+# Decomposition of total inertia:
+#      inertia     cum  cum(%)
+# Ax1   1.6492   1.649   11.78
+# Ax2   1.6029   3.252   23.23
+# Ax3   1.4358   4.688   33.48
+# Ax4   1.2099   5.898   42.13
+# Ax5   1.1409   7.039   50.28
+# Ax6   1.0136   8.052   57.52
+# Ax7   0.9778   9.030   64.50
+# Ax8   0.9630   9.993   71.38
+# Ax9   0.8741  10.867   77.62
+# Ax10  0.7522  11.619   83.00
+# Ax11  0.7416  12.361   88.29
+# Ax12  0.6313  12.992   92.80
+# Ax13  0.5560  13.548   96.77
+# Ax14  0.4518  14.000  100.00
+```
+
+---
+
+### Représentation de l'espace des variables
+
+.pull-left[
+
+```r
+s.corcircle(pcaEnq$co)
+```
+
+&lt;img src="Modèles_multivariées_pour_l-analyse_de_données_sous_R_files/figure-html/unnamed-chunk-46-1.png" width="432" style="display: block; margin: auto;" /&gt;
+]
+
+.pull-right[
+&lt;u&gt;Interprétation:&lt;/u&gt;
+- Sur l'axe 1, les variables qui contribuent le plus sont la pointure, le le lieu d'habitation en ville et la couleur des yeux verts.
+- Sur l'axe 2, les variables qui contribuent le plus sont les couleurs des cheveux bruns et noirs.
+]
+
+---
+
+### Représentation de l'espace des variables (suite)
+
+.pull-left[
+
+```r
+s.corcircle(pcaEnq$co[,3:4])
+```
+
+&lt;img src="Modèles_multivariées_pour_l-analyse_de_données_sous_R_files/figure-html/unnamed-chunk-47-1.png" width="432" style="display: block; margin: auto;" /&gt;
+]
+
+.pull-right[
+&lt;u&gt;Interprétation:&lt;/u&gt;
+- Sur l'axe 3, les variables qui contribuent le plus sont les cheveux et les yeux noirs.
+- Sur l'axe 4, les variables qui contribuent le plus sont les couleurs des cheveux bruns, couleurs des yeux marrons, couleur des yeux bleu et couleur des cheveux roux.
+]
+
+---
+
+### Représentation des individus
+
+
+```r
+scatter(pcaEnq, row.plab.cex = 1, col.plab.cex = 1.5)
+```
+
+&lt;img src="Modèles_multivariées_pour_l-analyse_de_données_sous_R_files/figure-html/unnamed-chunk-48-1.png" width="432" style="display: block; margin: auto;" /&gt;
+
+
+---
+
+# L'analyse Hill-Smith
+
+&lt;img src="../images/defi.jpg" width="10%" style="display: block; margin: auto auto auto 0;" /&gt;
+
+&lt;u&gt;Jeu de données:&lt;/u&gt; Le jeu de données `mtcars` contient des informations sur les caractéristiques de 32 voitures, telles que la cylindrée, la puissance, le poids, etc.
+
+1. Chargez le jeu de données "mtcars".
+
+2. Réalisez une analyse multivariée.
+
+3. Analysez les résultats.
+
+<div class="countdown" id="timer_1d36fa72" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
+<div class="countdown-controls"><button class="countdown-bump-down">&minus;</button><button class="countdown-bump-up">&plus;</button></div>
+<code class="countdown-time"><span class="countdown-digits minutes">10</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
+</div>
+
+---
+
+# Le Positionnement multidimensionnel non métrique (NMDS)
+
+- Alternative à l'ACP quand les variables ne suivent pas une distribution normale.
+
+- Repose sur un algorithme itératif d'optimisation.
+
+## Fonction R
+
+&gt; metaNMDS{vegan}
+&gt;metaNMDS(Comm=donnees, k=nombre) # K indique le nombre de dim.
+
+---
+
+## Cas d'étude
+
+&gt; Le marquage de neurones situés dans deux régions du système nerveux central a permis de mesurer leurs caractéristiques anatomiques (le nombre de synapses afférentes, la longeur de l'axone, la longeur de l'arbre dendritique et le diamètre de leur soma). Ce marquage spécifique a également permis de déterminer leur appartenance à un type cellulaire.   
+Mettre en évidence une relation entre les métriques observées d'une part et le type cellulaire ou la région anatomique d'autre part.
+
+### Import et préparation des données
+
+
+```r
+library(vegan)
+
+df1 &lt;- read.table("../data/nrn.txt", header = TRUE)
+cT &lt;- as.character(df1[,5])
+aR &lt;- as.character(df1[,6])
+df2 &lt;- df1[,1:4]
+colnames(df2) &lt;- c("nS", "aL", "dL", "sD")
+```
+
+---
+
+### Réalisation du NMDS
+
+
+```r
+nmds1 &lt;- metaMDS(comm = df2, k = 2)
+```
+
+
+```r
+print(paste("stress: ", nmds1$stress))
+NMDS1 &lt;- nmds1$points[,1]; NMDS2 &lt;- nmds1$points[,2]
+par(mfrow=c(2,2))
+stressplot(nmds1, p.col = "black", l.col = "grey", cex=1)
+ord1 &lt;- ordiplot(nmds1, type = "none")
+points(ord1, "sites", pch=21, col="lightgrey", bg="lightgrey")
+text(ord1, "species", col="black", cex=1.25)
+plot(NMDS1, NMDS2, col = cT, pch = cT, cex=1)
+plot(NMDS1, NMDS2, col = aR, pch = aR, cex=1)
+```
+
+&lt;img src="Modèles_multivariées_pour_l-analyse_de_données_sous_R_files/figure-html/unnamed-chunk-52-1.png" width="432" style="display: block; margin: auto;" /&gt;
+
+---
+
+### Réalisation du NMDS (suite)
+
+.pull-left[
+
+```
+# [1] "stress:  0.0229843352766943"
+```
+
+&lt;img src="Modèles_multivariées_pour_l-analyse_de_données_sous_R_files/figure-html/unnamed-chunk-53-1.png" width="432" style="display: block; margin: auto;" /&gt;
+]
+
+.pull-right[
+&lt;u&gt;Interprétation:&lt;/u&gt;
+- L'ajustement du modèle est bon avec un `\(R²\)` très haut.
+- La longeur de l'axone et le diamètre du soma sont très proches et que ce sont surtout le nombre de synapses et la longeur de l'arbre dendritique qui permettent de distinguer les éléments.
+- Le type cellulaire est bien classé et bien délimité. En revanche, la région anatomique n'est pas influencé par ces différentes métriques.
+]
+
+---
+
+# Le Positionnement multidimensionnel non métrique (NMDS)
+
+&lt;img src="../images/defi.jpg" width="10%" style="display: block; margin: auto auto auto 0;" /&gt;
+
+&lt;u&gt;Jeu de données:&lt;/u&gt; Les données utilisées dans ce tutoriel proviennent du Réseau National des Observatoires Ecologiques (NEON). Les données sont des dénombrements d'espèces de macroinvertébrés benthiques pour les rivières et les lacs de l'ensemble des États-Unis et ont été recueillies entre juillet 2014 et aujourd'hui.
+
+1. Chargez le jeu de données.
+
+2. Effectuez l'analyse NMDS sur le dénombrements d'espèces (var. 4 à 11).
+
+3. Interprétez et Visualisez les résultats.
+
+<div class="countdown" id="timer_865b77cb" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
+<div class="countdown-controls"><button class="countdown-bump-down">&minus;</button><button class="countdown-bump-up">&plus;</button></div>
+<code class="countdown-time"><span class="countdown-digits minutes">10</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
+</div>
+
+---
+
+# Méthodes d'ordination sous contrainte
+
+- Nous allons examiner 2 méthodes **d'ordination sous contraintes**:
+
+  - L'**A**nalyse **L**inéaire discriminante (ALD ou LDA)
+
+  - L'**A**nalyse **C**anonique de redondances (ACR ou RDA)
+  
+---
+
+# Analyse discriminante linéaire
+
+- Expliquer et de prédire les valeurs d'une variable qualitative `Y` à partir de variables explicatives quantitatives/qualitatives.
+
+- Divise la variable réponse en groupes en trouvant une combinaison de variables qui donne la **meilleure séparation possible**.
+
+---
+
+## Cas d'étude
+
+&gt; Dans le cadre d'une étude de la population angevine, le CHU d'Angers s'est interressé à la propension à ronfler d'homme et de femmes. Le fichier `ronfle.txt` contient un échantillon de 100 patients, le variables considérées sont :
+- age (années);
+- poids (kg);
+- taille (cm);
+- alcool (nombre de verres bus par jour);
+- sexe (F/H);
+- ronfle (O/N);
+- taba (O/N).
+
+&gt;Le but de cette étude est d'expliquer le ronflement par les autres variables.
+
+---
+
+### Importer les données
+
+
+```r
+donnees &lt;- read.table("../data/ronfle.txt", header = TRUE)
+summary(donnees)
+#       age            poids            taille          alcool     
+#  Min.   :23.00   Min.   : 42.00   Min.   :158.0   Min.   : 0.00  
+#  1st Qu.:43.00   1st Qu.: 77.00   1st Qu.:166.0   1st Qu.: 0.00  
+#  Median :52.00   Median : 95.00   Median :186.0   Median : 2.00  
+#  Mean   :52.27   Mean   : 90.41   Mean   :181.1   Mean   : 2.95  
+#  3rd Qu.:62.25   3rd Qu.:107.00   3rd Qu.:194.0   3rd Qu.: 4.25  
+#  Max.   :74.00   Max.   :120.00   Max.   :208.0   Max.   :15.00  
+#      sexe              ronfle              taba          
+#  Length:100         Length:100         Length:100        
+#  Class :character   Class :character   Class :character  
+#  Mode  :character   Mode  :character   Mode  :character  
+#                                                          
+#                                                          
+# 
+```
+
+---
+
+### Fonction R
+
+&gt; lda{mass}
+&gt; lda(Y ~ X1+X2)
+
+### Construire le modèle
+
+
+```r
+library(MASS)
+mod.complet &lt;- lda(ronfle ~ ., data = donnees)
+mod.complet$scaling
+#                LD1
+# age     0.05973655
+# poids  -0.01620579
+# taille  0.01590170
+# alcool  0.24058822
+# sexeH   0.55413371
+# tabaO  -1.14621434
+```
+
+---
+
+### Estimer le taux de mauvais classement
+
+
+```r
+prev.complet &lt;- lda(ronfle~., data = donnees, CV=TRUE)$class
+
+# tableau des classifications a priori et prédites
+spe.table &lt;- table(prev.complet, donnees$ronfle)
+
+# proportion de mauvaise classification
+1 - diag(prop.table(spe.table, 1))
+#         N         O 
+# 0.2933333 0.4800000
+```
+
+---
+
+### Faire de la prévision
+
+
+```r
+
+# charger les nouvelles données
+new_df &lt;- data.frame(age = c(42, 58, 35, 67),
+                     poids = c(55, 94, 70, 63),
+                     taille = c(169, 185, 180, 166),
+                     alcool = c(0,4, 6, 3),
+                     sexe = c("F", "H", "H", "F"),
+                     taba = c("N", "O", "O", "N"))
+
+# prédiction sur les nouvelles données
+predict.group &lt;- predict(mod.complet, newdata = new_df)
+```
+
+---
+
+# Analyse discriminante linéaire
+
+&lt;img src="../images/defi.jpg" width="10%" style="display: block; margin: auto auto auto 0;" /&gt;
+
+&lt;u&gt;Jeu de données:&lt;/u&gt; : "Iris" dataset disponible dans R. C'est un jeu de données bien connu en science des données qui contient des mesures de quatre variables (longueur et largeur des sépales et des pétales) pour trois espèces d'iris (setosa, versicolor et virginica).
+
+1. Chargez le jeu de données `iris`.
+
+2. Divisez le jeu de données en un ensemble d'apprentissage et un ensemble de test.
+
+3. Effectuez l'analyse LDA en utilisant les variables explicatives "Sepal.Length" et "Sepal.Width" pour prédire la variable réponse "Species".
+
+4. Utilisez le modèle LDA pour prédire les classes de l'ensemble de test.
+
+5. Évaluez la précision du modèle en comparant les prédictions avec les classes réelles de l'ensemble de test
+
+<div class="countdown" id="timer_3e611f5f" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
+<div class="countdown-controls"><button class="countdown-bump-down">&minus;</button><button class="countdown-bump-up">&plus;</button></div>
+<code class="countdown-time"><span class="countdown-digits minutes">10</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
+</div>
+
+---
+
+# Analyse canonique de redondances
+
+- Extension directe de la régression multiple.
+
+- Modélise l'effet d'une matrice X sur une matrice Y.
+
+- Variables peuvent être quantitatives, qualitatives ou binaires.
+
+---
+
+## Cas d'étude
+ 
+&gt; Le jeu de données "fishes" contient des informations sur l'abondance de différentes espèces de poissons en fonction de l'habitat. 
+
+### Fonction R
+
+&gt; rda{vegan}   
+&gt; rda(X, Y)
+
+---
+
+### Importer et préparer les données
+
+
+```r
+
+# Charger le jeu de données
+fishes &lt;- read.csv("../data/fishes.csv")
+
+Resp &lt;- fishes[,c(2:7)]
+Expl &lt;- fishes[,c(8:11)]
+```
+
+---
+
+### Réaliser une RDA
+
+
+```r
+library(vegan)
+res.rda &lt;- vegan::rda(Resp, Expl)
+head(summary(res.rda, display = NULL))
+# 
+# Call:
+# rda(X = Resp, Y = Expl) 
+# 
+# Partitioning of variance:
+#               Inertia Proportion
+# Total         112.889    1.00000
+# Constrained   108.341    0.95971
+# Unconstrained   4.548    0.04029
+# 
+# Eigenvalues, and their contribution to the variance 
+# 
+# Importance of components:
+#                          RDA1    RDA2    RDA3     PC1     PC2       PC3
+# Eigenvalue            74.5227 24.9420 8.87611 4.18878 0.31386 0.0370370
+# Proportion Explained   0.6601  0.2209 0.07863 0.03711 0.00278 0.0003281
+# Cumulative Proportion  0.6601  0.8811 0.95971 0.99682 0.99960 0.9999250
+#                             PC4
+# Eigenvalue            8.463e-03
+# Proportion Explained  7.497e-05
+# Cumulative Proportion 1.000e+00
+# 
+# Accumulated constrained eigenvalues
+# Importance of components:
+#                          RDA1    RDA2    RDA3
+# Eigenvalue            74.5227 24.9420 8.87611
+# Proportion Explained   0.6879  0.2302 0.08193
+# Cumulative Proportion  0.6879  0.9181 1.00000
+# 
+# Scaling 2 for species and site scores
+# * Species are scaled proportional to eigenvalues
+# * Sites are unscaled: weighted dispersion equal on all dimensions
+# * General scaling constant of scores:
+```
+
+---
+
+### Réaliser une RDA
+
+- Variance de Y expliquée par X représente 95.97% .
+
+- Variance de Y non expliquée par X représente 4%.
+
+---
+
+### Ajustement du modèle
+
+
+```r
+RsquareAdj(res.rda)
+# $r.squared
+# [1] 0.9597113
+# 
+# $adj.r.squared
+# [1] 0.9395669
+```
+
+### Significativité d'une RDA
+
+
+```r
+anova.cca(res.rda, permutations = 1000)
+# Permutation test for rda under reduced model
+# Permutation: free
+# Number of permutations: 1000
+# 
+# Model: rda(X = Resp, Y = Expl)
+#          Df Variance      F   Pr(&gt;F)    
+# Model     3  108.341 47.642 0.000999 ***
+# Residual  6    4.548                    
+# ---
+# Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+```
+
+---
+
+### Représentation graphique
+
+.pull-left[
+
+```r
+ordiplot(res.rda,
+         scaling = 1,
+         type = "text")
+```
+
+&lt;img src="Modèles_multivariées_pour_l-analyse_de_données_sous_R_files/figure-html/unnamed-chunk-64-1.png" width="432" style="display: block; margin: auto;" /&gt;
+]
+
+.pull-right[
+
+```r
+ordiplot(res.rda,
+         scaling = 2,
+         type = "text")
+```
+
+&lt;img src="Modèles_multivariées_pour_l-analyse_de_données_sous_R_files/figure-html/unnamed-chunk-65-1.png" width="432" style="display: block; margin: auto;" /&gt;
+]
+
+
+---
+
+# Analyse canonique de redondances
+
+&lt;img src="../images/defi.jpg" width="10%" style="display: block; margin: auto auto auto 0;" /&gt;
+
+&lt;u&gt;Jeu de données:&lt;/u&gt; Le dataset "Wisconsin Breast Cancer" contient des mesures de caractéristiques de cellules tumorales pour des tumeurs du sein. Les données contiennent des informations sur la taille et la forme des cellules, la densité de la tumeur et d'autres caractéristiques. L'objectif de cet exercice est d'identifier quelles caractéristiques des cellules tumorales sont les plus fortement associées à un diagnostic de tumeur maligne ou bénigne.
+
+1. Chargez le fichier `breast-cancer-wisconsin.csv`.
+
+2. Supprimer les colonnes non nécessaires.
+
+3. Convertir la variable de réponse (Class) en facteur.
+
+4. Sélectionner les variables à inclure dans l'analyse. Dans cet exemple, nous allons inclure toutes les variables de caractéristiques des cellules tumorales.
+
+5. Effectuer une Analyse Canonique de Redondances (ACR) pour identifier quelles caractéristiques des cellules tumorales sont les plus fortement associées à un diagnostic de tumeur maligne ou bénigne.
+
+6. Interpréter les résultats de l'ACR et discuter quelles caractéristiques des cellules tumorales sont les plus fortement associées à un diagnostic de tumeur maligne ou bénigne.
+
+<div class="countdown" id="timer_b12cee02" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
+<div class="countdown-controls"><button class="countdown-bump-down">&minus;</button><button class="countdown-bump-up">&plus;</button></div>
+<code class="countdown-time"><span class="countdown-digits minutes">10</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
+</div>
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

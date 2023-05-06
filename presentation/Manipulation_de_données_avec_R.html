@@ -1,0 +1,1696 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Manipulation de données avec R</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Cédric Hassen-Khodja" />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <link href="libs/remark-css/default.css" rel="stylesheet" />
+    <link href="libs/remark-css/default-fonts.css" rel="stylesheet" />
+    <link href="libs/countdown/countdown.css" rel="stylesheet" />
+    <script src="libs/countdown/countdown.js"></script>
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# Manipulation de données avec R
+]
+.subtitle[
+## Jour 1
+]
+.author[
+### Cédric Hassen-Khodja
+]
+.institute[
+### BioCampus Montpellier, MRI
+]
+.date[
+### <p><img src="logo_MRI.png" style="width:3in" /></p>
+]
+
+---
+
+
+
+
+<div>
+<style type="text/css">.xaringan-extra-logo {
+width: 110px;
+height: 128px;
+z-index: 0;
+background-image: url(logo_cnrs.png);
+background-size: contain;
+background-repeat: no-repeat;
+position: absolute;
+top:1em;right:1em;
+}
+</style>
+<script>(function () {
+  let tries = 0
+  function addLogo () {
+    if (typeof slideshow === 'undefined') {
+      tries += 1
+      if (tries < 10) {
+        setTimeout(addLogo, 100)
+      }
+    } else {
+      document.querySelectorAll('.remark-slide-content:not(.title-slide):not(.inverse):not(.hide_logo)')
+        .forEach(function (slide) {
+          const logo = document.createElement('div')
+          logo.classList = 'xaringan-extra-logo'
+          logo.href = null
+          slide.appendChild(logo)
+        })
+    }
+  }
+  document.addEventListener('DOMContentLoaded', addLogo)
+})()</script>
+</div>
+
+# Objectifs d'apprentissage
+
+1. Savoir utiliser R et RStudio.
+
+2. Manipuler les objets dans R.
+
+3. Installer et utiliser les packages R.
+
+4. Obtenir de l'aide.
+
+5. Ecrire un script dans R.
+
+6. Charger, explorer et enregistrer des données.
+
+7. Manipuler des jeux de données avec l'aide du `tidyerse`.
+
+---
+
+# RStudio
+
+&lt;img src="../images/defi.jpg" width="10%" /&gt;
+
+Ouvrir RStudio !
+
+<div class="countdown" id="timer_fb4a9a23" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
+<div class="countdown-controls"><button class="countdown-bump-down">&minus;</button><button class="countdown-bump-up">&plus;</button></div>
+<code class="countdown-time"><span class="countdown-digits minutes">00</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">30</span></code>
+</div>
+
+--
+
+&lt;img src="../images/myFirstScript.png" width="80%" /&gt;
+
+---
+
+## La console R
+
+&lt;img src="../images/console_R.png" width="80%" /&gt;
+
+- On commence à écrire du code R après l'affichage d'un prompt de la forme **&gt;**.
+- On doit toujours appuyer sur **"entrée"** pour que le code s'exécute et affiche un résultat.
+- Pour effacer la console on peut utiliser le raccourci clavier `Ctrl+l`.
+
+---
+
+## Opérateurs arithmétiques
+
+&lt;img src="../images/defi.jpg" width="10%" /&gt;
+
+Calculez le résultat de l'expression suivante: `\((3 + 2) * 4 - \frac{7}{2}\)`
+
+<div class="countdown" id="timer_05165a15" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
+<div class="countdown-controls"><button class="countdown-bump-down">&minus;</button><button class="countdown-bump-up">&plus;</button></div>
+<code class="countdown-time"><span class="countdown-digits minutes">00</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">30</span></code>
+</div>
+
+---
+
+## Opérateurs arithmétiques (continue)
+
+&lt;img src="../images/defi.jpg" width="10%" /&gt;
+
+Quelle est l'aire d'un carré de 5 cm et d'un cercle de rayon égale à 5 cm ?
+
+&gt; *Astuce*: pour faire un exposant, utilisez la commande `^` et   pour le `\(\pi\)`, utilisez la constante `pi`.
+
+<div class="countdown" id="timer_4cf2e1e0" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
+<div class="countdown-controls"><button class="countdown-bump-down">&minus;</button><button class="countdown-bump-up">&plus;</button></div>
+<code class="countdown-time"><span class="countdown-digits minutes">00</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">30</span></code>
+</div>
+
+---
+
+## Aides dans R
+
+Pour obtenir de l'aide sur une fonction, il suffit d'exécuter la commande `?` ou la fonction `help()` devant le nom de la fonction.
+
+
+```r
+help(print)
+?pi
+```
+
+---
+
+## Les objets R
+
+- La création d'un objet se fait par affection via l'opérateur `&lt;-`.
+
+- Les noms d'objets doivent **toujours commencer par une lettre**.
+
+- R est **sensible à la casse**.
+
+- Les **caractères spéciaux sont interdits** !
+
+&lt;u&gt; Exemples: &lt;/u&gt;
+
+
+```r
+num &lt;- 3.14 # crée l'objet num en lui donnant la valeur 3.14
+num_2 &lt;- num # num_2 reçoit la valeur de num
+num -&gt; num_3 # num_3 reçoit la valeur de num
+```
+
+---
+
+## Les objets R (continue)
+
+&lt;img src="../images/defi.jpg" width="10%" /&gt;
+
+- Calculez la racine carrée de la somme des carrés de 3 et 4.
+
+- Affecter le résultat à l'objet x.
+
+- Afficher le résultat de x.
+
+&gt; *Astuce*: Utilisez la fonction `sqrt` pour avoir la racine carrée et `print` pour afficher le résultat d'un objet.
+
+<div class="countdown" id="timer_b24078bd" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
+<div class="countdown-controls"><button class="countdown-bump-down">&minus;</button><button class="countdown-bump-up">&plus;</button></div>
+<code class="countdown-time"><span class="countdown-digits minutes">01</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">15</span></code>
+</div>
+
+---
+
+## Créer un projet dans RStudio
+
+Pour créer un nouveau projet allez dans File &gt; New Project...
+
+&lt;img src="../images/create_project.png" width="80%" /&gt;
+
+---
+
+## Créer un projet dans RStudio (continue)
+
+&lt;img src="../images/defi.jpg" width="10%" /&gt;
+
+- Créer un nouveau projet dans RStudio pour réaliser les prochains défis à résoudre.
+- Une fois créé, ajouter de nouveaux dossiers data, reports et plots en cliquant sur le bouton `New Folder`.
+
+<div class="countdown" id="timer_19c89554" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
+<div class="countdown-controls"><button class="countdown-bump-down">&minus;</button><button class="countdown-bump-up">&plus;</button></div>
+<code class="countdown-time"><span class="countdown-digits minutes">01</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">15</span></code>
+</div>
+
+---
+
+## Créer un script R
+
+&lt;img src="../images/create_RScript.png" width="50%" /&gt;&lt;img src="../images/write_Rscript.png" width="50%" /&gt;
+
+---
+
+## Créer un script R (continue)
+
+&lt;img src="../images/defi.jpg" width="10%" /&gt;
+
+1. Créez un nouveau script R et écrivez du code: a = 5; b = 4
+
+2. Effectuez les **opérations arithmétiques** suivantes: addition, soustraction, multiplication, division et puissance. Affectez chaque opération à un **nouveau objet**.
+
+3. Affichez le **résultat** de chaque opération.
+
+&gt; *Astuce*: `&lt;-`, `+`, `*`, `\`, `^` et `print()`
+
+<div class="countdown" id="timer_82f77ca6" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
+<div class="countdown-controls"><button class="countdown-bump-down">&minus;</button><button class="countdown-bump-up">&plus;</button></div>
+<code class="countdown-time"><span class="countdown-digits minutes">05</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
+</div>
+
+---
+
+## Sauver son script R
+
+&lt;img src="../images/defi.jpg" width="10%" /&gt;
+
+Sauvez votre script précédemment créé en utilisant la commande `Ctrl+S` et enregistrez le sous le dossier, `reports`, initialement créé.
+
+<div class="countdown" id="timer_8dc8103e" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
+<div class="countdown-controls"><button class="countdown-bump-down">&minus;</button><button class="countdown-bump-up">&plus;</button></div>
+<code class="countdown-time"><span class="countdown-digits minutes">00</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">30</span></code>
+</div>
+
+---
+
+## Nettoyage
+
+- R conserve en mémoire tous les objets créés dans la session.
+- On utilise les fonctions `objects` ou `ls` pour connaître les objets de la session.
+- Dans RStudio ils sont consultables via l'onglet `Environment`
+
+Pour supprimer l'objet x, on tape:
+
+
+```r
+rm(x)
+```
+
+Pour supprimer plusieurs objets, on tape:
+
+
+```r
+rm(x1, x2, x3)
+```
+
+Pour supprimer tous les objets de l'environnement de travail, appuyez sur le "balai" de l'onglet `Environment` ou tapez:
+
+
+```r
+rm(list=ls())
+```
+
+---
+
+## Nettoyage (continue)
+
+&lt;img src="../images/defi.jpg" width="10%" /&gt;
+
+- Amusez-vous à supprimer l'objet `addition` du script précédent.
+
+- Affichez l'objet `addition` pour vérifier que l'objet est bien supprimé.
+
+- Supprimez tous les objets créés de l'environnement de travail.
+
+<div class="countdown" id="timer_fc872524" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
+<div class="countdown-controls"><button class="countdown-bump-down">&minus;</button><button class="countdown-bump-up">&plus;</button></div>
+<code class="countdown-time"><span class="countdown-digits minutes">00</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">45</span></code>
+</div>
+
+---
+
+## Type de structures de données
+
+|| Dimension | Mode | Exemple |
+|:-:|:------:|:----:|:--------|
+|**Vecteur**|&lt;img src="../images/vector.png" width="100%"/&gt;|identique|c(1:12)|
+|**Matrice**|&lt;img src="../images/matrix.png" width="100%"/&gt;|identique|matrix(data = c(1:36), nrow = 3, ncol = 12)|
+|**Data Frame**|&lt;img src="../images/data-frame.png" width="100%"/&gt;|différent|data.frame(logique = c(T, F, T), nombre = c(1,2,3), nbr_déci = c(1.25, 1.2, 1.45), caractère = c("bleu", "blanc", "rouge")...)|
+|**Array**|&lt;img src="../images/Array.png" width="100%"/&gt;|identique|array(c(1:36), dim = c(3,12,3))|
+|**Liste**|Un ensemble de structures de données|différent|list(...)|
+
+---
+
+## Vecteur
+
+.pull-left[
+- Les valeurs d'un vecteur doivent avoir le **même mode**.
+
+  - numériques
+
+  - caractères
+
+  - logiques
+
+- Pour créer un vecteur, on peut utiliser:
+
+  - la fonction `c()`
+
+  - la fonction `rep()`
+
+  - la fonction `seq()`
+
+  - l'opérateur séquence `:`
+]
+
+--
+
+.pull-right[
+&lt;u&gt; Exemples: &lt;/u&gt;
+
+
+```r
+#### vecteurs numériques #####
+num_vecteur &lt;- c(1,2,3,4,5)
+num_vecteur_bis &lt;- 1:5
+num_vecteur_2 &lt;- rep(1,4)
+
+#### vecteurs de caractères ####
+car_vecteur &lt;- c("Bleu", "Blanc", "Rouge")
+car_vecteur_2 &lt;- rep(car_vecteur, each=3)
+
+#### vecteurs logiques ####
+x &lt;- c(10, 20, 30, 40)
+res &lt;- x &lt; 25
+res
+```
+
+```
+## [1]  TRUE  TRUE FALSE FALSE
+```
+]
+
+---
+
+## Vecteur (continue)
+
+- Les vecteurs logiques sont en général générés grâce à des **opérateurs logiques**.   
+  - On considère un vecteur contenant les cinq premier chiffres impaires: 
+
+&gt; impair &lt;- c(1, 3, 5, 7, 9)
+
+
+|Opérateur     |Description              |Exemple|
+|-------------|-------------------------|-------------------------------|
+|`&lt;` et `&gt;`  |inférieur ou supérieur à|`impair &gt; 3`                    |
+|`&lt;=` et `&gt;=`|inférieur/supérieur ou égale à |`impair &gt;= 3`                   |
+|`==`         |égale à         |`impair == 3`                   |
+|`!=`         |non égale à            |`impair != 3`                   |
+|`x`&amp;#124;`y` |x OU y                   |`impair[impair &gt;= 5` &amp;#124; `impair &lt; 3]`|
+|`x &amp; y`      |x ET y                  |`impair[impair &gt;=3 &amp; impair &lt; 7]` |
+
+---
+
+## Vecteur (continue)
+
+- La sélection d'une partie d'un vecteur se fait à l'aide de l'opérateur `[]`.
+
+&lt;u&gt; Exemples: &lt;/u&gt;
+
+
+```r
+impair &lt;- c(1, 3, 5, 7, 9)
+impair[3] # donne le troisième élément de impair
+```
+
+```
+## [1] 5
+```
+
+```r
+impair[2:4] # donne les 2,3,4ème éléments de impair
+```
+
+```
+## [1] 3 5 7
+```
+
+```r
+impair[(impair &gt;= 5) | (impair &lt; 3)] # donne les éléments sup égale à 5 ou inf. à 3
+```
+
+```
+## [1] 1 5 7 9
+```
+
+```r
+impair[impair &gt;= 3 &amp; impair &lt; 7] # donne les éléments qui sont à la fois sup. ou égale à 3 et inf. à 7 
+```
+
+```
+## [1] 3 5
+```
+
+---
+
+## Vecteur (continue)
+
+- Une autre méthode consiste à enlever les éléments du vecteur avec l'opérateur `-`.
+
+&lt;u&gt; Exemples: &lt;/u&gt;
+
+
+```r
+impair &lt;- c(1, 3, 5, 7, 9)
+impair[-3] # donne impair sans le troisième élément
+```
+
+```
+## [1] 1 3 7 9
+```
+
+```r
+impair[-(2:4)] # donne impair sans les 2,3,4ème éléments
+```
+
+```
+## [1] 1 9
+```
+
+---
+
+## Vecteur (continue)
+
+&lt;img src="../images/defi.jpg" width="10%" /&gt;
+
+1. Créez un vecteur contenant les **nombres entiers de 1 à 10** à l'aide de la fonction `seq()`.
+
+2. Créez un vecteur contenant **cinq fois le nombre 3** à l'aide de la fonction `rep()`.
+
+3. Créez un vecteur contenant les **nombres entiers pairs** de 2 à 10 à l'aide de la fonction `seq()`.
+
+4. Créez un vecteur `sexe` contenant *6 éléments*: 3 'M' et 3 'F'.
+  
+  - Extraire de ce vecteur uniquement les **'F'**
+
+&gt; *Astuce*: `?seq()`, `?rep()`
+
+<div class="countdown" id="timer_f36fd52f" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
+<div class="countdown-controls"><button class="countdown-bump-down">&minus;</button><button class="countdown-bump-up">&plus;</button></div>
+<code class="countdown-time"><span class="countdown-digits minutes">04</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
+</div>
+
+---
+
+## Data frame
+
+- Une liste de vecteur de même longueur.
+
+- Les modes peuvent différer.
+
+- Une colonne = une variable.
+
+- Une ligne = une observation.
+
+&lt;u&gt; Exemple: &lt;/u&gt;
+
+
+```r
+df &lt;- data.frame(x = 1:2, y = c(3,5))
+print(df)
+```
+
+```
+##   x y
+## 1 1 3
+## 2 2 5
+```
+
+---
+
+## Data frame
+
+- Pour extraire une partie d'un data frame, vous devez spécifier **deux dimensions**: numéro de ligne et de colonne entre `[]`:
+
+.pull-left[
+
+&lt;u&gt; Exemples: &lt;/u&gt;
+
+
+```r
+df &lt;- data.frame(x = 1:2, 
+                 y = c(3,5))
+df[1,] # Extrait la 1ère ligne
+```
+
+```
+##   x y
+## 1 1 3
+```
+
+```r
+df[, 2] # Extrait la 2ème colonne
+```
+
+```
+## [1] 3 5
+```
+
+```r
+df[1, 2] # Extrait la 1ère ligne de la 2ème colonne
+```
+
+```
+## [1] 3
+```
+]
+
+.pull-right[
+
+
+```r
+df[c(1, 2), ] # Extrait la 1ère et 2ème lignes
+```
+
+```
+##   x y
+## 1 1 3
+## 2 2 5
+```
+
+```r
+df$x # Extrait la variable x du data frame
+```
+
+```
+## [1] 1 2
+```
+
+```r
+df$x[2] # Extrait la 2ème valeur de la variable x du data frame
+```
+
+```
+## [1] 2
+```
+
+]
+
+---
+
+## Data frame (continue)
+
+&lt;img src="../images/defi.jpg" width="10%" /&gt;
+
+1. Créez un data frame appelé `my_data` contenant les variables suivantes : **"age" (21, 30, 35)**, **"sexe" ("M", "F", "F")**, **"salaire" (2500, 3200, 4000)**. Affichez le data frame et déterminez son nombre de lignes et de colonnes.
+
+2. Créez un nouveau data.frame appelé `salaire_augmente` qui est une **copie** de `my_data` mais avec un **salaire augmenté de 10%**. Affichez ce nouveau data frame.
+
+3. Créez une nouvelle variable appelée `prime` qui est **égale à 5% du salaire** pour chaque observation dans le data frame `salaire_augmente`. Affichez le data frame `salaire_augmente` avec cette nouvelle variable.
+
+4. Créez un nouveau data frame appelé `femmes` qui contient **toutes les femmes dans salaire_augmente**. Affichez ce nouveau data frame.
+
+&gt; *Astuce*: `?nrow()`, `?ncol()`, `$`
+
+<div class="countdown" id="timer_1793f151" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
+<div class="countdown-controls"><button class="countdown-bump-down">&minus;</button><button class="countdown-bump-up">&plus;</button></div>
+<code class="countdown-time"><span class="countdown-digits minutes">05</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
+</div>
+
+---
+
+## Les fonctions
+
+- Un grand nombre de fonctions sont prédéfinies dans R.
+
+- Une fonction admet des **arguments** en entrée et retourne un **résultat** en sortie.
+
+- Les **arguments** d'une fonction:
+
+  - obligatoires.
+  
+  - optionnels.
+
+&lt;u&gt; Exemples: &lt;/u&gt;
+
+
+```r
+set.seed(1234) # fixe la graine
+rnorm(n = 5) # 5 nombres aléatoires suivant la loi normale
+```
+
+```
+## [1] -1.2070657  0.2774292  1.0844412 -2.3456977  0.4291247
+```
+
+```r
+# 5 nombres aléatoires suivant 
+# la loi normale de moyenne 10 et d'écart-type 1
+rnorm(n = 5, mean = 10, sd = 1) 
+```
+
+```
+## [1] 10.506056  9.425260  9.453368  9.435548  9.109962
+```
+
+---
+
+## Les fonctions (continue)
+
+&lt;img src="../images/defi.jpg" width="10%" /&gt;
+
+1. Générer un vecteur `x` de **100 nombres aléatoires suivant une loi normale** avec une **moyenne** de 10 et un **écart-type** de 2.
+
+2. Calculer la **somme** des éléments de `x`.
+
+3. Générer une matrice `m` de **5 lignes et 3 colonnes avec des nombres aléatoires suivant une loi normale** avec une **moyenne** de 0 et un **écart-type** de 1.
+
+4. Calculer la **moyenne** des éléments de `m`.
+
+5. Calculer la **médiane** des éléments de `m`.
+
+&gt; *Astuce*: `?rnorm()`, `?sum()`, `?mean()`, `?median()`
+
+<div class="countdown" id="timer_48a7555a" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
+<div class="countdown-controls"><button class="countdown-bump-down">&minus;</button><button class="countdown-bump-up">&plus;</button></div>
+<code class="countdown-time"><span class="countdown-digits minutes">05</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
+</div>
+
+---
+
+## Les packages
+
+.pull-left[
+&lt;img src="../images/rdrr.png" width="90%" /&gt;
+]
+
+.pull-right[
+- Pour installer une bibliothèque, utilisez la commande `install.packages("nom")`.
+- Lui passer des **arguments**.
+- L'argument **dependencies = TRUE** pour installer les dépendances.
+- Pour supprimer ou mettre à jour une bibliothèque, utilisez les commandes suivantes: 
+  - `remove.packages("nom")`.
+  - `update.packages("nom")`.
+
+&lt;u&gt; Exemples: &lt;/u&gt;
+
+```r
+#Installer ggplot2
+install.packages('ggplot2', 
+                 dependencies = TRUE)
+
+#Supprimer ggplot2
+remove.packages('ggplot2')
+```
+
+]
+
+---
+
+## Les packages (continue)
+
+&lt;img src="../images/defi.jpg" width="10%" /&gt;
+
+- **Installation d'un package**: Installez le package `tidyverse` en utilisant la fonction `install.packages()`. Assurez-vous que le package est bien installé en utilisant la fonction `library()` pour charger le package.
+
+<div class="countdown" id="timer_d5bfcdba" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
+<div class="countdown-controls"><button class="countdown-bump-down">&minus;</button><button class="countdown-bump-up">&plus;</button></div>
+<code class="countdown-time"><span class="countdown-digits minutes">00</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">30</span></code>
+</div>
+
+---
+
+## Importation d'un jeu de données
+
+- Le **format texte** est très commun (`.txt` ou `.csv`).
+- Un jeu de données contient:
+  - les lignes = **les individus**.
+  - les colonnes = **les variables**.
+  - un **séparateur de colonnes** = "\t" / "," / ";".
+- Supposons que des données soient contenues dans un fichier `donnees.txt`.
+- Les données sont importées dans l'objet `data`:
+
+
+```r
+data &lt;- read.table("../data/donnees.txt", sep = ";", header = TRUE, 
+                   dec = ",", row.names = 1)
+```
+
+*Remarque*:
+
+- Le nom de fichier est entre guillemets.
+- L'option `sep` indique que le caractère qui sépare les colonnes est un `;`.
+- L'argument `header` indique si la première ligne contient les intitulés des variables.
+- L'argument `dec` indique que le sépareur décimal est le caractère `,`.
+- L'argument `row.names` indique que la colonne 1 est *l'identifiant des lignes*.
+
+---
+
+## Importation d'un jeu de données (continue)
+
+- Supposons maintenant le nouveau jeu de données `donnees2.txt`.
+
+
+```r
+data2 &lt;- read.table("../data/donnees2.txt", sep = ";", 
+                    header = TRUE, dec = ",", row.names = 1)
+data2
+```
+
+```
+##     age taille
+## ABC  25    165
+## DEF  NA    163
+## GHI  21    170
+```
+
+- Le caractère spécial `NA` indiqe qu'il manque une valeur.
+- `na.strings` permet de modifier le caractère de remplacement des valeurs manquantes.
+
+---
+
+## Importation d'un jeu de données (continue)
+
+.pull-left[
+&lt;img src="../images/env_donnees.png" width="620" /&gt;
+]
+
+.pull-right[
+- Prenez note que RStudio montre maintenant le jeu de données `data` dans votre espace de travail.
+
+- L'espace de travail inclut tous les objets créés pendant la session R.
+]
+
+---
+
+## Visualiser les données
+
+R code  					| action
+----------------- | -------------
+`data`					  		| Affiche le tableau de données complet dans la console
+`head(data)`		  		| Affiche les premières lignes du tableau de données
+`tail(data)`         | Affiche les dernières lignes du tableau de données
+`names(data)`				| Affiche le nom des colonnes du tableau de données
+`attributes(data)`		| Affiche les attributs du tableau de données
+`dim(data)`          | Affiche la dimension du tableau de données
+`ncol(data)`         | Affiche le nombre de colonnes du tableau de données
+`nrow(data)`					| Affiche le nombre de lignes du tableau de données
+`summary(data)`			| Calcule quelques statistiques de base sur les variables
+
+---
+
+## Visualiser les données (continue)
+
+La fonction `str()` est très utile pour identifier le type/mode de chaque colonne.
+
+
+```r
+str(data)
+```
+
+```
+## 'data.frame':	3 obs. of  2 variables:
+##  $ age   : int  25 22 21
+##  $ taille: int  165 163 170
+```
+
+---
+
+## Manipuler les variables
+
+&lt;u&gt; Exemples: &lt;/u&gt;
+Supposons qu'un utilisateur ajoute au jeu de données précédent la colonne sexe.
+
+
+```r
+data3 &lt;- read.table("../data/donnees3.txt", sep = ";", 
+                    header = TRUE, dec = ",", row.names = 1)
+str(data3)
+```
+
+```
+## 'data.frame':	3 obs. of  3 variables:
+##  $ age   : int  25 22 21
+##  $ taille: int  165 163 170
+##  $ sexe  : chr  "M" "F" "M"
+```
+
+Le passage de variable type `caractère` en classe se fait via la fonction `factor`.
+
+
+```r
+data3$sexe &lt;- factor(data3$sexe)
+str(data3)
+```
+
+```
+## 'data.frame':	3 obs. of  3 variables:
+##  $ age   : int  25 22 21
+##  $ taille: int  165 163 170
+##  $ sexe  : Factor w/ 2 levels "F","M": 2 1 2
+```
+
+---
+
+## Manipuler les variables (continue)
+
+Npus souhaitons changer les intitulés des niveaux. On utilise la fonction `levels`.
+
+
+```r
+levels(data3$sexe) &lt;- c("femelle","mâle")
+data3$sexe
+```
+
+```
+## [1] mâle    femelle mâle   
+## Levels: femelle mâle
+```
+
+&gt; Attention à l'ordre des facteurs !!
+
+--
+
+- Soit une variable qualitative X codée:
+  - 1 = **classique**.
+  - 2 = **nouveau**.
+  - 3 = **placebo**.
+  
+
+```r
+X &lt;- c(1,1,2,2,3,3)
+Xfactor &lt;- factor(X, labels = c("classique", "nouveau", "placebo"))
+Xfactor
+```
+
+```
+## [1] classique classique nouveau   nouveau   placebo   placebo  
+## Levels: classique nouveau placebo
+```
+
+---
+
+## Manipuler les variables (continue)
+
+On choisit `placebo` comme valeur de référence; pour cela on utilise la fonction `relevel`:
+
+
+```r
+Xfactor2 &lt;- relevel(Xfactor, ref = "placebo")
+Xfactor2
+```
+
+```
+## [1] classique classique nouveau   nouveau   placebo   placebo  
+## Levels: placebo classique nouveau
+```
+
+Pour contrôler l'ordre des niveaux, il suffit de recréer un facteur sur le facteur existant.
+
+
+```r
+Xfactor3 &lt;- factor(Xfactor, levels = c("placebo", "nouveau", "classique"))
+Xfactor3
+```
+
+```
+## [1] classique classique nouveau   nouveau   placebo   placebo  
+## Levels: placebo nouveau classique
+```
+---
+
+## Manipuler les individus
+
+&lt;u&gt; Exemples: &lt;/u&gt;
+
+- L'analyste aimerait identifier les lignes où il y a des valeurs manquantes.
+- La fonction `is.na` permet de les repérer.
+
+
+```r
+select &lt;- is.na(data2)
+```
+
+- Si on veut connaître les couples ligne x colonne des individus portant une valeur manquante, on peut utiliser l'option `arr.ind` de la fonction `which`:
+
+
+```r
+which(is.na(data2), arr.ind = TRUE)
+```
+
+```
+##     row col
+## DEF   2   1
+```
+
+- Si on veut supprimer les lignes contenant des données manquantes, on peut utiliser la fonction `na.omit`:
+
+
+```r
+ndata2 &lt;- na.omit(data2)
+```
+
+---
+
+## Manipuler les individus (continue)
+
+- Maintenant on va s'intéresser à identifier **des valeurs aberrantes**.
+- On va utiliser pour cela un jeu de données célébre `iris`.
+
+
+```r
+data(iris) #150x5
+boxplot(iris[,"Sepal.Width"])
+```
+
+&lt;img src="Manipulation_de_données_avec_R_files/figure-html/data_iris-1.png" width="20%" /&gt;
+
+--
+
+- La composante `out` de la sortie de la fonction `boxplot`.
+
+
+```r
+resultat&lt;- boxplot(iris[,"Sepal.Width"], plot = FALSE)
+valeurs_aberrantes &lt;- resultat$out
+valeurs_aberrantes
+```
+
+```
+## [1] 4.4 4.1 4.2 2.0
+```
+
+---
+
+## Manipuler les individus (continue)
+
+- Pour trouver les **indices** de ces valeurs aberrantes, vous pouvez utiliser le code suivant:
+
+
+```r
+which(iris[,"Sepal.Width"] %in% valeurs_aberrantes)
+```
+
+```
+## [1] 16 33 34 61
+```
+
+```r
+niris &lt;- iris[which(!(iris[,"Sepal.Width"] 
+                      %in% valeurs_aberrantes)),]
+dim(niris)
+```
+
+```
+## [1] 146   5
+```
+
+---
+
+## Manipuler les individus (continue)
+
+.pull-left[
+- Il arrive également que **des doublons** soient présent dans notre jeu de données.
+
+
+```r
+df &lt;- data.frame(C1 = c("a","b", "b", "a", "a"), 
+                 C2 = c(1,2,2,3,1))
+```
+
+- La fonction `unique` permet de garder les individus différents.
+
+
+```r
+unique(df)
+```
+
+```
+##   C1 C2
+## 1  a  1
+## 2  b  2
+## 4  a  3
+```
+]
+
+.pull-right[
+- La fonction `duplicated` permet de repérer les individus identiques en retournant un booléen.
+
+
+```r
+duplicated(df)
+```
+
+```
+## [1] FALSE FALSE  TRUE FALSE  TRUE
+```
+
+- Pour extraire les doublons, il suffit:
+
+
+```r
+df[duplicated(df),]
+```
+
+```
+##   C1 C2
+## 3  b  2
+## 5  a  1
+```
+]
+
+---
+
+## Exportation d'un jeu de données
+
+- L'exportation d'un tableau au format texte suit :
+
+
+```r
+write.table(data, "../data/monresultat.txt", sep = ";")
+```
+
+- D'autres options sont possibles:
+  - `col.names` = le jeu de données contient-il le nom des colonnes ?
+  - `row.names` = le jeu de données contient-il le nom des lignes ?
+  - ...
+
+---
+
+## Manipulation des données
+
+&lt;img src="../images/defi.jpg" width="10%" /&gt;
+
+Jeu de données : Le jeu de données `diabetes` contient des informations sur des patients atteints de diabète. Il contient des informations sur 442 patients et 11 variables, y compris l'âge, le sexe, l'indice de masse corporelle (IMC) et six mesures de résultats médicaux.
+
+Lien pour télécharger les données : https://www4.stat.ncsu.edu/~boos/var.select/diabetes.tab.txt
+
+&lt;u&gt; Importation des données &lt;/u&gt;
+
+1. Téléchargez le fichier `diabetes.tab.txt` à partir du lien ci-dessus et vous l'importez dans R en tant que data.frame nommé "diabetes".
+
+2. Inspectez le data.frame et notez le nombre de variables et le nombre d'individus.
+
+3. Vérifiez la présence de données manquantes.
+
+<div class="countdown" id="timer_7aeb0a82" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
+<div class="countdown-controls"><button class="countdown-bump-down">&minus;</button><button class="countdown-bump-up">&plus;</button></div>
+<code class="countdown-time"><span class="countdown-digits minutes">25</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
+</div>
+
+---
+
+## Manipulation des données (suite)
+
+&lt;img src="../images/defi.jpg" width="10%" /&gt;
+
+&lt;u&gt; Exportation des données &lt;/u&gt;
+
+1. Exportez le data.frame précédemment importé en tant que fichier csv nommé "diabetes_export.csv".
+
+2. Vérifiez si le fichier exporté est bien dans votre répertoire de travail.
+
+&lt;u&gt; Manipulation des variables &lt;/u&gt;
+
+1. Créez un facteur de la variable SEX avec les labels Femmes et Hommes.
+
+2. Combien y a t'il d'Hommes et de Femmes ?
+
+3. Créez une nouvelle variable nommée "diabetes_risk" qui est la somme des variables "bmi", "bp" et "age".
+
+4. Renommez la variable "y" en "diabetes_outcome".
+
+5. Supprimez les variables "s1", "s2", "s3", "s4", "s5" et "s6" du data frame.
+
+---
+
+## Manipulation des données (suite)
+
+&lt;img src="../images/defi.jpg" width="10%" /&gt;
+
+&lt;u&gt; Manipulation des individus &lt;/u&gt;
+
+1. Sélectionnez les patients qui ont un IMC supérieur à 30 et les patients qui ont une pression artérielle (bp) supérieure à 80.
+
+3. A partir de cette sélection, créez un nouveau data frame avec uniquement les variables "diabetes_outcome", "age", "sex" et "diabetes_risk"
+
+4. Récupérez les autres individus n'appartenant pas à cette sélection dans un autre data frame puis comparez. Qu'observez-vous ?
+
+---
+
+## Le monde du tidyverse
+
+- Le tidyverse est un **ensemble de packages**:
+  - Manipulation et visualisation des données.
+  - Philosophie de programmation commune (`tidy data`).
+  - Syntaxe cohérente pour l'analyse de données.
+
+- Les packages les plus connus:
+  - `dplyr`.
+  - `ggplot2`.
+  - `tidyr`.
+  - `purrr`.
+
+---
+## tidyr
+
+- Le but de ce package est de crée des `données ordonnées`:
+
+  - Chaque colonne est une variable.
+  
+  - Chaque ligne est une observation.
+  
+  - Chaque cellule à une seule valeur.
+  
+&lt;img src="../Logos/tidyr.png" width="20%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## tidyr: Manipuler vos données
+
+- Le paquet tidyr permet de manipuler la structure d'un data frame en préservant les informations d'origine.
+
+&lt;img src="../images/reshape_data.png" width="1373" style="display: block; margin: auto;" /&gt;
+
+
+---
+
+## tidyr: tibble
+
+- `Tibble` est un format alternatif et plus pratique que celui d'un data frame:
+
+  - Les `tibbles` ont une présentation de sortie plus propre que les data.frames.
+
+  - Les `tibbles` permettent d'appliquer des fonctions sur des colonnes de manière plus intuitive.
+
+---
+
+## tidyr: tibble (continue)
+
+ Les `tibbles` ont une présentation de sortie plus propre que les data frames.
+ 
+.pull-left[
+
+```r
+ df &lt;- data.frame(
+  x = c(1, 2, 3),
+  y = c("a", "b", "c")
+)
+df
+```
+
+```
+##   x y
+## 1 1 a
+## 2 2 b
+## 3 3 c
+```
+]
+.pull-right[
+  
+
+```r
+library(tidyr)
+tb &lt;- tibble(
+  x = c(1, 2, 3),
+  y = c("a", "b", "c")
+)
+tb
+```
+
+```
+## # A tibble: 3 × 2
+##       x y    
+##   &lt;dbl&gt; &lt;chr&gt;
+## 1     1 a    
+## 2     2 b    
+## 3     3 c
+```
+]
+
+---
+
+## tidyr: séparer et regrouper des colonnes
+
+&lt;img src="../images/split_cells.png" width="1057" style="display: block; margin: auto;" /&gt;
+
+---
+
+## tidyr: créer de nouvelles combinaisons et gérer les valeurs manquantes
+
+.pull-left[
+&lt;img src="../images/expand_tables.png" width="564" style="display: block; margin: auto;" /&gt;
+]
+
+.pull-right[
+&lt;img src="../images/handle_na.png" width="525" style="display: block; margin: auto;" /&gt;
+]
+---
+
+## tidyr
+
+&lt;img src="../images/defi.jpg" width="10%" /&gt;
+
+**Réorganiser les données**
+
+Réorganiser les données de la table ci-jointe pour qu'il y ait une colonne pour chaque variable et une ligne pour chaque observation.
+
+
+```r
+library(tidyr)
+
+# Exemple de tibble
+tb &lt;- tibble(
+  id = 1:3,
+  age = c(25, 30, 28),
+  height = c(170, 175, 180),
+  weight = c(70, 75, 80)
+)
+```
+
+<div class="countdown" id="timer_fff54625" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
+<div class="countdown-controls"><button class="countdown-bump-down">&minus;</button><button class="countdown-bump-up">&plus;</button></div>
+<code class="countdown-time"><span class="countdown-digits minutes">05</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
+</div>
+
+---
+
+## tidyr (continue)
+
+&lt;img src="../images/defi.jpg" width="10%" /&gt;
+
+**Séparer les données en colonnes**
+
+Le tibble ci-joint contient des informations qui doivent être séparées en plusieurs colonnes distinctes.
+
+
+```r
+# Exemple de tibble
+tb &lt;- tibble(
+  id = 1:3,
+  name = c("John Smith", "Jane Doe", "Bob Johnson"),
+  age = c(25, 30, 28)
+)
+```
+
+<div class="countdown" id="timer_811fe2d2" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
+<div class="countdown-controls"><button class="countdown-bump-down">&minus;</button><button class="countdown-bump-up">&plus;</button></div>
+<code class="countdown-time"><span class="countdown-digits minutes">04</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
+</div>
+
+
+
+---
+
+## tidyr (continue)
+
+&lt;img src="../images/defi.jpg" width="10%" /&gt;
+
+**Combiner les données de plusieurs colonnes**
+
+Le tibble ci-joint contient plusieurs colonnes qui doivent être combinées en une seule colonne.
+
+
+```r
+# Exemple de tibble
+tb &lt;- tibble(
+  id = 1:3,
+  first_name = c("John", "Jane", "Bob"),
+  last_name = c("Smith","Doe", "Johnson"),
+  age = c(25, 30, 28)
+)
+```
+
+<div class="countdown" id="timer_e57b058a" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
+<div class="countdown-controls"><button class="countdown-bump-down">&minus;</button><button class="countdown-bump-up">&plus;</button></div>
+<code class="countdown-time"><span class="countdown-digits minutes">04</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
+</div>
+
+---
+
+## tidyr (continue)
+
+&lt;img src="../images/defi.jpg" width="10%" /&gt;
+
+**Réorganiser les données**
+
+Supposons que vous ayez un ensemble de données contenant des informations sur les ventes de produits dans différentes régions au cours de différentes périodes.   
+Transformez ces données de manière à avoir une colonne par période, avec les ventes correspondantes pour chaque produit et région.
+
+
+```r
+region &lt;- c("North", "North", "South", "South")
+period &lt;- c("Q1", "Q2", "Q1", "Q2")
+product &lt;- c("A", "A", "B", "B")
+sales &lt;- c(100, 150, 200, 250)
+
+tb &lt;- tibble(region, period, product, sales)
+```
+
+<div class="countdown" id="timer_96a38121" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
+<div class="countdown-controls"><button class="countdown-bump-down">&minus;</button><button class="countdown-bump-up">&plus;</button></div>
+<code class="countdown-time"><span class="countdown-digits minutes">05</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
+</div>
+
+---
+
+## dplyr
+
+- Ce package fournit un ensemble de fonctions (ou verbes) pour la manipulation de données:
+
+  - `mutate()`: crée une nouvelle colonne de données (ou transforme une colonne existante).
+  
+  - `select()`: sélectionne des colonnes dans un jeu de données.
+  
+  - `filter()`: filtre des rangées suivant les critères spécifiés.
+  
+  - `summarise()`: créer un sommaire de variables au sein de groupes distincts dans un jeu de données en utilisant des fonctions d'aggrégation.
+  
+  - `arrange()`: trie les données d'une colonne en ordre croissant ou décroissant.
+  
+&lt;img src="../Logos/dplyr.png" width="15%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## dplyr (suite)
+
+### select() - selection de colonnes
+
+&lt;img src="../images/dplyr_select.png" width="611" style="display: block; margin: auto;" /&gt;
+
+---
+
+## dplyr (suite)
+
+### select() - selection de colonnes (suite)
+
+&lt;img src="../images/dplyr_selecthelper.png" width="70%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## dplyr (suite)
+
+### filter() - selection de lignes
+
+&lt;img src="../images/dplyr_filter.png" width="645" style="display: block; margin: auto;" /&gt;
+
+&lt;img src="../images/dplyr_logic.png" width="727" style="display: block; margin: auto;" /&gt;
+
+---
+
+## dplyr (suite)
+
+### arrange() - ordonner des lignes
+
+&lt;img src="../images/dplyr_arrange.png" width="671" style="display: block; margin: auto;" /&gt;
+
+---
+
+## dplyr (suite)
+
+### mutate() - créer/modifier des colonnes
+
+&lt;img src="../images/dplyr_mutate.png" width="671" style="display: block; margin: auto;" /&gt;
+
+---
+
+## dplyr (suite)
+
+### summarise() - créer des stats récapitulatives
+
+.pull-left[
+&lt;img src="../images/dplyr_summarise.png" width="513" style="display: block; margin: auto;" /&gt;
+]
+
+.pull-right[
+&lt;img src="../images/dplyr_summaryfct.png" width="70%" style="display: block; margin: auto;" /&gt;
+]
+
+
+---
+
+## dplyr (suite)
+
+Soit la table suivante:
+
+
+```r
+library(tidyverse)
+```
+
+```
+## ── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
+## ✔ dplyr     1.1.2     ✔ purrr     1.0.1
+## ✔ forcats   1.0.0     ✔ readr     2.1.4
+## ✔ ggplot2   3.4.2     ✔ stringr   1.5.0
+## ✔ lubridate 1.9.2     ✔ tibble    3.2.1
+## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+## ✖ dplyr::filter() masks stats::filter()
+## ✖ dplyr::lag()    masks stats::lag()
+## ℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors
+```
+
+```r
+set.seed(1234)
+tbl &lt;- tibble(group1 = rep(c("A", "B"), each = 5000),
+              group2 = rep(c("C", "D"), each = 5000),
+              value = rnorm(10000),
+              weight = sample(1:10, 10000, replace = TRUE))
+tbl
+```
+
+```
+## # A tibble: 10,000 × 4
+##    group1 group2  value weight
+##    &lt;chr&gt;  &lt;chr&gt;   &lt;dbl&gt;  &lt;int&gt;
+##  1 A      C      -1.21       5
+##  2 A      C       0.277      7
+##  3 A      C       1.08       1
+##  4 A      C      -2.35       4
+##  5 A      C       0.429      9
+##  6 A      C       0.506      8
+##  7 A      C      -0.575      1
+##  8 A      C      -0.547      5
+##  9 A      C      -0.564      1
+## 10 A      C      -0.890      7
+## # ℹ 9,990 more rows
+```
+
+---
+
+## dplyr (suite)
+
+Si on sélectionne les colonnes *group1* et *weight* puis on filtre le résultat pour ne garder que les lignes dont le *poids est &gt; à 9*.
+
+.pull-left[
+**solution 1**:
+
+
+```r
+library(tidyverse)
+
+tmp &lt;- select(tbl, group1, 
+              weight)
+print(filter(tmp, 
+             weight &gt; 9), n=4)
+```
+
+```
+## # A tibble: 996 × 2
+##   group1 weight
+##   &lt;chr&gt;   &lt;int&gt;
+## 1 A          10
+## 2 A          10
+## 3 A          10
+## 4 A          10
+## # ℹ 992 more rows
+```
+]
+
+.pull-right[
+**solution 2**
+
+
+```r
+library(tidyverse)
+
+print(filter(select(tbl, 
+                    group1, 
+                    weight), 
+             weight &gt; 9), 
+      n = 4)
+```
+
+```
+## # A tibble: 996 × 2
+##   group1 weight
+##   &lt;chr&gt;   &lt;int&gt;
+## 1 A          10
+## 2 A          10
+## 3 A          10
+## 4 A          10
+## # ℹ 992 more rows
+```
+]
+
+---
+
+## dplyr (suite)
+
+Le **tidyverse** propose une alternative avec le `%&gt;%`.
+
+
+```r
+library(tidyverse)
+
+tbl %&gt;% 
+  select(group1, weight) %&gt;% 
+  filter(weight &gt; 9) %&gt;% 
+  print(, n= 4)
+```
+
+```
+## # A tibble: 996 × 2
+##   group1 weight
+##   &lt;chr&gt;   &lt;int&gt;
+## 1 A          10
+## 2 A          10
+## 3 A          10
+## 4 A          10
+## # ℹ 992 more rows
+```
+
+---
+
+## dplyr (suite)
+
+### group_by() - regrouper le jeu de données par un facteur
+
+&lt;img src="../images/dplyr_groupby.png" width="664" style="display: block; margin: auto;" /&gt;
+
+---
+
+## dplyr (suite)
+
+&lt;img src="../images/defi.jpg" width="10%" /&gt;
+
+1. Chargez les données sur les vols d'avions à partir du package `nycflights13` et stockez-les dans un data frame appelé `vols`.
+2. Affichez les premières observations de `vols`.
+3. Sélectionnez les colonnes *year*, *month* et *day* de `vols`.
+4. Sélectionnez seulement les vols qui se sont produits en novembre.
+5. Trouvez le nombre total de vols par année.
+6. Triez les observations de `vols` par année croissante, puis par mois croissant, puis par jour croissant.
+7. Créez une nouvelle variable appelée *weekday* qui contient le jour de la semaine pour chaque observation.
+8. Transformez la variable *carrier* en colonnes et calculer le nombre total de vol par compagnie aérienne.
+
+<div class="countdown" id="timer_1560ad24" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
+<div class="countdown-controls"><button class="countdown-bump-down">&minus;</button><button class="countdown-bump-up">&plus;</button></div>
+<code class="countdown-time"><span class="countdown-digits minutes">25</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
+</div>
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

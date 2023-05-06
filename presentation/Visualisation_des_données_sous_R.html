@@ -1,0 +1,1449 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Visualisation des données sous R</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Cédric Hassen-Khodja" />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <link href="libs/remark-css/default.css" rel="stylesheet" />
+    <link href="libs/remark-css/default-fonts.css" rel="stylesheet" />
+    <link href="libs/countdown/countdown.css" rel="stylesheet" />
+    <script src="libs/countdown/countdown.js"></script>
+    <script src="libs/htmlwidgets/htmlwidgets.js"></script>
+    <script src="libs/plotly-binding/plotly.js"></script>
+    <script src="libs/typedarray/typedarray.min.js"></script>
+    <script src="libs/jquery/jquery.min.js"></script>
+    <link href="libs/crosstalk/css/crosstalk.min.css" rel="stylesheet" />
+    <script src="libs/crosstalk/js/crosstalk.min.js"></script>
+    <link href="libs/plotly-htmlwidgets-css/plotly-htmlwidgets.css" rel="stylesheet" />
+    <script src="libs/plotly-main/plotly-latest.min.js"></script>
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# Visualisation des données sous R
+]
+.subtitle[
+## Jour 2
+]
+.author[
+### Cédric Hassen-Khodja
+]
+.institute[
+### BioCampus Montpellier, MRI
+]
+.date[
+### <p><img src="logo_MRI.png" style="width:3in" /></p>
+]
+
+---
+
+
+
+
+<div>
+<style type="text/css">.xaringan-extra-logo {
+width: 110px;
+height: 128px;
+z-index: 0;
+background-image: url(logo_cnrs.png);
+background-size: contain;
+background-repeat: no-repeat;
+position: absolute;
+top:1em;right:1em;
+}
+</style>
+<script>(function () {
+  let tries = 0
+  function addLogo () {
+    if (typeof slideshow === 'undefined') {
+      tries += 1
+      if (tries < 10) {
+        setTimeout(addLogo, 100)
+      }
+    } else {
+      document.querySelectorAll('.remark-slide-content:not(.title-slide):not(.inverse):not(.hide_logo)')
+        .forEach(function (slide) {
+          const logo = document.createElement('div')
+          logo.classList = 'xaringan-extra-logo'
+          logo.href = null
+          slide.appendChild(logo)
+        })
+    }
+  }
+  document.addEventListener('DOMContentLoaded', addLogo)
+})()</script>
+</div>
+
+# Objectifs d'apprentissage
+
+1. Apprendre les bases de la visualisation de données en utilisant `R`.
+
+2. Apprendre l'approche de la *grammaire des graphiques* en couches avec `ggplot2`.
+
+3. Créer et modifier des figures.
+
+4. Réfléchir de manière critique et discuter sur la représentation et la visualisation des données.
+
+---
+
+# Fonctions graphiques de base
+
+## Gestion des fenêtres graphiques
+
+&lt;u&gt; Exemple: &lt;/u&gt;
+
+.pull-left[
+
+```r
+x &lt;- 1:12; y &lt;- 12:1
+
+dev.new()
+dev.new()
+dev.list()
+
+dev.set(4)
+split.screen(c(2,1))
+screen(1)
+split.screen(c(1,2))
+screen(3)
+plot(x, 
+     main = "des points pour x")
+screen(4)
+plot(y, 
+     main = "des points pour y")
+screen(2)
+```
+]
+
+.pull-right[
+
+```r
+split.screen(c(1,2))
+screen(5)
+plot(x, type = "l", 
+     main = "des lignes pour x")
+screen(6)
+plot(y, type = "l", 
+     main = "des lignes pour y")
+dev.set(5)
+plot(x, 
+     main = "placer un titre")
+text(3,9, "placer un texte ici")
+text(9,3, "placer un texte là")
+```
+]
+
+---
+
+## Gestion des fenêtres graphiques (suite)
+
+&lt;img src="../images/defi.jpg" width="10%" /&gt;
+
+A partir de l'exemple précédent,
+
+ - Créer un vecteur pour x et y respectivement.
+
+ - Créer une fenêtre graphique composé de deux lignes et trois colonnes.
+
+  - Sur la première colonne, affichez deux graphiques avec des points pour x et y.
+  
+  - Sur la deuxième colonne, affichez deux graphiques avec des lignes pour x et y.
+  
+  - Sur la troixième colonne, afiichez deux graphiques avec des tirets pour x et y.
+
+<div class="countdown" id="timer_bf12b6ee" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
+<div class="countdown-controls"><button class="countdown-bump-down">&minus;</button><button class="countdown-bump-up">&plus;</button></div>
+<code class="countdown-time"><span class="countdown-digits minutes">10</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
+</div>
+
+---
+
+## La fonction plot
+
+- Fonction générique de `R`.
+- De base, un nuage de points d'une variable `y` en fonction d'une variable `x`.
+
+&lt;u&gt; Exemple: &lt;/u&gt;
+
+
+```r
+# Création d'un jeu de données de deux variables quantitatives :
+x &lt;- c(2, 4, 6, 8, 10)
+y &lt;- c(3, 5, 7, 9, 11)
+
+# Tracer un nuage de points (scatterplot) avec la fonction plot() :
+plot(x,y, 
+     main = "Nuage de points pour deux variables quantitatives", 
+     xlab = "Variable X", ylab = "Variable Y")
+```
+
+&lt;img src="Visualisation_des_données_sous_R_files/figure-html/plot_1-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+
+## La fonction plot (suite)
+
+- La taille du symbole peut-être contrôlé via `cex`
+
+- La forme des points via `pch`.
+
+- Le type de tracé via `type`.
+
+--
+
+&lt;img src="../images/defi.jpg" width="10%" /&gt;
+
+1. Créez un vecteur `x` et un vecteur `y`.
+
+2. Tracez un graphique en nuage (scatterplot) avec la fonction `plot()`. Faites en sorte que les points soient représentés par des **triangles creux** et **augmentez leur taille**. Ajoutez des étiquettes pour les axes x et y avec les arguments xlab et ylab.
+
+<div class="countdown" id="timer_bb1a2289" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
+<div class="countdown-controls"><button class="countdown-bump-down">&minus;</button><button class="countdown-bump-up">&plus;</button></div>
+<code class="countdown-time"><span class="countdown-digits minutes">05</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
+</div>
+
+---
+
+## La fonction boxplot
+
+&lt;u&gt; Exemple: &lt;/u&gt;
+
+
+```r
+# Création d'un jeu de données de deux variables :
+x &lt;- c(10, 20, 30, 40, 50, 60, 70, 80, 90, 100)
+y &lt;- rep(c("Groupe A", "Groupe B"), each = 5)
+
+# Tracer un graphique en utilisant la fonction boxplot() :
+boxplot(x~y, main = "boites à moustaches", 
+     xlab = "Variable qualitative", ylab = "Variable quantitative")
+```
+
+&lt;img src="Visualisation_des_données_sous_R_files/figure-html/plot_2-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+
+## La fonction spineplot
+
+
+```r
+# Création d'un jeu de données de deux variables qualitatives :
+y &lt;- factor(c("A", "B", "A", "B", "A", "B", "A", "B"))
+x &lt;- factor(c("C", "C", "D", "D", "C", "C", "D", "D"))
+
+# Tracer un graphique en spineplot avec la fonction spineplot() :
+spineplot(y~x, 
+          main = "Diagramme en bandes", 
+          xlab = "Variable x", ylab = "Variable y")
+```
+
+&lt;img src="Visualisation_des_données_sous_R_files/figure-html/plot_3-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Représentation d'une distribution
+
+- une variable quantitative: utilisation de la fonction `hist()`.
+
+- L'argument freq = FALSE permet de représenter un estimateur de la densité.
+
+&lt;u&gt; Exemple: &lt;/u&gt;
+
+.pull-left[
+
+```r
+# Créer un vecteur de données
+x &lt;- c(2, 5, 7, 8, 8, 9, 10, 10, 10, 11, 11, 11, 11, 12, 13, 14)
+
+# Tracer un histogramme avec la fonction hist() sans probabilité
+hist(x, breaks = 6, main = "Histogramme sans probabilité", 
+     xlab = "Valeurs", ylab = "Fréquence", freq = TRUE)
+```
+
+![](Visualisation_des_données_sous_R_files/figure-html/hist_sans_prob, -1.png)&lt;!-- --&gt;
+]
+.pull-right[
+
+```r
+# Créer un vecteur de données
+x &lt;- c(2, 5, 7, 8, 8, 9, 10, 10, 10, 11, 11, 11, 11, 12, 13, 14)
+
+# Tracer un histogramme avec la fonction hist() avec probabilité
+hist(x, main = "Histogramme avec probabilité", 
+   xlab = "Valeurs", ylab = "Densité", freq = FALSE)
+```
+
+![](Visualisation_des_données_sous_R_files/figure-html/hist_avec_prob-1.png)&lt;!-- --&gt;
+]
+
+---
+
+## Représentation d'une distribution (suite)
+
+- Variable qualitative: utilisation de la fonction `barplot()`.
+
+- On calcule les occurences avec la fonction `table()`.
+
+
+```r
+# Créer un vecteur de données
+x &lt;- c("Chat", "Chien", "Poisson", "Oiseau", "Chat", 
+       "Chat", "Chien", "Chien", "Chien", "Poisson")
+# Calculer la fréquence de chaque catégorie
+freq &lt;- table(x)
+# Tracer un diagramme en barres avec la fonction barplot()
+barplot(freq, main = "Distribution des animaux de compagnie", 
+        xlab = "Type d'animal", ylab = "Fréquence")
+```
+
+![](Visualisation_des_données_sous_R_files/figure-html/barplot-1.png)&lt;!-- --&gt;
+
+---
+
+## Représentation d'une distribution (suite)
+
+&lt;img src="../images/defi.jpg" width="10%" /&gt;
+
+1. Chargez le jeu de données mtcars.
+2. Tracez un histogramme pour la variable `mpg`.
+  - Ajoutez un titre approprié, ainsi qu'une étiquette pour l'axe x et l'axe y.
+3. Tracez un histogramme pour la variable `cyl`.
+  - Utilisez l'argument *breaks* pour spécifier le nombre de classes.
+  - Utilisez l'argument *col* pour changer la couleur de remplissage des barres.
+4. Tracez un histogramme pour la variable `wt`.
+  - Utilisez l'argument *xlim* pour spécifier les limites de l'axe x.
+  - Affichez une densité plutôt que des fréquences.
+
+<div class="countdown" id="timer_401babf0" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
+<div class="countdown-controls"><button class="countdown-bump-down">&minus;</button><button class="countdown-bump-up">&plus;</button></div>
+<code class="countdown-time"><span class="countdown-digits minutes">05</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
+</div>
+
+---
+
+## Ajouts aux graphiques
+
+&lt;u&gt; Exemple: &lt;/u&gt;
+
+
+```r
+# Charger le jeu de données mtcars
+data(mtcars)
+
+# Créer un graphique de dispersion de mpg vs. hp
+plot(mtcars$hp, mtcars$mpg, xlab = "Puissance (hp)", 
+     ylab = "Consommation de carburant (mpg)", 
+     main = "Relation entre puissance et consommation de carburant")
+
+# Ajouter une ligne verticale pour la moyenne de hp
+abline(v = mean(mtcars$hp), col = "red")
+
+# Ajouter le nom de la voiture avec le plus haut et le plus bas mpg
+text(mtcars$hp[which.max(mtcars$mpg)], max(mtcars$mpg), 
+     labels = rownames(mtcars)[which.max(mtcars$mpg)])
+text(mtcars$hp[which.min(mtcars$mpg)], min(mtcars$mpg), 
+     labels = rownames(mtcars)[which.min(mtcars$mpg)])
+```
+
+---
+
+## Ajouts aux graphiques (suite)
+
+![](Visualisation_des_données_sous_R_files/figure-html/p_fct_2-1.png)&lt;!-- --&gt;
+
+---
+
+## Ajouts aux graphiques (suite)
+
+&lt;img src="../images/defi.jpg" width="10%" /&gt;
+
+1. Charger le jeu de données **airquality** inclus dans `R`.
+
+2. Tracer un graphique de **dispersion de la température (Temp) en fonction de la vitesse du vent (Wind)**. Ajouter des axes et une légende appropriés. Le titre du graphique doit être *"Relation entre température et vitesse du vent"*.
+
+3. Ajouter une **ligne horizontale** pour marquer la moyenne de Temp. Utiliser une **couleur différente** de celle du nuage de points pour la ligne.
+
+4. Ajouter le **Jour** (`Day`) où la température était la plus haute puis la plus basse en utilisant la fonction `text()`.
+
+<div class="countdown" id="timer_31d832cf" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
+<div class="countdown-controls"><button class="countdown-bump-down">&minus;</button><button class="countdown-bump-up">&plus;</button></div>
+<code class="countdown-time"><span class="countdown-digits minutes">10</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
+</div>
+
+---
+
+## Scatterplot Matrices
+
+&lt;u&gt; Exemple: &lt;/u&gt;
+
+
+```r
+# Charger le jeu de données iris
+data(iris)
+
+# Tracer un graphique en plusieurs dimensions de iris
+pairs(iris[1:4], main = "Matrice de visualisation des variables par paires", 
+      pch = 21, bg = c("red", "green3", "blue")[iris$Species])
+```
+
+&lt;img src="Visualisation_des_données_sous_R_files/figure-html/graph-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Exportation de graphiques
+
+- Plusieurs formats d'échange: `jpeg`, `png`, `pdf`, `svg` ...
+
+- Avec `RStudio`, il suffit de cliquer sur l'onglet *Export* puis de choisir un format d'exportation.
+
+- Sinon, l'export suit toujours le même schéma:
+
+
+```r
+data(iris)
+pdf("pgraphik.pdf")
+# Tracer un graphique en plusieurs dimensions de iris
+pairs(iris[1:4], main = "Graphique en plusieurs dimensions de iris", 
+      pch = 21, bg = c("red", "green3", "blue")[unclass(iris$Species)])
+dev.off()
+```
+
+---
+
+## Plusieurs graphiques
+
+- On utilise la fonction `par()`.
+
+
+```r
+par(mfrow = c(1,2))
+plot(1:10, 10:1, pch=0)
+plot(rep(1,4), type="l")
+```
+
+&lt;img src="Visualisation_des_données_sous_R_files/figure-html/graphs-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Plusieurs graphiques (suite)
+
+- Pour des graphiques de tailles différentes, on utilise la fonction `layout()`.
+
+
+```r
+mat &lt;- matrix(c(1,1,2,3), nrow = 2, ncol = 2, byrow = TRUE)
+layout(mat)
+plot(1:10, 10:1, pch=0)
+plot(rep(1,4), type="l")
+plot(c(2,3,-1,0),type = "b")
+```
+
+&lt;img src="Visualisation_des_données_sous_R_files/figure-html/graphs_2-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Plusieurs graphiques (suite)
+
+&lt;img src="../images/defi.jpg" width="10%" /&gt;
+
+1. Générer des données aléatoires pour quatre variables X1, X2, X3 et X4, chacune contenant 50 valeurs aléatoires tirées d'une distribution normale.
+
+2. Utiliser la fonction par() avec l'argument mfrow pour créer une grille de graphiques qui contient quatre sous-graphiques.
+
+3. Tracer un histogramme pour chaque variable en utilisant la fonction hist(). Vous pouvez spécifier des options telles que la couleur de remplissage, la couleur des bordures et la courbe de densité.
+
+4. Exporter le graphique en PNG en utilisant la fonction png().
+
+<div class="countdown" id="timer_94b24a18" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
+<div class="countdown-controls"><button class="countdown-bump-down">&minus;</button><button class="countdown-bump-up">&plus;</button></div>
+<code class="countdown-time"><span class="countdown-digits minutes">05</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
+</div>
+
+---
+
+# Fonctions graphiques avec ggplot2
+
+## ggplot2 et la grammaire des graphiques
+
+.pull-left[
+- **Hadley Wickham**
+
+- Approche structurée en couches pour construire des graphiques.
+]
+
+.pull-right[
+&lt;img src="../images/gglayers.png" width="2561" /&gt;
+]
+
+---
+
+## ggplot2 et la grammaire des graphiques (suite)
+
+### Data
+
+.pull-left[
+- Le jeu de données. 
+
+- Essentiel pour créer la figure.
+
+- Une observation = une ligne de la table.
+
+&gt; Astuce: `tidyverse`
+
+]
+
+.pull-right[
+&lt;img src="../images/gglayers.png" width="2561" /&gt;
+]
+
+---
+
+## ggplot2 et la grammaire des graphiques (suite)
+
+### aesthetics / aes()
+
+.pull-left[
+
+- Les variables à utiliser.
+
+- Rend les données visibles:
+
+  - `x`, `y`: variables.
+  - `colour`: colore les lignes des géométries.
+  - `fill`: remplit les géométries.
+  - `group`: regroupe les données en fonction des groupes.
+  - `shape`: définit la forme.
+  - `linetype`: définit le type de ligne.
+  - `size`: dfinit la taille des éléments.
+  - `alpha`: modifie la transparence.
+]
+
+.pull-right[
+&lt;img src="../images/gglayers.png" width="2561" /&gt;
+]
+
+---
+
+## ggplot2 et la grammaire des graphiques (suite)
+
+### Géométries / geom_*()
+
+- Fournit des formes aux données.
+
+- Le type de représentation graphique souhaité:
+
+
+|Geom|Description|Aesthetics|
+|----|-----------|----------|
+|`geom_point()`|Nuage de point|`x`, `y`, `shape`, `fill`|
+|`geom_line()`|Ligne (ordonnées selon x)|`x`, `y`, `linetype`|
+|`geom_abline()`|Droite|`slope`, `intercept`|
+|`geom_path()`|Ligne (ordre original)|`x`, `y`, `linetype`|
+|`geom_text()`|Texte|`x`, `y`, `label`, `hjust`, `vjust`|
+|`geom_rect()`|Rectangle|`xmin`, `ymin`, `xmax`, `ymax`, `fill`, `linetype`|
+|`geom_polygon()`|Polygone|`x`, `y`, `fill`, `linetype`|
+
+---
+
+## ggplot2 et la grammaire des graphiques (suite)
+
+### Géométries / geom_*()
+
+|Geom|Description|Aesthetics|
+|----|-----------|----------|
+|`geom_segment()`|Segment|`x`, `y`, `fill`, `linetype`|
+|`geom_bar()`|Diagramme en barres|`x`, `fill`, `linetype`, `weight`|
+|`geom_histogram()`|Histogramme|`x`, `fill`, `linetype`, `weight`|
+|`geom_boxplot()`|Boîtes à moustaches|`x`, `y`, `fill`, `weight`|
+|`geom_density()`|Densité|`x`, `y`, `fill`, `linetype`|
+|`geom_contour()`|Lignes de contour|`x`, `y`, `fill`, `linetype`|
+|`geom_smooth()`|Lissage|`x`, `y`, `fill`, `linetype`|
+
+---
+
+## ggplot2 et la grammaire des graphiques (suite)
+
+### Facets
+
+.pull-left[
+
+- Représente les sous-groupes dans des graphes différents.
+
+- Divise les figures entre les panneaux:
+
+  - `facet_wrap()` enchaîne des graphiques dans différents cadres basés sur une seule variable.
+  
+  - `facet_grid()` fait la même chose que ci-dessus, mais peut prendre différentes variables.
+]
+
+.pull-right[
+&lt;img src="../images/gglayers.png" width="2561" /&gt;
+]
+
+---
+
+## ggplot2 et la grammaire des graphiques (suite)
+
+### Statistiques / stat_*()
+
+.pull-left[
+
+- Permet de transformer les données:
+
+  - `stat_identity()` permet aucune transformation.
+  
+  - `stat_bin()` pour le comptage.
+  
+  - `stat_density()` pour exprimer la densité.
+  
+  - `stat_smooth()` pour le lissage.
+  
+  - `stat_boxplot()` pour les boîtes à moustaches.
+]
+
+.pull-right[
+&lt;img src="../images/gglayers.png" width="2561" /&gt;
+]
+
+---
+
+## ggplot2 et la grammaire des graphiques (suite)
+
+### Coordonnées / coord_*()
+
+.pull-left[
+
+- Représentation des données selon différentes coordonnées:
+
+  - `coord_cartesian()` pour le plan cartésien ;
+  
+  - `coord_polar()` pour les tracés circulaires ;
+  
+  - `coord_map()` pour les différentes projections cartographiques.
+]
+
+.pull-right[
+&lt;img src="../images/gglayers.png" width="2561" /&gt;
+]
+
+---
+
+## ggplot2 et la grammaire des graphiques (suite)
+
+### thèmes / theme_*()
+
+- Permet de changer le visuel.
+
+- Différents thèmes sont disponibles dans le package **ggtheme**:
+
+  - `theme_bw()` pour le thème classique ggplot2 dark-on-light; 
+  
+  - `theme_classic()` pour un thème d'aspect classique, avec des lignes d'axes x et y et pas de quadrillage;
+  
+  - `theme_gray()` pour le thème signature ggplot2 avec un fond gris et un quadrillage blanc, conçu pour mettre les données en avant tout en facilitant les comparaisons.
+  
+  - `theme_minimal()` pour un thème minimaliste sans annotations d'arrière-plan.
+
+---
+
+## Comment assembler les couches ?
+
+1. Créez un objet de graphique simple:
+
+  - &gt; plot.object &lt;- ggplot() # required
+
+2. Ajouter des couches géométriques:
+
+  - &gt; plot.object &lt;- plot.object + geom_*() # required
+
+3. Ajouter des couches d'apparence:
+
+  - &gt; plot.object &lt;- plot.object + coord_*() + theme() # not required
+
+4. Répétez les étapes 2 et 3 jusqu'à ce que vous soyez satisfait, puis affichez :
+
+  - &gt; plot.object ou print(plot.object)
+
+---
+
+## Le jeu de données: mpg
+
+&lt;u&gt;Exemple&lt;/u&gt;
+
+ - Nous allons utiliser le jeu de données `mpg` disponible dans `ggplot2`.
+
+
+```r
+ggplot2::mpg
+```
+
+- Contient des informations sur la consommation de carburant de différents modèles de voitures.
+
+---
+
+## Le jeu de données: mpg (suite)
+
+Regardons les variables du jeu de données:
+
+
+```r
+str(ggplot2::mpg)
+```
+
+```
+## tibble [234 × 11] (S3: tbl_df/tbl/data.frame)
+##  $ manufacturer: chr [1:234] "audi" "audi" "audi" "audi" ...
+##  $ model       : chr [1:234] "a4" "a4" "a4" "a4" ...
+##  $ displ       : num [1:234] 1.8 1.8 2 2 2.8 2.8 3.1 1.8 1.8 2 ...
+##  $ year        : int [1:234] 1999 1999 2008 2008 1999 1999 2008 1999 1999 2008 ...
+##  $ cyl         : int [1:234] 4 4 4 4 6 6 6 4 4 4 ...
+##  $ trans       : chr [1:234] "auto(l5)" "manual(m5)" "manual(m6)" "auto(av)" ...
+##  $ drv         : chr [1:234] "f" "f" "f" "f" ...
+##  $ cty         : int [1:234] 18 21 20 21 16 18 18 18 16 20 ...
+##  $ hwy         : int [1:234] 29 29 31 30 26 26 27 26 25 28 ...
+##  $ fl          : chr [1:234] "p" "p" "p" "p" ...
+##  $ class       : chr [1:234] "compact" "compact" "compact" "compact" ...
+```
+
+---
+
+## Préparer les données
+
+`ggplot2` requiert un objet de la classe **data.frame** ou **tibble**.
+
+
+```r
+class(ggplot2::mpg)
+```
+
+```
+## [1] "tbl_df"     "tbl"        "data.frame"
+```
+
+&gt; Les données doivent être préparées au format long.
+
+---
+
+## Questions scientifiques à propos du jeu de données
+
+- Y a-t-il une relation entre la consommation de carburant en ville et la consommation de carburant sur autoroute pour les différents types de cylindrée ?
+
+&gt; Comment pouvons nous répondre graphiquement à cette question ?
+
+---
+
+## Questions scientifiques à propos du jeu de données (suite)
+
+- Y a-t-il une relation entre la consommation de carburant en ville et la consommation de carburant sur autoroute pour les différents types de cylindrée ?
+
+&gt; ggplot(): couche **Data**
+
+.pull-left[
+
+```r
+library(ggplot2)
+ggplot(data = mpg)
+```
+]
+
+.pull-right[
+![](Visualisation_des_données_sous_R_files/figure-html/data_2-1.png)&lt;!-- --&gt;
+]
+
+
+---
+
+## Questions scientifiques à propos du jeu de données (suite)
+
+- Y a-t-il une relation entre la consommation de carburant en ville et la consommation de carburant sur autoroute pour les différents types de cylindrée ?
+
+&gt; ggplot(): couche **Aesthetics**
+
+.pull-left[
+
+```r
+library(ggplot2)
+ggplot(data = mpg,
+       aes(x = cty, 
+           y = hwy))
+```
+]
+
+.pull-right[
+![](Visualisation_des_données_sous_R_files/figure-html/data_4-1.png)&lt;!-- --&gt;
+]
+
+---
+
+## Questions scientifiques à propos du jeu de données (suite)
+
+- Y a-t-il une relation entre la consommation de carburant en ville et la consommation de carburant sur autoroute pour les différents types de cylindrée ?
+
+&gt; ggplot(): couche **Geometries**
+
+.pull-left[
+
+```r
+library(ggplot2)
+ggplot(data = mpg,
+       aes(x = cty, y = hwy)) +
+  geom_point()
+```
+]
+
+.pull-right[
+![](Visualisation_des_données_sous_R_files/figure-html/data_7-1.png)&lt;!-- --&gt;
+]
+
+---
+
+## Questions scientifiques à propos du jeu de données (suite)
+
+- Y a-t-il une relation entre la consommation de carburant en ville et la consommation de carburant sur autoroute pour les différents types de cylindrée ?
+
+&gt; ggplot(): couche **Facets**
+
+.pull-left[
+
+```r
+library(ggplot2)
+ggplot(data = mpg,
+       aes(x = cty, y = hwy)) +
+  geom_point() +
+  facet_wrap(~cyl)
+```
+]
+
+.pull-right[
+![](Visualisation_des_données_sous_R_files/figure-html/data_9-1.png)&lt;!-- --&gt;
+]
+
+## Questions scientifiques à propos du jeu de données (suite)
+
+- Y a-t-il une relation entre la consommation de carburant en ville et la consommation de carburant sur autoroute pour les différents types de cylindrée ?
+
+&gt; ggplot(): couche **Facets**
+
+.pull-left[
+
+```r
+library(ggplot2)
+ggplot(data = mpg,
+       aes(x = cty, y = hwy)) +
+  geom_point() +
+  facet_wrap(~cyl) +
+  theme_classic()
+```
+]
+
+.pull-right[
+![](Visualisation_des_données_sous_R_files/figure-html/data_11-1.png)&lt;!-- --&gt;
+]
+
+---
+
+## Tout mettre ensemble, en une seule figure
+
+![](Visualisation_des_données_sous_R_files/figure-html/data_12-1.png)&lt;!-- --&gt;
+
+---
+
+## Codez et représentez votre premier objet ggplot()
+
+&lt;img src="../images/defi.jpg" width="10%" /&gt;
+
+- Comment varie la consommation de carburant en ville en fonction de la classe de voiture et du type de transmission ?
+
+&lt;br&gt;
+
+.center[Paramètres à prendre en compte pour répondre à cette question :]
+
+ données | géométrie | valeurs x | valeurs y | colour
+:-------------:|:-------------:|:-------------:|:-------------:
+`mpg`|`geom_col()`|`class`|`cty`|`trans`
+
+<div class="countdown" id="timer_79349ea0" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
+<div class="countdown-controls"><button class="countdown-bump-down">&minus;</button><button class="countdown-bump-up">&plus;</button></div>
+<code class="countdown-time"><span class="countdown-digits minutes">05</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
+</div>
+
+---
+
+## Esthétique
+
+Distinguer les classes, les groupes et la structure
+
+![](Visualisation_des_données_sous_R_files/figure-html/aes-1.png)&lt;!-- --&gt;
+
+### Couleur
+
+- différencier entre des groupes.
+- représenter les valeurs des données.
+- mettre en évidence des éléments spécifiques.
+
+&gt; Couleurs qualitatives pour des groupes.
+
+&gt; Gradients de couleurs pour des valeurs.
+
+---
+
+## Esthétique (suite)
+
+### Changer les couleurs manuellement
+
+.pull-left[
+
+```r
+library(ggplot2)
+ggp &lt;- ggplot(data = mpg) +
+  geom_point(aes(x = cty, 
+                 y = hwy, 
+                 col = factor(cyl)))
+ggp + labs(title = "Défaut")
+```
+
+![](Visualisation_des_données_sous_R_files/figure-html/col_default-1.png)&lt;!-- --&gt;
+]
+
+.pull-right[
+
+```r
+ggp + 
+scale_colour_manual(
+  values = c("grey55", 
+             "orange",
+             "skyblue", 
+             "green")) +
+labs(title = "Personnalisé")
+```
+
+![](Visualisation_des_données_sous_R_files/figure-html/col_pers-1.png)&lt;!-- --&gt;
+]
+
+---
+
+## Esthétique (suite)
+
+### Utililser une palette de couleur
+
+
+```r
+library(RColorBrewer)
+display.brewer.all()
+```
+
+&lt;img src="Visualisation_des_données_sous_R_files/figure-html/pal-1.png" width="60%" /&gt;
+
+---
+
+## Esthétique (suite)
+
+### Utililser une palette de couleur
+
+
+```r
+ggp +
+  scale_colour_brewer(palette = "Dark2") +
+  labs(title = "Palette pour des groupes")
+```
+
+&lt;img src="Visualisation_des_données_sous_R_files/figure-html/pal_2-1.png" width="45%" /&gt;
+
+---
+
+## Esthétique (suite)
+
+&lt;img src="../images/defi.jpg" width="10%" /&gt;
+
+- Créer un graphique informatif à partir de jeu de données disponible de R, comme `CO2`, `msleep` ou `ToothGrowth`.
+
+- Utiliser les esthétiques appropriés pour différents types de données
+
+
+&lt;br&gt;&lt;qr&gt;
+
+Données | x | y | Esthétiques
+:-------------:|:-------------:|:-------------:|:-------------:
+CO2 |*conc* |*uptake* | *Treatment* et *Type*
+msleep |log10(*bodywt*) |*awake* | *vore* et *conservation*
+ToothGrowth | *dose* | *len* | *supp*
+
+
+<div class="countdown" id="timer_ae191427" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
+<div class="countdown-controls"><button class="countdown-bump-down">&minus;</button><button class="countdown-bump-up">&plus;</button></div>
+<code class="countdown-time"><span class="countdown-digits minutes">10</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
+</div>
+
+---
+
+## Changer l'échelle des axes
+
+
+```r
+donnees &lt;- mtcars
+library(ggplot2)
+ggplot(donnees, aes(x = hp, y = mpg)) +
+  geom_point(color = "steelblue") +
+  xlab("Puissance (hp)") + ylab("Miles par gallon (mpg)") +
+  ggtitle("Relation entre la puissance et les miles par gallon") +
+  coord_trans(y = "log10")
+```
+
+![](Visualisation_des_données_sous_R_files/figure-html/update_scale-1.png)&lt;!-- --&gt;
+
+---
+
+## Utiliser le theme()
+
+![](./ggthemes.png)
+
+---
+
+## Les facettes pour diviser votre graphique
+
+### Facettes selon une variable 
+
+
+```r
+donnees &lt;- mtcars
+library(ggplot2)
+ggplot(donnees, aes(x = hp, y = mpg)) +
+  geom_point(color = "steelblue") +
+  xlab("Puissance (horsepower)") + 
+  ylab("Miles par gallon (mpg)") +
+  ggtitle("Relation entre la puissance et les miles par gallon") +
+  facet_wrap(~ cyl)
+```
+
+&lt;img src="Visualisation_des_données_sous_R_files/figure-html/wrap-1.png" width="32%" /&gt;
+
+---
+
+## Les facettes pour diviser votre graphique
+
+### Facettes selon deux variables 
+
+
+```r
+data(mtcars)
+ggplot(mtcars, aes(x = wt, y = hp, color = factor(cyl))) +
+    geom_point() +
+    labs(title = "Relation entre la puissance et le poids des voitures",
+         x = "Poids (1000 lbs)", y = "Puissance (hp)",
+         color = "Nombre de cylindres") +
+    facet_grid(am ~ vs)
+```
+
+&lt;img src="Visualisation_des_données_sous_R_files/figure-html/grid-1.png" width="30%" /&gt;
+
+---
+
+## Reproduire un graphique
+
+&lt;img src="../images/defi.jpg" width="10%" /&gt;
+
+Utilisez les données `iris` qui se trouvent dans `data` pour reproduire le graphique ci-dessous.
+
+&gt; *Astuce*: Allez-y étape par étape! Commencez par `theme_classic()` et ajoutez `theme()` pour faire vos changements supplémentaires.
+
+![](Visualisation_des_données_sous_R_files/figure-html/unnamed-chunk-8-1.png)&lt;!-- --&gt;
+
+<div class="countdown" id="timer_e968a16f" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
+<div class="countdown-controls"><button class="countdown-bump-down">&minus;</button><button class="countdown-bump-up">&plus;</button></div>
+<code class="countdown-time"><span class="countdown-digits minutes">10</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
+</div>
+
+---
+
+## Créer différents type de graphique
+
+### Histogramme: geom_histogram()
+
+Définit la répartition des valeurs d'une variable donnée.
+
+
+```r
+ggplot(mpg,
+       aes(x = cty)) +
+  geom_histogram(bins = 16) +
+  ggtitle("Histogramme de la consommation de carburant en ville")
+```
+
+![](Visualisation_des_données_sous_R_files/figure-html/unnamed-chunk-10-1.png)&lt;!-- --&gt;
+
+---
+
+## Créer différents type de graphique (suite)
+
+### Nuage de points et régression linéaire: geom_point() et geom_smooth()
+
+.small[
+.pull-left[
+
+```r
+ggplot(mpg, aes(displ, hwy)) +
+  geom_point() +
+  labs(title = "Nuage de points")
+```
+
+![](Visualisation_des_données_sous_R_files/figure-html/unnamed-chunk-11-1.png)&lt;!-- --&gt;
+]
+
+.pull-right[
+
+```r
+ggplot(mpg, aes(displ, hwy)) +
+  geom_point() +
+  labs(title = "Régression linéaire") +
+  geom_smooth(method = lm)
+```
+
+![](Visualisation_des_données_sous_R_files/figure-html/unnamed-chunk-12-1.png)&lt;!-- --&gt;
+]
+]
+
+---
+
+## Créer différents type de graphique (suite)
+
+### Diagramme en boîte: geom_boxplot()
+
+
+```r
+ggplot(data = iris,
+       aes(x = Species,
+           y = Sepal.Length,
+           fill = Species)) +
+  geom_boxplot() +
+  labs(title = "Diagramme en boîte")
+```
+
+&lt;img src="Visualisation_des_données_sous_R_files/figure-html/unnamed-chunk-13-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Créer différents type de graphique (suite)
+
+### Diagramme en boîte avec annotations: geom_boxplot() et geom_signif()
+
+.pull-left[
+
+```r
+library(ggsignif)
+ggplot(data = iris,
+       aes(x = Species,
+           y = Sepal.Length,
+           fill = Species)) +
+  geom_boxplot() +
+  labs(title = "Diagramme en boîte") +
+  geom_signif(comparisons = list(c("setosa", "versicolor", "virginica")),
+              map_signif_level=TRUE)
+```
+]
+
+.pull-right[
+&lt;img src="Visualisation_des_données_sous_R_files/figure-html/unnamed-chunk-15-1.png" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+## Créer différents type de graphique (suite)
+
+### Diagramme en violon: geom_violin()
+
+Un diagramme en violon est utilisé pour visualiser la distribution des données et leur densité de probabilité.
+
+
+```r
+violin &lt;- ggplot(data = iris,
+                 aes(x = Species, y = Sepal.Length)) +
+  geom_violin(trim = FALSE, fill = "grey70", alpha = .5) +
+  labs(title = "Violin plot")
+violin
+```
+
+&lt;img src="Visualisation_des_données_sous_R_files/figure-html/unnamed-chunk-16-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Créer différents type de graphique (suite)
+
+### Diagramme en violon: geom_violin() + _boxplot() + _jitter()
+
+
+```r
+violin +
+  geom_jitter(shape = 16, position = position_jitter(0.2), alpha = .3) +
+  geom_boxplot(width = .05)
+```
+
+&lt;img src="Visualisation_des_données_sous_R_files/figure-html/unnamed-chunk-17-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Créer différents type de graphique (suite)
+
+### Graphique de densité: geom_density()
+
+
+```r
+(cars.dens &lt;-
+   ggplot(cars,
+          aes(x = dist)) +
+   geom_density())
+```
+
+&lt;img src="Visualisation_des_données_sous_R_files/figure-html/unnamed-chunk-18-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Créer différents type de graphique (suite)
+
+### Dendogramme: ggdendrogram()
+
+
+```r
+library(ggplot2)
+library(ggdendro)
+data(mtcars)
+dist_mtcars &lt;- dist(mtcars)
+hc_mtcars &lt;- hclust(dist_mtcars, method = "ward.D")
+dend_mtcars &lt;- as.dendrogram(hc_mtcars)
+ggdendrogram(dend_mtcars, rotate = TRUE, theme_dendro = FALSE)
+```
+
+![](Visualisation_des_données_sous_R_files/figure-html/unnamed-chunk-19-1.png)&lt;!-- --&gt;
+
+---
+
+## Résumer des valeurs: stat_summary()
+
+.pull-left[
+
+```r
+ggplot(mtcars, aes(cyl, mpg)) +
+  geom_point() +
+  stat_summary(fun = "mean", geom = "point",
+               colour = "red", size = 3) +
+  labs(title = "Moyenne")
+```
+
+![](Visualisation_des_données_sous_R_files/figure-html/unnamed-chunk-20-1.png)&lt;!-- --&gt;
+]
+
+.pull-right[
+
+```r
+ggplot(mtcars, aes(cyl, mpg)) +
+  geom_point() +
+  stat_summary(fun.data = "mean_cl_boot",
+               colour = "red", size = 0.5) +
+  labs(title = "Moyenne et intervalle de confiance")
+```
+
+![](Visualisation_des_données_sous_R_files/figure-html/unnamed-chunk-21-1.png)&lt;!-- --&gt;
+]
+
+---
+## Résumer des valeurs (suite)
+
+Pour afficher d'autres statistiques, consultez:
+
+- `geom_errorbar()`
+- `geom_pointrange()`
+- `geom_linerange()`
+- `geom_crossbar()`
+- et autres!
+
+---
+
+## Créer différents type de graphique (suite)
+
+&lt;img src="../images/defi.jpg" width="10%" /&gt;
+
+1. Importez le jeu de données `mtcars`.
+
+2. Créez un graphique à barres avec la consommation d'essence moyenne (mpg) par cylindres (cyl). Calculez la moyenne de la consommation d'essence (mpg) pour chaque valeur unique de cylindre (cyl). Ajoutez un titre au graphique et nommez les axes x et y.
+
+3. Créez un graphique en boîte avec la consommation d'essence (mpg) pour chaque valeur unique de cylindre (cyl). Calculez la médiane de la consommation d'essence (mpg) pour chaque valeur unique de cylindre (cyl). Ajoutez un titre au graphique et nommez les axes x et y.
+
+4. Créez un graphique à barres empilées avec la consommation d'essence (mpg) par cylindres (cyl) et par nombre de vitesses (gear). Calculez la moyenne de la consommation d'essence (mpg) pour chaque combinaison unique de cylindre (cyl) et de nombre de vitesses (gear). Ajoutez un titre au graphique et nommez les axes x et y.
+
+<div class="countdown" id="timer_10864f8b" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
+<div class="countdown-controls"><button class="countdown-bump-down">&minus;</button><button class="countdown-bump-up">&plus;</button></div>
+<code class="countdown-time"><span class="countdown-digits minutes">10</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
+</div>
+
+---
+
+## Graphiques interactifs avec plotly()
+
+
+```r
+library(plotly)
+p &lt;- ggplot(data = mpg) +
+  geom_point(aes(x = cty, 
+                 y = hwy, 
+                 col = factor(cyl)))
+ggplotly(p)
+```
+
+<div class="plotly html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-325b82b1b55887dc0893" style="width:720px;height:324px;"></div>
+<script type="application/json" data-for="htmlwidget-325b82b1b55887dc0893">{"x":{"data":[{"x":[18,21,20,21,18,16,20,19,19,22,18,28,24,25,23,24,26,25,24,21,18,18,21,21,19,19,20,20,21,19,23,23,18,18,20,19,20,18,21,19,19,19,20,20,19,20,15,16,21,21,21,21,21,21,21,22,24,24,26,28,26,15,16,17,21,19,21,22,33,21,19,22,21,35,29,21,19,21,18,19,21],"y":[29,29,31,30,26,25,28,27,27,30,24,33,32,32,29,32,34,36,36,29,26,27,30,31,26,29,28,27,29,27,31,32,25,24,27,25,26,23,26,26,26,26,25,27,25,27,20,20,29,27,31,31,27,29,31,31,30,33,35,37,35,20,20,22,29,26,29,29,44,29,26,29,29,44,41,29,26,29,29,28,29],"text":["cty: 18<br />hwy: 29<br />factor(cyl): 4","cty: 21<br />hwy: 29<br />factor(cyl): 4","cty: 20<br />hwy: 31<br />factor(cyl): 4","cty: 21<br />hwy: 30<br />factor(cyl): 4","cty: 18<br />hwy: 26<br />factor(cyl): 4","cty: 16<br />hwy: 25<br />factor(cyl): 4","cty: 20<br />hwy: 28<br />factor(cyl): 4","cty: 19<br />hwy: 27<br />factor(cyl): 4","cty: 19<br />hwy: 27<br />factor(cyl): 4","cty: 22<br />hwy: 30<br />factor(cyl): 4","cty: 18<br />hwy: 24<br />factor(cyl): 4","cty: 28<br />hwy: 33<br />factor(cyl): 4","cty: 24<br />hwy: 32<br />factor(cyl): 4","cty: 25<br />hwy: 32<br />factor(cyl): 4","cty: 23<br />hwy: 29<br />factor(cyl): 4","cty: 24<br />hwy: 32<br />factor(cyl): 4","cty: 26<br />hwy: 34<br />factor(cyl): 4","cty: 25<br />hwy: 36<br />factor(cyl): 4","cty: 24<br />hwy: 36<br />factor(cyl): 4","cty: 21<br />hwy: 29<br />factor(cyl): 4","cty: 18<br />hwy: 26<br />factor(cyl): 4","cty: 18<br />hwy: 27<br />factor(cyl): 4","cty: 21<br />hwy: 30<br />factor(cyl): 4","cty: 21<br />hwy: 31<br />factor(cyl): 4","cty: 19<br />hwy: 26<br />factor(cyl): 4","cty: 19<br />hwy: 29<br />factor(cyl): 4","cty: 20<br />hwy: 28<br />factor(cyl): 4","cty: 20<br />hwy: 27<br />factor(cyl): 4","cty: 21<br />hwy: 29<br />factor(cyl): 4","cty: 19<br />hwy: 27<br />factor(cyl): 4","cty: 23<br />hwy: 31<br />factor(cyl): 4","cty: 23<br />hwy: 32<br />factor(cyl): 4","cty: 18<br />hwy: 25<br />factor(cyl): 4","cty: 18<br />hwy: 24<br />factor(cyl): 4","cty: 20<br />hwy: 27<br />factor(cyl): 4","cty: 19<br />hwy: 25<br />factor(cyl): 4","cty: 20<br />hwy: 26<br />factor(cyl): 4","cty: 18<br />hwy: 23<br />factor(cyl): 4","cty: 21<br />hwy: 26<br />factor(cyl): 4","cty: 19<br />hwy: 26<br />factor(cyl): 4","cty: 19<br />hwy: 26<br />factor(cyl): 4","cty: 19<br />hwy: 26<br />factor(cyl): 4","cty: 20<br />hwy: 25<br />factor(cyl): 4","cty: 20<br />hwy: 27<br />factor(cyl): 4","cty: 19<br />hwy: 25<br />factor(cyl): 4","cty: 20<br />hwy: 27<br />factor(cyl): 4","cty: 15<br />hwy: 20<br />factor(cyl): 4","cty: 16<br />hwy: 20<br />factor(cyl): 4","cty: 21<br />hwy: 29<br />factor(cyl): 4","cty: 21<br />hwy: 27<br />factor(cyl): 4","cty: 21<br />hwy: 31<br />factor(cyl): 4","cty: 21<br />hwy: 31<br />factor(cyl): 4","cty: 21<br />hwy: 27<br />factor(cyl): 4","cty: 21<br />hwy: 29<br />factor(cyl): 4","cty: 21<br />hwy: 31<br />factor(cyl): 4","cty: 22<br />hwy: 31<br />factor(cyl): 4","cty: 24<br />hwy: 30<br />factor(cyl): 4","cty: 24<br />hwy: 33<br />factor(cyl): 4","cty: 26<br />hwy: 35<br />factor(cyl): 4","cty: 28<br />hwy: 37<br />factor(cyl): 4","cty: 26<br />hwy: 35<br />factor(cyl): 4","cty: 15<br />hwy: 20<br />factor(cyl): 4","cty: 16<br />hwy: 20<br />factor(cyl): 4","cty: 17<br />hwy: 22<br />factor(cyl): 4","cty: 21<br />hwy: 29<br />factor(cyl): 4","cty: 19<br />hwy: 26<br />factor(cyl): 4","cty: 21<br />hwy: 29<br />factor(cyl): 4","cty: 22<br />hwy: 29<br />factor(cyl): 4","cty: 33<br />hwy: 44<br />factor(cyl): 4","cty: 21<br />hwy: 29<br />factor(cyl): 4","cty: 19<br />hwy: 26<br />factor(cyl): 4","cty: 22<br />hwy: 29<br />factor(cyl): 4","cty: 21<br />hwy: 29<br />factor(cyl): 4","cty: 35<br />hwy: 44<br />factor(cyl): 4","cty: 29<br />hwy: 41<br />factor(cyl): 4","cty: 21<br />hwy: 29<br />factor(cyl): 4","cty: 19<br />hwy: 26<br />factor(cyl): 4","cty: 21<br />hwy: 29<br />factor(cyl): 4","cty: 18<br />hwy: 29<br />factor(cyl): 4","cty: 19<br />hwy: 28<br />factor(cyl): 4","cty: 21<br />hwy: 29<br />factor(cyl): 4"],"type":"scatter","mode":"markers","marker":{"autocolorscale":false,"color":"rgba(248,118,109,1)","opacity":1,"size":5.66929133858268,"symbol":"circle","line":{"width":1.88976377952756,"color":"rgba(248,118,109,1)"}},"hoveron":"points","name":"4","legendgroup":"4","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"x":[21,21,20,20],"y":[29,29,28,29],"text":["cty: 21<br />hwy: 29<br />factor(cyl): 5","cty: 21<br />hwy: 29<br />factor(cyl): 5","cty: 20<br />hwy: 28<br />factor(cyl): 5","cty: 20<br />hwy: 29<br />factor(cyl): 5"],"type":"scatter","mode":"markers","marker":{"autocolorscale":false,"color":"rgba(124,174,0,1)","opacity":1,"size":5.66929133858268,"symbol":"circle","line":{"width":1.88976377952756,"color":"rgba(124,174,0,1)"}},"hoveron":"points","name":"5","legendgroup":"5","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"x":[16,18,18,15,17,17,15,15,17,18,18,17,17,16,16,17,17,11,15,15,16,16,15,14,13,14,13,14,15,14,13,14,14,18,18,17,16,18,18,19,17,16,17,17,15,15,14,13,19,19,18,19,19,14,15,14,18,16,17,18,15,15,16,18,18,19,18,18,18,15,15,15,16,17,16,17,16,18,17],"y":[26,26,27,25,25,25,25,24,25,26,29,26,24,22,22,24,24,17,22,21,23,23,19,18,17,17,17,17,19,17,19,17,17,26,25,26,24,26,26,28,24,24,24,22,19,20,17,19,27,26,26,25,25,17,17,20,26,26,27,28,19,17,20,26,26,28,26,26,27,17,19,18,20,24,23,24,26,26,26],"text":["cty: 16<br />hwy: 26<br />factor(cyl): 6","cty: 18<br />hwy: 26<br />factor(cyl): 6","cty: 18<br />hwy: 27<br />factor(cyl): 6","cty: 15<br />hwy: 25<br />factor(cyl): 6","cty: 17<br />hwy: 25<br />factor(cyl): 6","cty: 17<br />hwy: 25<br />factor(cyl): 6","cty: 15<br />hwy: 25<br />factor(cyl): 6","cty: 15<br />hwy: 24<br />factor(cyl): 6","cty: 17<br />hwy: 25<br />factor(cyl): 6","cty: 18<br />hwy: 26<br />factor(cyl): 6","cty: 18<br />hwy: 29<br />factor(cyl): 6","cty: 17<br />hwy: 26<br />factor(cyl): 6","cty: 17<br />hwy: 24<br />factor(cyl): 6","cty: 16<br />hwy: 22<br />factor(cyl): 6","cty: 16<br />hwy: 22<br />factor(cyl): 6","cty: 17<br />hwy: 24<br />factor(cyl): 6","cty: 17<br />hwy: 24<br />factor(cyl): 6","cty: 11<br />hwy: 17<br />factor(cyl): 6","cty: 15<br />hwy: 22<br />factor(cyl): 6","cty: 15<br />hwy: 21<br />factor(cyl): 6","cty: 16<br />hwy: 23<br />factor(cyl): 6","cty: 16<br />hwy: 23<br />factor(cyl): 6","cty: 15<br />hwy: 19<br />factor(cyl): 6","cty: 14<br />hwy: 18<br />factor(cyl): 6","cty: 13<br />hwy: 17<br />factor(cyl): 6","cty: 14<br />hwy: 17<br />factor(cyl): 6","cty: 13<br />hwy: 17<br />factor(cyl): 6","cty: 14<br />hwy: 17<br />factor(cyl): 6","cty: 15<br />hwy: 19<br />factor(cyl): 6","cty: 14<br />hwy: 17<br />factor(cyl): 6","cty: 13<br />hwy: 19<br />factor(cyl): 6","cty: 14<br />hwy: 17<br />factor(cyl): 6","cty: 14<br />hwy: 17<br />factor(cyl): 6","cty: 18<br />hwy: 26<br />factor(cyl): 6","cty: 18<br />hwy: 25<br />factor(cyl): 6","cty: 17<br />hwy: 26<br />factor(cyl): 6","cty: 16<br />hwy: 24<br />factor(cyl): 6","cty: 18<br />hwy: 26<br />factor(cyl): 6","cty: 18<br />hwy: 26<br />factor(cyl): 6","cty: 19<br />hwy: 28<br />factor(cyl): 6","cty: 17<br />hwy: 24<br />factor(cyl): 6","cty: 16<br />hwy: 24<br />factor(cyl): 6","cty: 17<br />hwy: 24<br />factor(cyl): 6","cty: 17<br />hwy: 22<br />factor(cyl): 6","cty: 15<br />hwy: 19<br />factor(cyl): 6","cty: 15<br />hwy: 20<br />factor(cyl): 6","cty: 14<br />hwy: 17<br />factor(cyl): 6","cty: 13<br />hwy: 19<br />factor(cyl): 6","cty: 19<br />hwy: 27<br />factor(cyl): 6","cty: 19<br />hwy: 26<br />factor(cyl): 6","cty: 18<br />hwy: 26<br />factor(cyl): 6","cty: 19<br />hwy: 25<br />factor(cyl): 6","cty: 19<br />hwy: 25<br />factor(cyl): 6","cty: 14<br />hwy: 17<br />factor(cyl): 6","cty: 15<br />hwy: 17<br />factor(cyl): 6","cty: 14<br />hwy: 20<br />factor(cyl): 6","cty: 18<br />hwy: 26<br />factor(cyl): 6","cty: 16<br />hwy: 26<br />factor(cyl): 6","cty: 17<br />hwy: 27<br />factor(cyl): 6","cty: 18<br />hwy: 28<br />factor(cyl): 6","cty: 15<br />hwy: 19<br />factor(cyl): 6","cty: 15<br />hwy: 17<br />factor(cyl): 6","cty: 16<br />hwy: 20<br />factor(cyl): 6","cty: 18<br />hwy: 26<br />factor(cyl): 6","cty: 18<br />hwy: 26<br />factor(cyl): 6","cty: 19<br />hwy: 28<br />factor(cyl): 6","cty: 18<br />hwy: 26<br />factor(cyl): 6","cty: 18<br />hwy: 26<br />factor(cyl): 6","cty: 18<br />hwy: 27<br />factor(cyl): 6","cty: 15<br />hwy: 17<br />factor(cyl): 6","cty: 15<br />hwy: 19<br />factor(cyl): 6","cty: 15<br />hwy: 18<br />factor(cyl): 6","cty: 16<br />hwy: 20<br />factor(cyl): 6","cty: 17<br />hwy: 24<br />factor(cyl): 6","cty: 16<br />hwy: 23<br />factor(cyl): 6","cty: 17<br />hwy: 24<br />factor(cyl): 6","cty: 16<br />hwy: 26<br />factor(cyl): 6","cty: 18<br />hwy: 26<br />factor(cyl): 6","cty: 17<br />hwy: 26<br />factor(cyl): 6"],"type":"scatter","mode":"markers","marker":{"autocolorscale":false,"color":"rgba(0,191,196,1)","opacity":1,"size":5.66929133858268,"symbol":"circle","line":{"width":1.88976377952756,"color":"rgba(0,191,196,1)"}},"hoveron":"points","name":"6","legendgroup":"6","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"x":[16,14,11,14,13,12,16,15,16,15,15,14,11,11,14,14,14,9,11,11,13,9,13,11,13,11,12,9,13,13,12,9,11,11,13,11,11,11,12,13,13,13,13,13,11,13,15,15,15,15,14,14,9,14,13,11,11,12,12,11,11,11,12,13,13,12,16,14,11,13],"y":[23,20,15,20,17,17,26,23,26,25,24,19,14,15,17,19,19,12,17,15,17,12,17,16,18,15,16,12,17,17,16,12,15,16,17,15,17,17,18,19,17,16,16,17,15,17,21,22,23,22,20,17,12,19,18,14,15,18,18,15,17,16,18,19,17,18,25,17,15,18],"text":["cty: 16<br />hwy: 23<br />factor(cyl): 8","cty: 14<br />hwy: 20<br />factor(cyl): 8","cty: 11<br />hwy: 15<br />factor(cyl): 8","cty: 14<br />hwy: 20<br />factor(cyl): 8","cty: 13<br />hwy: 17<br />factor(cyl): 8","cty: 12<br />hwy: 17<br />factor(cyl): 8","cty: 16<br />hwy: 26<br />factor(cyl): 8","cty: 15<br />hwy: 23<br />factor(cyl): 8","cty: 16<br />hwy: 26<br />factor(cyl): 8","cty: 15<br />hwy: 25<br />factor(cyl): 8","cty: 15<br />hwy: 24<br />factor(cyl): 8","cty: 14<br />hwy: 19<br />factor(cyl): 8","cty: 11<br />hwy: 14<br />factor(cyl): 8","cty: 11<br />hwy: 15<br />factor(cyl): 8","cty: 14<br />hwy: 17<br />factor(cyl): 8","cty: 14<br />hwy: 19<br />factor(cyl): 8","cty: 14<br />hwy: 19<br />factor(cyl): 8","cty:  9<br />hwy: 12<br />factor(cyl): 8","cty: 11<br />hwy: 17<br />factor(cyl): 8","cty: 11<br />hwy: 15<br />factor(cyl): 8","cty: 13<br />hwy: 17<br />factor(cyl): 8","cty:  9<br />hwy: 12<br />factor(cyl): 8","cty: 13<br />hwy: 17<br />factor(cyl): 8","cty: 11<br />hwy: 16<br />factor(cyl): 8","cty: 13<br />hwy: 18<br />factor(cyl): 8","cty: 11<br />hwy: 15<br />factor(cyl): 8","cty: 12<br />hwy: 16<br />factor(cyl): 8","cty:  9<br />hwy: 12<br />factor(cyl): 8","cty: 13<br />hwy: 17<br />factor(cyl): 8","cty: 13<br />hwy: 17<br />factor(cyl): 8","cty: 12<br />hwy: 16<br />factor(cyl): 8","cty:  9<br />hwy: 12<br />factor(cyl): 8","cty: 11<br />hwy: 15<br />factor(cyl): 8","cty: 11<br />hwy: 16<br />factor(cyl): 8","cty: 13<br />hwy: 17<br />factor(cyl): 8","cty: 11<br />hwy: 15<br />factor(cyl): 8","cty: 11<br />hwy: 17<br />factor(cyl): 8","cty: 11<br />hwy: 17<br />factor(cyl): 8","cty: 12<br />hwy: 18<br />factor(cyl): 8","cty: 13<br />hwy: 19<br />factor(cyl): 8","cty: 13<br />hwy: 17<br />factor(cyl): 8","cty: 13<br />hwy: 16<br />factor(cyl): 8","cty: 13<br />hwy: 16<br />factor(cyl): 8","cty: 13<br />hwy: 17<br />factor(cyl): 8","cty: 11<br />hwy: 15<br />factor(cyl): 8","cty: 13<br />hwy: 17<br />factor(cyl): 8","cty: 15<br />hwy: 21<br />factor(cyl): 8","cty: 15<br />hwy: 22<br />factor(cyl): 8","cty: 15<br />hwy: 23<br />factor(cyl): 8","cty: 15<br />hwy: 22<br />factor(cyl): 8","cty: 14<br />hwy: 20<br />factor(cyl): 8","cty: 14<br />hwy: 17<br />factor(cyl): 8","cty:  9<br />hwy: 12<br />factor(cyl): 8","cty: 14<br />hwy: 19<br />factor(cyl): 8","cty: 13<br />hwy: 18<br />factor(cyl): 8","cty: 11<br />hwy: 14<br />factor(cyl): 8","cty: 11<br />hwy: 15<br />factor(cyl): 8","cty: 12<br />hwy: 18<br />factor(cyl): 8","cty: 12<br />hwy: 18<br />factor(cyl): 8","cty: 11<br />hwy: 15<br />factor(cyl): 8","cty: 11<br />hwy: 17<br />factor(cyl): 8","cty: 11<br />hwy: 16<br />factor(cyl): 8","cty: 12<br />hwy: 18<br />factor(cyl): 8","cty: 13<br />hwy: 19<br />factor(cyl): 8","cty: 13<br />hwy: 17<br />factor(cyl): 8","cty: 12<br />hwy: 18<br />factor(cyl): 8","cty: 16<br />hwy: 25<br />factor(cyl): 8","cty: 14<br />hwy: 17<br />factor(cyl): 8","cty: 11<br />hwy: 15<br />factor(cyl): 8","cty: 13<br />hwy: 18<br />factor(cyl): 8"],"type":"scatter","mode":"markers","marker":{"autocolorscale":false,"color":"rgba(199,124,255,1)","opacity":1,"size":5.66929133858268,"symbol":"circle","line":{"width":1.88976377952756,"color":"rgba(199,124,255,1)"}},"hoveron":"points","name":"8","legendgroup":"8","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null}],"layout":{"margin":{"t":32.2354134956875,"r":7.30593607305936,"b":46.1897513952309,"l":37.2602739726027},"plot_bgcolor":"rgba(235,235,235,1)","paper_bgcolor":"rgba(255,255,255,1)","font":{"color":"rgba(0,0,0,1)","family":"","size":14.6118721461187},"xaxis":{"domain":[0,1],"automargin":true,"type":"linear","autorange":false,"range":[7.7,36.3],"tickmode":"array","ticktext":["10","15","20","25","30","35"],"tickvals":[10,15,20,25,30,35],"categoryorder":"array","categoryarray":["10","15","20","25","30","35"],"nticks":null,"ticks":"outside","tickcolor":"rgba(51,51,51,1)","ticklen":3.65296803652968,"tickwidth":0.66417600664176,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":11.689497716895},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"showgrid":true,"gridcolor":"rgba(255,255,255,1)","gridwidth":0.66417600664176,"zeroline":false,"anchor":"y","title":{"text":"cty","font":{"color":"rgba(0,0,0,1)","family":"","size":14.6118721461187}},"hoverformat":".2f"},"yaxis":{"domain":[0,1],"automargin":true,"type":"linear","autorange":false,"range":[10.4,45.6],"tickmode":"array","ticktext":["20","30","40"],"tickvals":[20,30,40],"categoryorder":"array","categoryarray":["20","30","40"],"nticks":null,"ticks":"outside","tickcolor":"rgba(51,51,51,1)","ticklen":3.65296803652968,"tickwidth":0.66417600664176,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":11.689497716895},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"showgrid":true,"gridcolor":"rgba(255,255,255,1)","gridwidth":0.66417600664176,"zeroline":false,"anchor":"x","title":{"text":"hwy","font":{"color":"rgba(0,0,0,1)","family":"","size":14.6118721461187}},"hoverformat":".2f"},"shapes":[{"type":"rect","fillcolor":null,"line":{"color":null,"width":0,"linetype":[]},"yref":"paper","xref":"paper","x0":0,"x1":1,"y0":0,"y1":1}],"showlegend":true,"legend":{"bgcolor":"rgba(255,255,255,1)","bordercolor":"transparent","borderwidth":1.88976377952756,"font":{"color":"rgba(0,0,0,1)","family":"","size":11.689497716895},"title":{"text":"factor(cyl)","font":{"color":"rgba(0,0,0,1)","family":"","size":14.6118721461187}}},"hovermode":"closest","barmode":"relative"},"config":{"doubleClick":"reset","modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"source":"A","attrs":{"36d57b6a1445":{"x":{},"y":{},"colour":{},"type":"scatter"}},"cur_data":"36d57b6a1445","visdat":{"36d57b6a1445":["function (y) ","x"]},"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+
+---
+
+## Sauvegarder des graphiques à l'aide de fonction R
+
+ggsave() écrit directement dans votre répertoire de travail et vous permet de spécifier le nom du fichier, les dimensions du graphique, la résolution, etc.
+
+
+```r
+mon_graph &lt;- ggplot(data = mpg) +
+  geom_point(aes(x = cty, 
+                 y = hwy, 
+                 col = factor(cyl)))
+
+ggsave("mon_graph.pdf",
+       mon_graph,
+       height = 8.5, width = 11, units = "in", res = 300)
+```
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
