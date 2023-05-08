@@ -382,11 +382,12 @@ L'analyse des variables se déroule de la façon suivante :
 3. On étudie les corrélations entre variables.
 
 ```{r, echo=FALSE, include=FALSE}
-pcaUSArrests <- dudi.pca(USArrests, scannf = FALSE)
+#pcaUSArrests <- readRDS(file = "../../pcaUSArrests.rds")
 ```
 
 .pull-left[
 ```{r, echo=TRUE, fig.height=4}
+pcaUSArrests <- dudi.pca(USArrests, scannf = FALSE)
 s.corcircle(pcaUSArrests$co)
 ```
 ]
@@ -599,13 +600,12 @@ table.value(tableOis, col.labels = colnames(tableOis),
 ### Réalisation de l'AFC
 
 ```{r, echo=TRUE, eval=FALSE}
-afc1 <- dudi.coa(as.data.frame.matrix(tableOis))
+afc1 <- dudi.coa(as.data.frame.matrix(tableOis), scannf = FALSE)
 ```
 
 #### Affichage de l'inertie
 
 ```{r, echo=TRUE}
-#afc1 <- readRDS("../../afc1.rds")
 afc1 <- dudi.coa(as.data.frame.matrix(tableOis), scannf = FALSE)
 #Afficher l'inertie
 inertia.dudi(afc1)
@@ -703,13 +703,12 @@ str(ours)
 ### Réalisation de l'ACM
 
 ```{r, echo=TRUE, eval=FALSE}
-acm1 <- dudi.acm(ours[,1:8])
+acm1 <- dudi.acm(ours[,1:8], scannf = FALSE)
 ```
 
 #### Affichage de l'inertie
 
 ```{r, echo=TRUE}
-#acm1 <- readRDS("../../acm1.rds")
 acm1 <- dudi.acm(ours[,1:8], scannf = FALSE)
 inertia.dudi(acm1)
 ```
@@ -761,7 +760,7 @@ s.class(acm1$li, ours[,9], add.plot = TRUE)
 knitr::include_graphics("../images/defi.jpg")
 ```
 
-<u>Jeu de données:</u> `Titanic` contient des données sur le sort des passagers du voyage inaugural fatal du paquebot, résumé selon le statut économique (classe), le sexe, l'âge et la survie.
+<u>Jeu de données:</u> `Poison` Ce jeu de données fait référence à une enquête réalisée auprès d’un échantillon d’enfants de l’école primaire qui ont souffert d’intoxication alimentaire. Ils ont été interrogés sur leurs symptômes et sur ce qu’ils ont mangé.
 
 1. Chargez le jeu de données.
 
@@ -1267,6 +1266,8 @@ knitr::include_graphics("../images/defi.jpg")
 5. Effectuer une Analyse Canonique de Redondances (ACR) pour identifier quelles caractéristiques des cellules tumorales sont les plus fortement associées à un diagnostic de tumeur maligne ou bénigne.
 
 6. Interpréter les résultats de l'ACR et discuter quelles caractéristiques des cellules tumorales sont les plus fortement associées à un diagnostic de tumeur maligne ou bénigne.
+
+---
 
 ```{r, echo=FALSE}
 library(countdown)
