@@ -106,6 +106,38 @@ countdown(minutes = 10, seconds = 00)
 
 ---
 
+## Gestion des fenêtres graphiques (suite)
+
+**Solution:**
+
+```{r, eval=FALSE}
+x <- 1:12
+y <- 12:1
+
+dev.new()
+
+split.screen(c(2,3))
+
+screen(1)
+plot(x, main = "Points pour x")
+screen(4)
+plot(y, main = "Points pour y")
+
+screen(2)
+plot(x, type = "l", main = "Lignes pour x")
+screen(5)
+plot(y, type = "l", main = "Lignes pour y")
+
+screen(3)
+plot(x, type = "c", lty = 2, main = "Tirets pour x")
+screen(6)
+plot(y, type = "c", lty = 2, main = "Tirets pour y")
+
+dev.off()
+```
+
+---
+
 ## La fonction plot
 
 - Fonction générique de `R`.
@@ -148,6 +180,23 @@ knitr::include_graphics("../images/defi.jpg")
 ```{r, echo=FALSE}
 library(countdown)
 countdown(minutes = 5, seconds = 00)
+```
+
+---
+
+## La fonction plot (suite)
+
+**Solution:**
+
+```{r, fig.height=4}
+
+#### 1 ####
+x <- c(1, 2, 3, 4, 5)
+y <- c(6, 7, 8, 9, 10)
+
+#### 2 ####
+plot(x, y, pch = 2, cex = 2, main = "Nuage de points", 
+     xlab = "Axe x", ylab = "Axe y")
 ```
 
 ---
@@ -258,6 +307,37 @@ countdown(minutes = 5, seconds = 00)
 
 ---
 
+## Représentation d'une distribution (suite)
+
+**Solution:**
+
+.pull-left[
+```{r, echo=TRUE, fig.height=4}
+
+### 1 ####
+data(mtcars)
+
+### 2 ####
+hist(mtcars$mpg, main = "Histogramme de la consommation en miles par gallon", 
+     xlab = "Consommation (mpg)", ylab = "Fréquence")
+```
+]
+
+.pull-right[
+```{r, echo=TRUE, fig.height=4}
+### 1 ####
+data(mtcars)
+
+### 4 ####
+hist(mtcars$wt, main = "Histogramme du poids des véhicules", 
+     xlab = "Poids (wt)", ylab = "Densité", xlim = c(0,7), freq = FALSE)
+```
+]
+
+
+
+---
+
 ## Ajouts aux graphiques
 
 <u> Exemple: </u>
@@ -329,6 +409,62 @@ countdown(minutes = 10, seconds = 00)
 
 ---
 
+## Ajouts aux graphiques (suite)
+
+**Solution:**
+
+```{r, eval=FALSE}
+# Chargement des données
+data(airquality)
+
+# Graphique de dispersion de la température en fonction de la vitesse du vent
+plot(airquality$Wind, airquality$Temp, 
+     xlab = "Vitesse du vent (mph)", ylab = "Température (°F)",
+     main = "Relation entre température et vitesse du vent")
+
+# Ajout d'une ligne horizontale pour marquer la moyenne de Temp
+abline(h = mean(airquality$Temp), col = "red")
+
+# Ajout du nom de la journée avec la température la plus haute et la plus basse
+max_temp <- max(airquality$Temp)
+min_temp <- min(airquality$Temp)
+day_max_temp <- airquality$Day[which.max(airquality$Temp)]
+day_min_temp <- airquality$Day[which.min(airquality$Temp)]
+text(10, max_temp, paste("Journée avec la température la plus haute :", day_max_temp))
+text(10, min_temp, paste("Journée avec la température la plus basse :", day_min_temp))
+
+```
+---
+
+## Ajouts aux graphiques (suite)
+
+**Solution:**
+
+```{r, echo=FALSE}
+# Chargement des données
+data(airquality)
+
+# Graphique de dispersion de la température en fonction de la vitesse du vent
+plot(airquality$Wind, airquality$Temp, 
+     xlab = "Vitesse du vent (mph)", ylab = "Température (°F)",
+     main = "Relation entre température et vitesse du vent")
+
+# Ajout d'une ligne horizontale pour marquer la moyenne de Temp
+abline(h = mean(airquality$Temp), col = "red")
+
+# Ajout du nom de la journée avec la température la plus haute et la plus basse
+max_temp <- max(airquality$Temp)
+min_temp <- min(airquality$Temp)
+day_max_temp <- airquality$Day[which.max(airquality$Temp)]
+day_min_temp <- airquality$Day[which.min(airquality$Temp)]
+text(10, max_temp, paste("Journée avec la température la plus haute :", day_max_temp))
+text(10, min_temp, paste("Journée avec la température la plus basse :", day_min_temp))
+
+```
+
+
+---
+
 ## Scatterplot Matrices
 
 <u> Exemple: </u>
@@ -358,7 +494,7 @@ data(iris)
 pdf("pgraphik.pdf")
 # Tracer un graphique en plusieurs dimensions de iris
 pairs(iris[1:4], main = "Graphique en plusieurs dimensions de iris", 
-      pch = 21, bg = c("red", "green3", "blue")[unclass(iris$Species)])
+      pch = 21, bg = c("red", "green3", "blue")[iris$Species])
 dev.off()
 ```
 
@@ -411,6 +547,38 @@ countdown(minutes = 5, seconds = 00)
 
 ---
 
+## Plusieurs graphiques (suite)
+
+**Solution:**
+
+```{r, eval = FALSE}
+### 1 ###
+set.seed(123) # pour obtenir des résultats reproductibles
+X1 <- rnorm(50)
+X2 <- rnorm(50)
+X3 <- rnorm(50)
+X4 <- rnorm(50)
+
+### 2 - 3 - 4.###
+par(mfrow=c(2,2))
+
+# 4. Exporter le graphique en PNG
+png("histogrammes.png")
+par(mfrow=c(2,2))
+hist(X1, col="blue", border="white", main="Histogramme de X1", freq = FALSE)
+lines(density(X1))
+hist(X2, col="red", border="white", main="Histogramme de X2", freq = FALSE)
+lines(density(X2))
+hist(X3, col="green", border="white", main="Histogramme de X3", freq = FALSE)
+lines(density(X3))
+hist(X4, col="purple", border="white", main="Histogramme de X4", freq = FALSE)
+lines(density(X4))
+dev.off()
+
+```
+
+---
+
 # Fonctions graphiques avec ggplot2
 
 ## ggplot2 et la grammaire des graphiques
@@ -423,7 +591,7 @@ countdown(minutes = 5, seconds = 00)
 
 .pull-right[
 ```{r gg, echo=FALSE, eval=TRUE}
-knitr::include_graphics("../images/gglayers.png")
+knitr::include_graphics("./gglayers.png")
 ```
 ]
 
@@ -446,7 +614,7 @@ knitr::include_graphics("../images/gglayers.png")
 
 .pull-right[
 ```{r gg_2, echo=FALSE, eval=TRUE}
-knitr::include_graphics("../images/gglayers.png")
+knitr::include_graphics("./gglayers.png")
 ```
 ]
 
@@ -474,7 +642,7 @@ knitr::include_graphics("../images/gglayers.png")
 
 .pull-right[
 ```{r gg_3, echo=FALSE, eval=TRUE}
-knitr::include_graphics("../images/gglayers.png")
+knitr::include_graphics("./gglayers.png")
 ```
 ]
 
@@ -534,7 +702,7 @@ knitr::include_graphics("../images/gglayers.png")
 
 .pull-right[
 ```{r gg_4, echo=FALSE, eval=TRUE}
-knitr::include_graphics("../images/gglayers.png")
+knitr::include_graphics("./gglayers.png")
 ```
 ]
 
@@ -561,7 +729,7 @@ knitr::include_graphics("../images/gglayers.png")
 
 .pull-right[
 ```{r gg_5, echo=FALSE, eval=TRUE}
-knitr::include_graphics("../images/gglayers.png")
+knitr::include_graphics("./gglayers.png")
 ```
 ]
 
@@ -584,7 +752,7 @@ knitr::include_graphics("../images/gglayers.png")
 
 .pull-right[
 ```{r gg_6, echo=FALSE, eval=TRUE}
-knitr::include_graphics("../images/gglayers.png")
+knitr::include_graphics("./gglayers.png")
 ```
 ]
 
@@ -841,6 +1009,27 @@ countdown(minutes = 5, seconds = 00)
 
 ---
 
+## Codez et représentez votre premier objet ggplot() (suite)
+
+**Solution**
+
+```{r, eval=FALSE}
+library(ggplot2)
+
+ggplot(mpg, aes(x = class, y = cty, fill = trans)) + 
+  geom_col(position = "dodge") + 
+  labs(title = "Consommation de carburant en ville par classe de voiture et type de transmission", x = "Classe de voiture", y = "Consommation de carburant en ville") + 
+  theme_minimal()
+```
+
+- *Note 1*: l'esthétique peut être soit dans la ligne `ggplot()`, et sera héritée par chaque `geom_*()`, 
+soit dans la ligne `geom_*()` pour s'appliquer
+à ce `geom_*()` seulement !
+
+- *Note 2*: les commandes `colour`, `alpha`, `shape`, et `size` peuvent être définies en dehors des valeurs de `aes()`, et seront alors statiques, non dépendantes des données.
+
+---
+
 ## Esthétique
 
 Distinguer les classes, les groupes et la structure
@@ -965,6 +1154,53 @@ countdown(minutes = 10, seconds = 00)
 
 ---
 
+## Esthétique (suite)
+
+### **Solutions**
+
+```{r, eval=FALSE}
+library(ggplot2)
+data(CO2)
+
+ggplot(data = CO2) +
+  geom_point(aes(x = conc,
+                 y = uptake,
+                 colour = Treatment,
+                 shape = Type))
+```
+
+---
+
+## Esthétique (suite)
+
+### **Solutions**
+
+```{r, eval=FALSE}
+data(msleep)
+ggplot(data = msleep) +
+  geom_point(aes(x = log10(bodywt),
+                 y = awake,
+                 colour = vore,
+                 shape = conservation))
+```
+
+---
+
+## Esthétique (suite)
+
+### **Solutions**
+
+```{r, eval=FALSE}
+data(ToothGrowth)
+ggplot(ToothGrowth, aes(x = dose,
+                        y = len,
+                        color = supp)) +
+  geom_point() +
+  geom_smooth(method = lm, formula = 'y~x')
+```
+
+---
+
 ## Changer l'échelle des axes
 
 ```{r,update_scale, fig.height=4}
@@ -1049,6 +1285,30 @@ facet_grid(. ~ Species)
 ```{r, echo=FALSE}
 library(countdown)
 countdown(minutes = 10, seconds = 00)
+```
+
+---
+
+## Reproduire un graphique (suite)
+
+**Solution:**
+
+```{r, echo=TRUE, eval=FALSE}
+library(ggplot2)
+data(iris)
+ggplot(iris, aes(x=Sepal.Length, y=Petal.Width, color=Species)) +
+geom_point() +
+labs(title = "Relation entre la longueur des sépales et la largeur des pétales",
+x = "Longueur des sépales", y = "Largeur des pétales") +
+theme_classic() +
+theme(axis.title = element_text(size = 16,
+colour = "navy"),
+axis.text = element_text(size = 12),
+plot.title = element_text(size = 16,
+colour = "orange3",face = "bold"),
+strip.text.x = element_text(size = 14, face ="bold")) +
+facet_grid(. ~ Species)
+
 ```
 
 ---
@@ -1256,6 +1516,64 @@ knitr::include_graphics("../images/defi.jpg")
 ```{r, echo=FALSE}
 library(countdown)
 countdown(minutes = 10, seconds = 00)
+```
+
+---
+
+## Créer différents type de graphique (suite)
+
+**Solutions:**
+
+```{r eval=FALSE}
+# Importer les données
+data(mtcars)
+
+# Graphique à barres
+library(dplyr)
+library(ggplot2)
+
+mpg_by_cyl <- mtcars %>%
+  group_by(cyl) %>%
+  summarise(mean_mpg = mean(mpg))
+
+ggplot(mpg_by_cyl, aes(x = cyl, y = mean_mpg, fill = factor(cyl))) + 
+  geom_bar(stat = "identity", color = "black") +
+  labs(title = "Consommation d'essence moyenne par cylindre", x = "Cylindres", y = "Consommation d'essence (mpg)") +
+  theme_minimal()
+
+```
+
+---
+
+## Créer différents type de graphique (suite)
+
+**Solutions:**
+
+```{r eval=FALSE}
+# Graphique en boîte
+ggplot(mtcars, aes(x = factor(cyl), y = mpg, fill = factor(cyl))) + 
+  geom_boxplot() +
+  labs(title = "Consommation d'essence par cylindre", x = "Cylindres", y = "Consommation d'essence (mpg)") +
+  theme_minimal()
+```
+
+---
+
+## Créer différents type de graphique (suite)
+
+**Solutions:**
+
+```{r eval=FALSE}
+# Graphique à barres empilées
+mpg_by_cyl_gear <- mtcars %>%
+  group_by(cyl, gear) %>%
+  summarise(mean_mpg = mean(mpg))
+
+ggplot(mpg_by_cyl_gear, aes(x = factor(cyl), y = mean_mpg, fill = factor(gear))) + 
+  geom_bar(stat = "identity", color = "black") +
+  labs(title = "Consommation d'essence moyenne par cylindre et nombre de vitesses", x = "Cylindres", y = "Consommation d'essence (mpg)", fill = "Nombre de vitesses") +
+  theme_minimal()
+
 ```
 
 ---
