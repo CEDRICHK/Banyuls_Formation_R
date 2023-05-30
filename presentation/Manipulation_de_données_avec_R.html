@@ -93,7 +93,7 @@ top:1em;right:1em;
 
 Ouvrir RStudio !
 
-<div class="countdown" id="timer_fb4a9a23" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
+<div class="countdown" id="timer_dfaa6fb5" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
 <div class="countdown-controls"><button class="countdown-bump-down">&minus;</button><button class="countdown-bump-up">&plus;</button></div>
 <code class="countdown-time"><span class="countdown-digits minutes">00</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">30</span></code>
 </div>
@@ -120,10 +120,25 @@ Ouvrir RStudio !
 
 Calculez le résultat de l'expression suivante: `\((3 + 2) * 4 - \frac{7}{2}\)`
 
-<div class="countdown" id="timer_05165a15" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
+<div class="countdown" id="timer_03285567" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
 <div class="countdown-controls"><button class="countdown-bump-down">&minus;</button><button class="countdown-bump-up">&plus;</button></div>
 <code class="countdown-time"><span class="countdown-digits minutes">00</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">30</span></code>
 </div>
+
+--
+
+**Solution:**
+
+
+```r
+(3 + 2) * 4 - 7/2
+```
+
+```
+## [1] 16.5
+```
+
+&gt; L'ordre des opérations est respecté sous R.
 
 ---
 
@@ -135,10 +150,29 @@ Quelle est l'aire d'un carré de 5 cm et d'un cercle de rayon égale à 5 cm ?
 
 &gt; *Astuce*: pour faire un exposant, utilisez la commande `^` et   pour le `\(\pi\)`, utilisez la constante `pi`.
 
-<div class="countdown" id="timer_4cf2e1e0" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
+<div class="countdown" id="timer_d6a1db70" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
 <div class="countdown-controls"><button class="countdown-bump-down">&minus;</button><button class="countdown-bump-up">&plus;</button></div>
 <code class="countdown-time"><span class="countdown-digits minutes">00</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">30</span></code>
 </div>
+
+--
+
+**Solution:**
+
+
+```r
+5^2;pi * 5^2
+```
+
+```
+## [1] 25
+```
+
+```
+## [1] 78.53982
+```
+
+&gt; Attention à l'unité ici, cm²
 
 ---
 
@@ -187,10 +221,24 @@ num -&gt; num_3 # num_3 reçoit la valeur de num
 
 &gt; *Astuce*: Utilisez la fonction `sqrt` pour avoir la racine carrée et `print` pour afficher le résultat d'un objet.
 
-<div class="countdown" id="timer_b24078bd" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
+<div class="countdown" id="timer_e4ee7530" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
 <div class="countdown-controls"><button class="countdown-bump-down">&minus;</button><button class="countdown-bump-up">&plus;</button></div>
 <code class="countdown-time"><span class="countdown-digits minutes">01</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">15</span></code>
 </div>
+
+--
+
+**Solution:**
+
+
+```r
+x &lt;- sqrt(3^2+4^2)
+print(x)
+```
+
+```
+## [1] 5
+```
 
 ---
 
@@ -209,10 +257,19 @@ Pour créer un nouveau projet allez dans File &gt; New Project...
 - Créer un nouveau projet dans RStudio pour réaliser les prochains défis à résoudre.
 - Une fois créé, ajouter de nouveaux dossiers data, reports et plots en cliquant sur le bouton `New Folder`.
 
-<div class="countdown" id="timer_19c89554" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
+<div class="countdown" id="timer_5900a693" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
 <div class="countdown-controls"><button class="countdown-bump-down">&minus;</button><button class="countdown-bump-up">&plus;</button></div>
 <code class="countdown-time"><span class="countdown-digits minutes">01</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">15</span></code>
 </div>
+
+--
+
+**Solution:**
+
+1. Ouvrez RStudio et allez dans `File` &gt; `New Project`.
+2. Dans la fenêtre `New Project`, sélectionnez `New Directory` et cliquez sur `Next`.
+3. Dans la fenêtre suivante, sélectionnez `New Project` et donnez un nom à votre projet, puis choisissez un emplacement sur votre ordinateur pour le stocker. Cliquez sur `Create Project`.
+4. Dans l'onglet `Files` à droite de RStudio, cliquez sur le bouton `New Folder` et nommez le dossier *data*. Répétez cette étape pour créer les dossiers *plots* et *reports*.
 
 ---
 
@@ -234,10 +291,40 @@ Pour créer un nouveau projet allez dans File &gt; New Project...
 
 &gt; *Astuce*: `&lt;-`, `+`, `*`, `\`, `^` et `print()`
 
-<div class="countdown" id="timer_82f77ca6" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
+<div class="countdown" id="timer_ff512cd8" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
 <div class="countdown-controls"><button class="countdown-bump-down">&minus;</button><button class="countdown-bump-up">&plus;</button></div>
 <code class="countdown-time"><span class="countdown-digits minutes">05</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
 </div>
+
+---
+
+## Créer un script R (continue)
+
+**Solution:**
+
+
+```r
+#### Paramètres de bases ####
+
+a &lt;- 5
+b &lt;- 4
+
+#### Opérations ####
+
+addition &lt;- a + b
+soustraction &lt;- a - b
+multiplication &lt;- a * b
+division &lt;- a / b
+puissance &lt;- a ^ b
+
+#### Affichage ####
+
+print(addition)
+print(soustraction)
+print(multiplication)
+print(division)
+print(puissance)
+```
 
 ---
 
@@ -247,7 +334,7 @@ Pour créer un nouveau projet allez dans File &gt; New Project...
 
 Sauvez votre script précédemment créé en utilisant la commande `Ctrl+S` et enregistrez le sous le dossier, `reports`, initialement créé.
 
-<div class="countdown" id="timer_8dc8103e" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
+<div class="countdown" id="timer_31bc542f" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
 <div class="countdown-controls"><button class="countdown-bump-down">&minus;</button><button class="countdown-bump-up">&plus;</button></div>
 <code class="countdown-time"><span class="countdown-digits minutes">00</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">30</span></code>
 </div>
@@ -293,10 +380,21 @@ rm(list=ls())
 
 - Supprimez tous les objets créés de l'environnement de travail.
 
-<div class="countdown" id="timer_fc872524" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
+<div class="countdown" id="timer_09cbffc9" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
 <div class="countdown-controls"><button class="countdown-bump-down">&minus;</button><button class="countdown-bump-up">&plus;</button></div>
 <code class="countdown-time"><span class="countdown-digits minutes">00</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">45</span></code>
 </div>
+
+--
+
+**Solution:**
+
+
+```r
+source("../../Jour1/reports/exercices.R")
+rm(addition)
+rm(list = ls())
+```
 
 ---
 
@@ -466,11 +564,65 @@ impair[-(2:4)] # donne impair sans les 2,3,4ème éléments
 
 &gt; *Astuce*: `?seq()`, `?rep()`
 
-<div class="countdown" id="timer_f36fd52f" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
+<div class="countdown" id="timer_7784912e" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
 <div class="countdown-controls"><button class="countdown-bump-down">&minus;</button><button class="countdown-bump-up">&plus;</button></div>
 <code class="countdown-time"><span class="countdown-digits minutes">04</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
 </div>
 
+---
+
+## Vecteur (continue)
+
+**Solution:**
+
+.pull-left[
+
+```r
+#### 1 ####
+num_vec &lt;- seq(1:10)
+num_vec
+```
+
+```
+##  [1]  1  2  3  4  5  6  7  8  9 10
+```
+
+```r
+#### 2 ####
+rep_vec &lt;- rep(3, 5)
+rep_vec
+```
+
+```
+## [1] 3 3 3 3 3
+```
+]
+
+.pull-right[
+
+```r
+#### 3 ####
+pair &lt;- seq(from = 2, to = 10, 
+            by = 2)
+pair
+```
+
+```
+## [1]  2  4  6  8 10
+```
+
+```r
+#### 4 ####
+sexe &lt;- c("M", "M", "M", 
+          "F", "F", "F")
+res_F &lt;- sexe[sexe == "F"]
+res_F
+```
+
+```
+## [1] "F" "F" "F"
+```
+]
 ---
 
 ## Data frame
@@ -583,10 +735,92 @@ df$x[2] # Extrait la 2ème valeur de la variable x du data frame
 
 &gt; *Astuce*: `?nrow()`, `?ncol()`, `$`
 
-<div class="countdown" id="timer_1793f151" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
+<div class="countdown" id="timer_40e45677" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
 <div class="countdown-controls"><button class="countdown-bump-down">&minus;</button><button class="countdown-bump-up">&plus;</button></div>
 <code class="countdown-time"><span class="countdown-digits minutes">05</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
 </div>
+
+---
+
+## Data frame (continue)
+
+**Solution:**
+
+
+```r
+#### 1 ####
+my_data &lt;- data.frame("age" = c(21,30,35), "sexe" = c("M", "F", "F"), 
+                      "salaire" = c(2500, 3200, 4000))
+my_data; nrow(my_data); ncol(my_data)
+```
+
+```
+##   age sexe salaire
+## 1  21    M    2500
+## 2  30    F    3200
+## 3  35    F    4000
+```
+
+```
+## [1] 3
+```
+
+```
+## [1] 3
+```
+
+---
+
+## Data frame (continue)
+
+**Solution:**
+
+
+```r
+#### 2 ####
+salaire_augmente &lt;- my_data
+salaire_augmente$salaire &lt;- salaire_augmente$salaire * 1.1
+salaire_augmente
+```
+
+```
+##   age sexe salaire
+## 1  21    M    2750
+## 2  30    F    3520
+## 3  35    F    4400
+```
+
+```r
+#### 3 ####
+salaire_augmente$prime &lt;- salaire_augmente$salaire * 0.05
+salaire_augmente
+```
+
+```
+##   age sexe salaire prime
+## 1  21    M    2750 137.5
+## 2  30    F    3520 176.0
+## 3  35    F    4400 220.0
+```
+
+---
+
+## Data frame (continue)
+
+**Solution:**
+
+
+```r
+#### 4 ####
+femmes &lt;- salaire_augmente[salaire_augmente$sexe == "F",]
+femmes
+```
+
+```
+##   age sexe salaire prime
+## 2  30    F    3520   176
+## 3  35    F    4400   220
+```
 
 ---
 
@@ -642,10 +876,49 @@ rnorm(n = 5, mean = 10, sd = 1)
 
 &gt; *Astuce*: `?rnorm()`, `?sum()`, `?mean()`, `?median()`
 
-<div class="countdown" id="timer_48a7555a" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
+<div class="countdown" id="timer_097cab58" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
 <div class="countdown-controls"><button class="countdown-bump-down">&minus;</button><button class="countdown-bump-up">&plus;</button></div>
 <code class="countdown-time"><span class="countdown-digits minutes">05</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
 </div>
+
+---
+
+## Les fonctions (continue)
+
+**Solution:**
+
+
+```r
+#### 1 ####
+set.seed(123)
+x &lt;- rnorm(100, mean = 10, sd = 2)
+#### 2 ####
+sum(x)
+```
+
+```
+## [1] 1018.081
+```
+
+```r
+#### 3 ####
+m &lt;- matrix(rnorm(15, mean = 0, sd = 1), nrow = 5)
+#### 4 ####
+mean(m)
+```
+
+```
+## [1] -0.33866
+```
+
+```r
+#### 5 ####
+median(m)
+```
+
+```
+## [1] -0.3475426
+```
 
 ---
 
@@ -684,10 +957,46 @@ remove.packages('ggplot2')
 
 - **Installation d'un package**: Installez le package `tidyverse` en utilisant la fonction `install.packages()`. Assurez-vous que le package est bien installé en utilisant la fonction `library()` pour charger le package.
 
-<div class="countdown" id="timer_d5bfcdba" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
+<div class="countdown" id="timer_a4eadc5b" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
 <div class="countdown-controls"><button class="countdown-bump-down">&minus;</button><button class="countdown-bump-up">&plus;</button></div>
 <code class="countdown-time"><span class="countdown-digits minutes">00</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">30</span></code>
 </div>
+
+---
+
+## Les packages (continue)
+
+**Solution:**
+
+
+```r
+install.packages('tidyverse', dependencies = TRUE)
+```
+
+```
+## Installation du package dans '/home/cedric/R/x86_64-pc-linux-gnu-library/4.2'
+## (car 'lib' n'est pas spécifié)
+```
+
+```r
+library(tidyverse)
+```
+
+```
+## ── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
+## ✔ dplyr     1.1.2     ✔ readr     2.1.4
+## ✔ forcats   1.0.0     ✔ stringr   1.5.0
+## ✔ ggplot2   3.4.2     ✔ tibble    3.2.1
+## ✔ lubridate 1.9.2     ✔ tidyr     1.3.0
+## ✔ purrr     1.0.1
+```
+
+```
+## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+## ✖ dplyr::filter() masks stats::filter()
+## ✖ dplyr::lag()    masks stats::lag()
+## ℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors
+```
 
 ---
 
@@ -1064,7 +1373,7 @@ Lien pour télécharger les données : https://www4.stat.ncsu.edu/~boos/var.sele
 
 3. Vérifiez la présence de données manquantes.
 
-<div class="countdown" id="timer_7aeb0a82" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
+<div class="countdown" id="timer_99cdd46a" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
 <div class="countdown-controls"><button class="countdown-bump-down">&minus;</button><button class="countdown-bump-up">&plus;</button></div>
 <code class="countdown-time"><span class="countdown-digits minutes">25</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
 </div>
@@ -1106,6 +1415,274 @@ Lien pour télécharger les données : https://www4.stat.ncsu.edu/~boos/var.sele
 3. A partir de cette sélection, créez un nouveau data frame avec uniquement les variables "diabetes_outcome", "age", "sex" et "diabetes_risk"
 
 4. Récupérez les autres individus n'appartenant pas à cette sélection dans un autre data frame puis comparez. Qu'observez-vous ?
+
+---
+
+## Manipulation des données (suite)
+
+**Solution:**
+
+&lt;u&gt; Importation des données &lt;/u&gt;
+
+
+```r
+#### 1 ####
+diabetes &lt;- read.table(file = "../data/diabetes.tab.txt", 
+                       header = TRUE, sep = "\t")
+
+#### 2 ####
+str(diabetes)
+```
+
+```
+## 'data.frame':	442 obs. of  11 variables:
+##  $ AGE: int  59 48 72 24 50 23 36 66 60 29 ...
+##  $ SEX: int  2 1 2 1 1 1 2 2 2 1 ...
+##  $ BMI: num  32.1 21.6 30.5 25.3 23 22.6 22 26.2 32.1 30 ...
+##  $ BP : num  101 87 93 84 101 89 90 114 83 85 ...
+##  $ S1 : int  157 183 156 198 192 139 160 255 179 180 ...
+##  $ S2 : num  93.2 103.2 93.6 131.4 125.4 ...
+##  $ S3 : num  38 70 41 40 52 61 50 56 42 43 ...
+##  $ S4 : num  4 3 4 5 4 2 3 4.55 4 4 ...
+##  $ S5 : num  4.86 3.89 4.67 4.89 4.29 ...
+##  $ S6 : int  87 69 85 89 80 68 82 92 94 88 ...
+##  $ Y  : int  151 75 141 206 135 97 138 63 110 310 ...
+```
+
+```r
+dim(diabetes)
+```
+
+```
+## [1] 442  11
+```
+
+---
+
+## Manipulation des données (suite)
+
+**Solution:**
+
+&lt;u&gt; Importation des données &lt;/u&gt;
+
+
+```r
+#### 3 ####
+res &lt;- is.na(diabetes)
+unique(res)
+```
+
+```
+##        AGE   SEX   BMI    BP    S1    S2    S3    S4    S5    S6     Y
+## [1,] FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
+```
+
+```r
+summary(diabetes[1:4])
+```
+
+```
+##       AGE             SEX             BMI              BP        
+##  Min.   :19.00   Min.   :1.000   Min.   :18.00   Min.   : 62.00  
+##  1st Qu.:38.25   1st Qu.:1.000   1st Qu.:23.20   1st Qu.: 84.00  
+##  Median :50.00   Median :1.000   Median :25.70   Median : 93.00  
+##  Mean   :48.52   Mean   :1.468   Mean   :26.38   Mean   : 94.65  
+##  3rd Qu.:59.00   3rd Qu.:2.000   3rd Qu.:29.27   3rd Qu.:105.00  
+##  Max.   :79.00   Max.   :2.000   Max.   :42.20   Max.   :133.00
+```
+
+---
+
+## Manipulation des données (suite)
+
+**Solution:**
+
+&lt;u&gt; Importation des données &lt;/u&gt;
+
+
+```r
+#### 3 ####
+summary(diabetes[5:11])
+```
+
+```
+##        S1              S2               S3              S4      
+##  Min.   : 97.0   Min.   : 41.60   Min.   :22.00   Min.   :2.00  
+##  1st Qu.:164.2   1st Qu.: 96.05   1st Qu.:40.25   1st Qu.:3.00  
+##  Median :186.0   Median :113.00   Median :48.00   Median :4.00  
+##  Mean   :189.1   Mean   :115.44   Mean   :49.79   Mean   :4.07  
+##  3rd Qu.:209.8   3rd Qu.:134.50   3rd Qu.:57.75   3rd Qu.:5.00  
+##  Max.   :301.0   Max.   :242.40   Max.   :99.00   Max.   :9.09  
+##        S5              S6               Y        
+##  Min.   :3.258   Min.   : 58.00   Min.   : 25.0  
+##  1st Qu.:4.277   1st Qu.: 83.25   1st Qu.: 87.0  
+##  Median :4.620   Median : 91.00   Median :140.5  
+##  Mean   :4.641   Mean   : 91.26   Mean   :152.1  
+##  3rd Qu.:4.997   3rd Qu.: 98.00   3rd Qu.:211.5  
+##  Max.   :6.107   Max.   :124.00   Max.   :346.0
+```
+
+---
+
+## Manipulation des données (suite)
+
+**Solution:**
+
+&lt;u&gt; Exportation des données &lt;/u&gt;
+
+
+```r
+#### 1 ####
+
+write.csv(diabetes, file = "../data/diabetes_export.csv", sep = "\t", 
+          row.names = FALSE, col.names = TRUE)
+```
+
+```
+## Warning in write.csv(diabetes, file = "../data/diabetes_export.csv", sep =
+## "\t", : une tentative de modification de 'col.names' a échoué
+```
+
+```
+## Warning in write.csv(diabetes, file = "../data/diabetes_export.csv", sep =
+## "\t", : une tentative de modification de 'sep' a échoué
+```
+
+---
+
+## Manipulation des données (suite)
+
+**Solution:**
+
+&lt;u&gt; Manipulation des variables &lt;/u&gt;
+
+
+```r
+#### 1 ####
+diabetes$SEX &lt;- factor(diabetes$SEX, labels = c("Femme", "Homme"))
+
+#### 2 ####
+table(diabetes$SEX)
+```
+
+```
+## 
+## Femme Homme 
+##   235   207
+```
+
+```r
+#### 3 ####
+diabetes$diabetes_risk &lt;- diabetes$BMI + diabetes$BP + diabetes$AGE
+
+#### 4 ####
+names(diabetes)[names(diabetes) == "Y"] &lt;- "diabetes_outcome"
+#colnames(diabetes)[11] &lt;- "diabetes_outcome"
+```
+
+---
+
+## Manipulation des données (suite)
+
+**Solution:**
+
+&lt;u&gt; Manipulation des variables &lt;/u&gt;
+
+
+```r
+#### 5 ####
+diabetes$S1 &lt;- NULL; diabetes$S2 &lt;- NULL; diabetes$S3 &lt;- NULL;
+diabetes$S4 &lt;- NULL; diabetes$S5 &lt;- NULL; diabetes$S6 &lt;- NULL
+
+#sub_diabetes &lt;- diabetes[,c(1:4,11:12)]
+```
+
+---
+
+## Manipulation des données (suite)
+
+**Solution:**
+
+&lt;u&gt; Manipulation des individus &lt;/u&gt;
+
+
+```r
+#### 1 ####
+high_diabetes &lt;- diabetes[(diabetes$BMI &gt;30 &amp; diabetes$BP &gt; 80 ),]
+
+#### 2 ####
+high_diabetes &lt;- high_diabetes[, c("AGE", "SEX", "diabetes_outcome", "diabetes_risk")]
+
+#### 3 ####
+indices &lt;- row.names(high_diabetes)
+
+#### 3 ####
+low_diabetes &lt;- diabetes[!row.names(diabetes) %in% indices,]
+low_diabetes &lt;- low_diabetes[, c("AGE", "SEX", "diabetes_outcome", "diabetes_risk")]
+```
+
+---
+
+## Manipulation des données (suite)
+
+**Solution:**
+
+&lt;u&gt; Manipulation des individus &lt;/u&gt;
+.pull-left[
+
+```r
+#### 4 ####
+summary(low_diabetes[1:2]);summary(low_diabetes[3:4]) 
+```
+
+```
+##       AGE           SEX     
+##  Min.   :19.00   Femme:192  
+##  1st Qu.:38.00   Homme:164  
+##  Median :50.00              
+##  Mean   :48.34              
+##  3rd Qu.:59.00              
+##  Max.   :79.00
+```
+
+```
+##  diabetes_outcome diabetes_risk  
+##  Min.   : 25.00   Min.   :104.1  
+##  1st Qu.: 77.75   1st Qu.:148.7  
+##  Median :122.00   Median :165.8  
+##  Mean   :135.53   Mean   :165.6  
+##  3rd Qu.:184.25   3rd Qu.:183.2  
+##  Max.   :311.00   Max.   :222.3
+```
+]
+
+.pull-right[
+
+```r
+#### 4 ####
+summary(high_diabetes[1:2]);summary(high_diabetes[3:4]) 
+```
+
+```
+##       AGE           SEX    
+##  Min.   :26.00   Femme:43  
+##  1st Qu.:41.00   Homme:43  
+##  Median :49.50             
+##  Mean   :49.24             
+##  3rd Qu.:58.75             
+##  Max.   :75.00
+```
+
+```
+##  diabetes_outcome diabetes_risk  
+##  Min.   : 52.0    Min.   :142.5  
+##  1st Qu.:163.8    1st Qu.:169.1  
+##  Median :239.5    Median :189.2  
+##  Mean   :220.9    Mean   :185.7  
+##  3rd Qu.:275.0    3rd Qu.:202.4  
+##  Max.   :346.0    Max.   :223.9
+```
+]
 
 ---
 
@@ -1239,10 +1816,57 @@ tb &lt;- tibble(
 )
 ```
 
-<div class="countdown" id="timer_fff54625" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
+<div class="countdown" id="timer_567e24a3" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
 <div class="countdown-controls"><button class="countdown-bump-down">&minus;</button><button class="countdown-bump-up">&plus;</button></div>
 <code class="countdown-time"><span class="countdown-digits minutes">05</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
 </div>
+
+---
+
+## tidyr
+
+**Solution: Réorganiser les données**
+
+.pull-left[
+
+```r
+library(tidyr)
+
+# Exemple de tibble
+tb &lt;- tibble(
+  id = 1:3,
+  age = c(25, 30, 28),
+  height = c(170, 175, 180),
+  weight = c(70, 75, 80)
+)
+
+tb_long &lt;- pivot_longer(tb, 
+             cols = c(age, weight, height),
+             names_to = "variable",
+             values_to = "valeur")
+```
+]
+.pull-right[
+
+```r
+tb_long
+```
+
+```
+## # A tibble: 9 × 3
+##      id variable valeur
+##   &lt;int&gt; &lt;chr&gt;     &lt;dbl&gt;
+## 1     1 age          25
+## 2     1 weight       70
+## 3     1 height      170
+## 4     2 age          30
+## 5     2 weight       75
+## 6     2 height      175
+## 7     3 age          28
+## 8     3 weight       80
+## 9     3 height      180
+```
+]
 
 ---
 
@@ -1264,11 +1888,48 @@ tb &lt;- tibble(
 )
 ```
 
-<div class="countdown" id="timer_811fe2d2" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
+<div class="countdown" id="timer_a6b42fba" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
 <div class="countdown-controls"><button class="countdown-bump-down">&minus;</button><button class="countdown-bump-up">&plus;</button></div>
 <code class="countdown-time"><span class="countdown-digits minutes">04</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
 </div>
 
+---
+
+## tidyr (continue)
+
+**Solution: Séparer les données en colonnes**
+
+.pull-left[
+
+```r
+library(tidyr)
+
+# Exemple de tibble
+tb &lt;- tibble(
+  id = 1:3,
+  name = c("John Smith", "Jane Doe", "Bob Johnson"),
+  age = c(25, 30, 28)
+)
+
+# Utilisation de la fonction separate() pour séparer la colonne nom_prenom en deux colonnes nom et prenom
+tb_sep &lt;- separate(tb, name, into = c("first_name", "last_name"), sep = " ")
+```
+]
+.pull-right[
+
+```r
+tb_sep
+```
+
+```
+## # A tibble: 3 × 4
+##      id first_name last_name   age
+##   &lt;int&gt; &lt;chr&gt;      &lt;chr&gt;     &lt;dbl&gt;
+## 1     1 John       Smith        25
+## 2     2 Jane       Doe          30
+## 3     3 Bob        Johnson      28
+```
+]
 
 
 ---
@@ -1292,10 +1953,50 @@ tb &lt;- tibble(
 )
 ```
 
-<div class="countdown" id="timer_e57b058a" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
+<div class="countdown" id="timer_f61ff6af" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
 <div class="countdown-controls"><button class="countdown-bump-down">&minus;</button><button class="countdown-bump-up">&plus;</button></div>
 <code class="countdown-time"><span class="countdown-digits minutes">04</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
 </div>
+
+---
+
+## tidyr (continue)
+
+
+**Solution: Combiner les données de plusieurs colonnes**
+
+.pull-left[
+
+```r
+library(tidyr)
+
+tb &lt;- tibble(
+  id = 1:3,
+  first_name = c("John", "Jane", "Bob"),
+  last_name = c("Smith","Doe", "Johnson"),
+  age = c(25, 30, 28)
+)
+
+# Utilisation de la fonction unite() pour fusionner les colonnes jour et mois en une colonne date
+tb_unite &lt;- unite(tb, full_name, c(first_name, last_name), sep = " ")
+```
+]
+.pull-right[
+
+```r
+tb_unite
+```
+
+```
+## # A tibble: 3 × 3
+##      id full_name     age
+##   &lt;int&gt; &lt;chr&gt;       &lt;dbl&gt;
+## 1     1 John Smith     25
+## 2     2 Jane Doe       30
+## 3     3 Bob Johnson    28
+```
+]
+
 
 ---
 
@@ -1318,10 +2019,49 @@ sales &lt;- c(100, 150, 200, 250)
 tb &lt;- tibble(region, period, product, sales)
 ```
 
-<div class="countdown" id="timer_96a38121" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
+<div class="countdown" id="timer_afea6779" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
 <div class="countdown-controls"><button class="countdown-bump-down">&minus;</button><button class="countdown-bump-up">&plus;</button></div>
 <code class="countdown-time"><span class="countdown-digits minutes">05</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
 </div>
+
+---
+
+## tidyr (continue)
+
+**Solution: Réorganiser les données**
+
+.pull-left[
+
+```r
+library(tidyr)
+
+# Exemple de tibble
+region &lt;- c("North", "North", "South", "South")
+period &lt;- c("Q1", "Q2", "Q1", "Q2")
+product &lt;- c("A", "A", "B", "B")
+sales &lt;- c(100, 150, 200, 250)
+
+tb &lt;- tibble(region, period, product, sales)
+
+# Utilisation de la fonction pivot_wider() pour transformer le tibble en format "large"
+tb_wide &lt;- pivot_wider(tb, names_from = period, values_from = sales)
+```
+]
+.pull-right[
+
+```r
+tb_wide
+```
+
+```
+## # A tibble: 2 × 4
+##   region product    Q1    Q2
+##   &lt;chr&gt;  &lt;chr&gt;   &lt;dbl&gt; &lt;dbl&gt;
+## 1 North  A         100   150
+## 2 South  B         200   250
+```
+]
+
 
 ---
 
@@ -1407,21 +2147,7 @@ Soit la table suivante:
 
 ```r
 library(tidyverse)
-```
 
-```
-## ── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
-## ✔ dplyr     1.1.2     ✔ purrr     1.0.1
-## ✔ forcats   1.0.0     ✔ readr     2.1.4
-## ✔ ggplot2   3.4.2     ✔ stringr   1.5.0
-## ✔ lubridate 1.9.2     ✔ tibble    3.2.1
-## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
-## ✖ dplyr::filter() masks stats::filter()
-## ✖ dplyr::lag()    masks stats::lag()
-## ℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors
-```
-
-```r
 set.seed(1234)
 tbl &lt;- tibble(group1 = rep(c("A", "B"), each = 5000),
               group2 = rep(c("C", "D"), each = 5000),
@@ -1554,10 +2280,182 @@ tbl %&gt;%
 7. Créez une nouvelle variable appelée *weekday* qui contient le jour de la semaine pour chaque observation.
 8. Transformez la variable *carrier* en colonnes et calculer le nombre total de vol par compagnie aérienne.
 
-<div class="countdown" id="timer_1560ad24" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
+<div class="countdown" id="timer_6033b73d" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
 <div class="countdown-controls"><button class="countdown-bump-down">&minus;</button><button class="countdown-bump-up">&plus;</button></div>
 <code class="countdown-time"><span class="countdown-digits minutes">25</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
 </div>
+
+---
+
+## dplyr (suite)
+
+**Solution:**
+
+
+```r
+library(dplyr)
+library(nycflights13)
+#### 1 ####
+vols &lt;- nycflights13::flights 
+#### 2 ####
+head(vols)
+```
+
+```
+## # A tibble: 6 × 19
+##    year month   day dep_time sched_dep_time dep_delay arr_time sched_arr_time
+##   &lt;int&gt; &lt;int&gt; &lt;int&gt;    &lt;int&gt;          &lt;int&gt;     &lt;dbl&gt;    &lt;int&gt;          &lt;int&gt;
+## 1  2013     1     1      517            515         2      830            819
+## 2  2013     1     1      533            529         4      850            830
+## 3  2013     1     1      542            540         2      923            850
+## 4  2013     1     1      544            545        -1     1004           1022
+## 5  2013     1     1      554            600        -6      812            837
+## 6  2013     1     1      554            558        -4      740            728
+## # ℹ 11 more variables: arr_delay &lt;dbl&gt;, carrier &lt;chr&gt;, flight &lt;int&gt;,
+## #   tailnum &lt;chr&gt;, origin &lt;chr&gt;, dest &lt;chr&gt;, air_time &lt;dbl&gt;, distance &lt;dbl&gt;,
+## #   hour &lt;dbl&gt;, minute &lt;dbl&gt;, time_hour &lt;dttm&gt;
+```
+
+---
+
+**Solution:**
+
+.pull-left[
+
+```r
+#### 3 ####
+vols_select &lt;- select(vols, year, month, day)
+head(vols_select)
+```
+
+```
+## # A tibble: 6 × 3
+##    year month   day
+##   &lt;int&gt; &lt;int&gt; &lt;int&gt;
+## 1  2013     1     1
+## 2  2013     1     1
+## 3  2013     1     1
+## 4  2013     1     1
+## 5  2013     1     1
+## 6  2013     1     1
+```
+]
+
+.pull-right[
+
+```r
+#### 4 ####
+vols_filter &lt;- filter(vols, month == 11)
+head(vols_filter)
+```
+
+```
+## # A tibble: 6 × 19
+##    year month   day dep_time sched_dep_time dep_delay arr_time sched_arr_time
+##   &lt;int&gt; &lt;int&gt; &lt;int&gt;    &lt;int&gt;          &lt;int&gt;     &lt;dbl&gt;    &lt;int&gt;          &lt;int&gt;
+## 1  2013    11     1        5           2359         6      352            345
+## 2  2013    11     1       35           2250       105      123           2356
+## 3  2013    11     1      455            500        -5      641            651
+## 4  2013    11     1      539            545        -6      856            827
+## 5  2013    11     1      542            545        -3      831            855
+## 6  2013    11     1      549            600       -11      912            923
+## # ℹ 11 more variables: arr_delay &lt;dbl&gt;, carrier &lt;chr&gt;, flight &lt;int&gt;,
+## #   tailnum &lt;chr&gt;, origin &lt;chr&gt;, dest &lt;chr&gt;, air_time &lt;dbl&gt;, distance &lt;dbl&gt;,
+## #   hour &lt;dbl&gt;, minute &lt;dbl&gt;, time_hour &lt;dttm&gt;
+```
+]
+
+---
+
+**Solution:**
+
+
+```r
+#### 5 ####
+vols_group &lt;- group_by(vols, year)
+vols_summarize &lt;- summarize(vols_group, total_vols = n())
+vols_summarize
+```
+
+```
+## # A tibble: 1 × 2
+##    year total_vols
+##   &lt;int&gt;      &lt;int&gt;
+## 1  2013     336776
+```
+
+```r
+#### 6 ####
+vols_arrange &lt;- arrange(vols, year, month, day)
+head(vols_arrange)
+```
+
+```
+## # A tibble: 6 × 19
+##    year month   day dep_time sched_dep_time dep_delay arr_time sched_arr_time
+##   &lt;int&gt; &lt;int&gt; &lt;int&gt;    &lt;int&gt;          &lt;int&gt;     &lt;dbl&gt;    &lt;int&gt;          &lt;int&gt;
+## 1  2013     1     1      517            515         2      830            819
+## 2  2013     1     1      533            529         4      850            830
+## 3  2013     1     1      542            540         2      923            850
+## 4  2013     1     1      544            545        -1     1004           1022
+## 5  2013     1     1      554            600        -6      812            837
+## 6  2013     1     1      554            558        -4      740            728
+## # ℹ 11 more variables: arr_delay &lt;dbl&gt;, carrier &lt;chr&gt;, flight &lt;int&gt;,
+## #   tailnum &lt;chr&gt;, origin &lt;chr&gt;, dest &lt;chr&gt;, air_time &lt;dbl&gt;, distance &lt;dbl&gt;,
+## #   hour &lt;dbl&gt;, minute &lt;dbl&gt;, time_hour &lt;dttm&gt;
+```
+
+---
+
+**Solution:**
+
+
+```r
+#### 7 ####
+vols_mutate &lt;- mutate(vols, weekday = weekdays(as.Date(paste(vols$year, 
+                                              vols$month, 
+                                              vols$day, sep = "-"))))
+
+#### 8 ####
+vols_wide &lt;- tidyr::pivot_wider(vols, 
+                            names_from = carrier, 
+                            values_from = flight,
+                            values_fill = 0)
+head(vols_wide)
+```
+
+```
+## # A tibble: 6 × 33
+##    year month   day dep_time sched_dep_time dep_delay arr_time sched_arr_time
+##   &lt;int&gt; &lt;int&gt; &lt;int&gt;    &lt;int&gt;          &lt;int&gt;     &lt;dbl&gt;    &lt;int&gt;          &lt;int&gt;
+## 1  2013     1     1      517            515         2      830            819
+## 2  2013     1     1      533            529         4      850            830
+## 3  2013     1     1      542            540         2      923            850
+## 4  2013     1     1      544            545        -1     1004           1022
+## 5  2013     1     1      554            600        -6      812            837
+## 6  2013     1     1      554            558        -4      740            728
+## # ℹ 25 more variables: arr_delay &lt;dbl&gt;, tailnum &lt;chr&gt;, origin &lt;chr&gt;,
+## #   dest &lt;chr&gt;, air_time &lt;dbl&gt;, distance &lt;dbl&gt;, hour &lt;dbl&gt;, minute &lt;dbl&gt;,
+## #   time_hour &lt;dttm&gt;, UA &lt;int&gt;, AA &lt;int&gt;, B6 &lt;int&gt;, DL &lt;int&gt;, EV &lt;int&gt;,
+## #   MQ &lt;int&gt;, US &lt;int&gt;, WN &lt;int&gt;, VX &lt;int&gt;, FL &lt;int&gt;, AS &lt;int&gt;, `9E` &lt;int&gt;,
+## #   F9 &lt;int&gt;, HA &lt;int&gt;, YV &lt;int&gt;, OO &lt;int&gt;
+```
+
+---
+
+**Solution:**
+
+
+```r
+#### 8 ####
+glimpse(select(vols_wide, 18:33) %&gt;% colSums())
+```
+
+```
+##  Named num [1:16] 5.63e+07 3.00e+07 3.67e+07 6.61e+07 2.51e+08 ...
+##  - attr(*, "names")= chr [1:16] "UA" "AA" "B6" "DL" ...
+```
+
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>

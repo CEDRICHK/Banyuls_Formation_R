@@ -86,6 +86,16 @@ library(countdown)
 countdown(minutes = 00, seconds = 30)
 ```
 
+--
+
+**Solution:**
+
+```{r add_defi-2_solution}
+(3 + 2) * 4 - 7/2
+```
+
+> L'ordre des opérations est respecté sous R.
+
 ---
 
 ## Opérateurs arithmétiques (continue)
@@ -102,6 +112,16 @@ Quelle est l'aire d'un carré de 5 cm et d'un cercle de rayon égale à 5 cm ?
 library(countdown)
 countdown(minutes = 00, seconds = 30)
 ```
+
+--
+
+**Solution:**
+
+```{r add_defi-3_solution}
+5^2;pi * 5^2
+```
+
+> Attention à l'unité ici, cm²
 
 ---
 
@@ -155,6 +175,15 @@ library(countdown)
 countdown(minutes = 1, seconds = 15)
 ```
 
+--
+
+**Solution:**
+
+```{r add_defi-4_solution}
+x <- sqrt(3^2+4^2)
+print(x)
+```
+
 ---
 
 ## Créer un projet dans RStudio
@@ -180,6 +209,15 @@ knitr::include_graphics("../images/defi.jpg")
 library(countdown)
 countdown(minutes = 1, seconds = 15)
 ```
+
+--
+
+**Solution:**
+
+1. Ouvrez RStudio et allez dans `File` > `New Project`.
+2. Dans la fenêtre `New Project`, sélectionnez `New Directory` et cliquez sur `Next`.
+3. Dans la fenêtre suivante, sélectionnez `New Project` et donnez un nom à votre projet, puis choisissez un emplacement sur votre ordinateur pour le stocker. Cliquez sur `Create Project`.
+4. Dans l'onglet `Files` à droite de RStudio, cliquez sur le bouton `New Folder` et nommez le dossier *data*. Répétez cette étape pour créer les dossiers *plots* et *reports*.
 
 ---
 
@@ -209,6 +247,37 @@ knitr::include_graphics("../images/defi.jpg")
 ```{r, echo=FALSE}
 library(countdown)
 countdown(minutes = 5, seconds = 00)
+```
+
+---
+
+## Créer un script R (continue)
+
+**Solution:**
+
+```{r add_defi-6_solution, results='hide'}
+
+#### Paramètres de bases ####
+
+a <- 5
+b <- 4
+
+#### Opérations ####
+
+addition <- a + b
+soustraction <- a - b
+multiplication <- a * b
+division <- a / b
+puissance <- a ^ b
+
+#### Affichage ####
+
+print(addition)
+print(soustraction)
+print(multiplication)
+print(division)
+print(puissance)
+
 ```
 
 ---
@@ -269,6 +338,16 @@ knitr::include_graphics("../images/defi.jpg")
 ```{r, echo=FALSE}
 library(countdown)
 countdown(minutes = 00, seconds = 45)
+```
+
+--
+
+**Solution:**
+
+```{r add_defi-8_solution, eval=FALSE}
+source("../../Jour1/reports/exercices.R")
+rm(addition)
+rm(list = ls())
 ```
 
 ---
@@ -407,6 +486,39 @@ countdown(minutes = 04, seconds = 00)
 
 ---
 
+## Vecteur (continue)
+
+**Solution:**
+
+.pull-left[
+```{r add_defi-9_part1solution}
+
+#### 1 ####
+num_vec <- seq(1:10)
+num_vec
+
+#### 2 ####
+rep_vec <- rep(3, 5)
+rep_vec
+```
+]
+
+.pull-right[
+```{r add_defi-9_part2solution}
+#### 3 ####
+pair <- seq(from = 2, to = 10, 
+            by = 2)
+pair
+
+#### 4 ####
+sexe <- c("M", "M", "M", 
+          "F", "F", "F")
+res_F <- sexe[sexe == "F"]
+res_F
+```
+]
+---
+
 ## Data frame
 
 - Une liste de vecteur de même longueur.
@@ -478,6 +590,52 @@ countdown(minutes = 05, seconds = 00)
 
 ---
 
+## Data frame (continue)
+
+**Solution:**
+
+```{r add_defi-10_part1solution}
+
+#### 1 ####
+my_data <- data.frame("age" = c(21,30,35), "sexe" = c("M", "F", "F"), 
+                      "salaire" = c(2500, 3200, 4000))
+my_data; nrow(my_data); ncol(my_data)
+
+```
+
+---
+
+## Data frame (continue)
+
+**Solution:**
+
+```{r add_defi-10_part2solution}
+
+#### 2 ####
+salaire_augmente <- my_data
+salaire_augmente$salaire <- salaire_augmente$salaire * 1.1
+salaire_augmente
+
+#### 3 ####
+salaire_augmente$prime <- salaire_augmente$salaire * 0.05
+salaire_augmente
+```
+
+---
+
+## Data frame (continue)
+
+**Solution:**
+
+```{r add_defi-10_part3solution}
+
+#### 4 ####
+femmes <- salaire_augmente[salaire_augmente$sexe == "F",]
+femmes
+```
+
+---
+
 ## Les fonctions
 
 - Un grand nombre de fonctions sont prédéfinies dans R.
@@ -527,6 +685,27 @@ countdown(minutes = 05, seconds = 00)
 
 ---
 
+## Les fonctions (continue)
+
+**Solution:**
+
+```{r add_defi-11_solution}
+
+#### 1 ####
+set.seed(123)
+x <- rnorm(100, mean = 10, sd = 2)
+#### 2 ####
+sum(x)
+#### 3 ####
+m <- matrix(rnorm(15, mean = 0, sd = 1), nrow = 5)
+#### 4 ####
+mean(m)
+#### 5 ####
+median(m)
+```
+
+---
+
 ## Les packages
 
 .pull-left[
@@ -569,6 +748,17 @@ knitr::include_graphics("../images/defi.jpg")
 ```{r, echo=FALSE}
 library(countdown)
 countdown(minutes = 00, seconds = 30)
+```
+
+---
+
+## Les packages (continue)
+
+**Solution:**
+
+```{r add_defi-12_solution, warning=FALSE}
+install.packages('tidyverse', dependencies = TRUE)
+library(tidyverse)
 ```
 
 ---
@@ -893,6 +1083,165 @@ knitr::include_graphics("../images/defi.jpg")
 
 ---
 
+## Manipulation des données (suite)
+
+**Solution:**
+
+<u> Importation des données </u>
+
+```{r manage_data}
+
+
+#### 1 ####
+diabetes <- read.table(file = "../data/diabetes.tab.txt", 
+                       header = TRUE, sep = "\t")
+
+#### 2 ####
+str(diabetes)
+dim(diabetes)
+```
+
+---
+
+## Manipulation des données (suite)
+
+**Solution:**
+
+<u> Importation des données </u>
+
+```{r manage_data_2}
+
+#### 3 ####
+res <- is.na(diabetes)
+unique(res)
+summary(diabetes[1:4])
+```
+
+---
+
+## Manipulation des données (suite)
+
+**Solution:**
+
+<u> Importation des données </u>
+
+```{r manage_data_3}
+
+#### 3 ####
+summary(diabetes[5:11])
+```
+
+---
+
+## Manipulation des données (suite)
+
+**Solution:**
+
+<u> Exportation des données </u>
+
+```{r manage_data_4}
+
+#### 1 ####
+
+write.csv(diabetes, file = "../data/diabetes_export.csv", sep = "\t", 
+          row.names = FALSE, col.names = TRUE)
+```
+
+---
+
+## Manipulation des données (suite)
+
+**Solution:**
+
+<u> Manipulation des variables </u>
+
+```{r manage_data_5}
+
+#### 1 ####
+diabetes$SEX <- factor(diabetes$SEX, labels = c("Femme", "Homme"))
+
+#### 2 ####
+table(diabetes$SEX)
+
+#### 3 ####
+diabetes$diabetes_risk <- diabetes$BMI + diabetes$BP + diabetes$AGE
+
+#### 4 ####
+names(diabetes)[names(diabetes) == "Y"] <- "diabetes_outcome"
+#colnames(diabetes)[11] <- "diabetes_outcome"
+
+
+```
+
+---
+
+## Manipulation des données (suite)
+
+**Solution:**
+
+<u> Manipulation des variables </u>
+
+```{r manage_data_6}
+
+#### 5 ####
+diabetes$S1 <- NULL; diabetes$S2 <- NULL; diabetes$S3 <- NULL;
+diabetes$S4 <- NULL; diabetes$S5 <- NULL; diabetes$S6 <- NULL
+
+#sub_diabetes <- diabetes[,c(1:4,11:12)]
+
+```
+
+---
+
+## Manipulation des données (suite)
+
+**Solution:**
+
+<u> Manipulation des individus </u>
+
+```{r manage_data_7}
+
+#### 1 ####
+high_diabetes <- diabetes[(diabetes$BMI >30 & diabetes$BP > 80 ),]
+
+#### 2 ####
+high_diabetes <- high_diabetes[, c("AGE", "SEX", "diabetes_outcome", "diabetes_risk")]
+
+#### 3 ####
+indices <- row.names(high_diabetes)
+
+#### 3 ####
+low_diabetes <- diabetes[!row.names(diabetes) %in% indices,]
+low_diabetes <- low_diabetes[, c("AGE", "SEX", "diabetes_outcome", "diabetes_risk")]
+
+```
+
+---
+
+## Manipulation des données (suite)
+
+**Solution:**
+
+<u> Manipulation des individus </u>
+.pull-left[
+```{r manage_data_8_part1}
+
+#### 4 ####
+summary(low_diabetes[1:2]);summary(low_diabetes[3:4]) 
+```
+]
+
+.pull-right[
+```{r manage_data_8_part2}
+
+#### 4 ####
+summary(high_diabetes[1:2]);summary(high_diabetes[3:4]) 
+
+```
+]
+
+---
+
 ## Le monde du tidyverse
 
 - Le tidyverse est un **ensemble de packages**:
@@ -1024,6 +1373,37 @@ countdown(minutes = 5, seconds = 00)
 
 ---
 
+## tidyr
+
+**Solution: Réorganiser les données**
+
+.pull-left[
+```{r ex-1_solution}
+library(tidyr)
+
+# Exemple de tibble
+tb <- tibble(
+  id = 1:3,
+  age = c(25, 30, 28),
+  height = c(170, 175, 180),
+  weight = c(70, 75, 80)
+)
+
+tb_long <- pivot_longer(tb, 
+             cols = c(age, weight, height),
+             names_to = "variable",
+             values_to = "valeur")
+
+```
+]
+.pull-right[
+```{r ex-1_print}
+tb_long
+```
+]
+
+---
+
 ## tidyr (continue)
 
 ```{r add_defi-14_2, echo=FALSE, eval=TRUE, out.width="10%"}
@@ -1048,6 +1428,32 @@ library(countdown)
 countdown(minutes = 4, seconds = 00)
 ```
 
+---
+
+## tidyr (continue)
+
+**Solution: Séparer les données en colonnes**
+
+.pull-left[
+```{r ex-2_solution}
+library(tidyr)
+
+# Exemple de tibble
+tb <- tibble(
+  id = 1:3,
+  name = c("John Smith", "Jane Doe", "Bob Johnson"),
+  age = c(25, 30, 28)
+)
+
+# Utilisation de la fonction separate() pour séparer la colonne nom_prenom en deux colonnes nom et prenom
+tb_sep <- separate(tb, name, into = c("first_name", "last_name"), sep = " ")
+```
+]
+.pull-right[
+```{r ex-2_print}
+tb_sep
+```
+]
 
 
 ---
@@ -1081,6 +1487,36 @@ countdown(minutes = 4, seconds = 00)
 
 ## tidyr (continue)
 
+
+**Solution: Combiner les données de plusieurs colonnes**
+
+.pull-left[
+```{r ex-3_solution}
+library(tidyr)
+
+tb <- tibble(
+  id = 1:3,
+  first_name = c("John", "Jane", "Bob"),
+  last_name = c("Smith","Doe", "Johnson"),
+  age = c(25, 30, 28)
+)
+
+# Utilisation de la fonction unite() pour fusionner les colonnes jour et mois en une colonne date
+tb_unite <- unite(tb, full_name, c(first_name, last_name), sep = " ")
+
+```
+]
+.pull-right[
+```{r ex-3_print}
+tb_unite
+```
+]
+
+
+---
+
+## tidyr (continue)
+
 ```{r add_defi-14_4, echo=FALSE, eval=TRUE, out.width="10%"}
 knitr::include_graphics("../images/defi.jpg")
 ```
@@ -1104,6 +1540,36 @@ tb <- tibble(region, period, product, sales)
 library(countdown)
 countdown(minutes = 5, seconds = 00)
 ```
+
+---
+
+## tidyr (continue)
+
+**Solution: Réorganiser les données**
+
+.pull-left[
+```{r ex-4_solution}
+library(tidyr)
+
+# Exemple de tibble
+region <- c("North", "North", "South", "South")
+period <- c("Q1", "Q2", "Q1", "Q2")
+product <- c("A", "A", "B", "B")
+sales <- c(100, 150, 200, 250)
+
+tb <- tibble(region, period, product, sales)
+
+# Utilisation de la fonction pivot_wider() pour transformer le tibble en format "large"
+tb_wide <- pivot_wider(tb, names_from = period, values_from = sales)
+
+```
+]
+.pull-right[
+```{r ex-4_print}
+tb_wide
+```
+]
+
 
 ---
 
@@ -1294,3 +1760,81 @@ knitr::include_graphics("../images/defi.jpg")
 ```{r, echo = FALSE}
 countdown(minutes = 25, seconds = 00)
 ```
+
+---
+
+## dplyr (suite)
+
+**Solution:**
+
+```{r dplyr_solutions}
+library(dplyr)
+library(nycflights13)
+#### 1 ####
+vols <- nycflights13::flights 
+#### 2 ####
+head(vols)
+```
+
+---
+
+**Solution:**
+
+.pull-left[
+```{r dplyr_solutions_part2}
+#### 3 ####
+vols_select <- select(vols, year, month, day)
+head(vols_select)
+```
+]
+
+.pull-right[
+```{r dplyr_solutions_part3}
+#### 4 ####
+vols_filter <- filter(vols, month == 11)
+head(vols_filter)
+```
+]
+
+---
+
+**Solution:**
+
+```{r dplyr_solutions_part4}
+#### 5 ####
+vols_group <- group_by(vols, year)
+vols_summarize <- summarize(vols_group, total_vols = n())
+vols_summarize
+
+#### 6 ####
+vols_arrange <- arrange(vols, year, month, day)
+head(vols_arrange)
+```
+
+---
+
+**Solution:**
+
+```{r dplyr_solutions_part5}
+#### 7 ####
+vols_mutate <- mutate(vols, weekday = weekdays(as.Date(paste(vols$year, 
+                                              vols$month, 
+                                              vols$day, sep = "-"))))
+
+#### 8 ####
+vols_wide <- tidyr::pivot_wider(vols, 
+                            names_from = carrier, 
+                            values_from = flight,
+                            values_fill = 0)
+head(vols_wide)
+```
+
+---
+
+**Solution:**
+
+```{r dplyr_solutions_part6}
+#### 8 ####
+glimpse(select(vols_wide, 18:33) %>% colSums())
+```
+
