@@ -362,10 +362,218 @@ Dans cet exercice, nous allons nous concentrer sur la relation entre la tempéra
 
 5. Interpréter et tracer le modèle.
 
-<div class="countdown" id="timer_f5b9a7d4" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
+<div class="countdown" id="timer_1896953d" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
 <div class="countdown-controls"><button class="countdown-bump-down">&minus;</button><button class="countdown-bump-up">&plus;</button></div>
 <code class="countdown-time"><span class="countdown-digits minutes">08</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
 </div>
+
+---
+
+# Régression linéaire avec R (suite)
+
+**Solution:**
+
+1.
+
+
+```r
+# Importer le fichier csv dans R
+dataset &lt;- read.csv("../../exercices/data/bottle.csv")
+head(dataset)
+#     T_degC   Salnty
+# 1 13.87905 38.45331
+# 2 14.53965 39.61878
+# 3 18.11742 40.18853
+# 4 15.14102 39.19476
+# 5 15.25858 38.62595
+# 6 18.43013 40.48401
+```
+
+---
+
+# Régression linéaire avec R (suite)
+
+**Solution:**
+
+2.
+
+.pull-left[
+
+```r
+# Exploration des variables
+str(dataset); summary(dataset)
+# 'data.frame':	100 obs. of  2 variables:
+#  $ T_degC: num  13.9 14.5 18.1 15.1 15.3 ...
+#  $ Salnty: num  38.5 39.6 40.2 39.2 38.6 ...
+#      T_degC          Salnty     
+#  Min.   :10.38   Min.   :37.07  
+#  1st Qu.:14.01   1st Qu.:38.63  
+#  Median :15.12   Median :39.42  
+#  Mean   :15.18   Mean   :39.45  
+#  3rd Qu.:16.38   3rd Qu.:40.18  
+#  Max.   :19.37   Max.   :42.13
+```
+]
+
+.pull-right[
+
+```r
+library(ggplot2)
+ggplot(data = dataset, aes(x = T_degC, 
+                           y = Salnty)) +
+  geom_point()
+```
+
+&lt;img src="Analyse_de_données_sous_R_files/figure-html/unnamed-chunk-17-1.png" width="432" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+# Régression linéaire avec R (suite)
+
+**Solution:**
+
+3.
+
+
+```r
+# Ajuster un modèle linéaire simple pour évaluer 
+# la corrélation entre 
+# T_degC et Salnty
+model &lt;- lm(Salnty ~ T_degC, data = dataset)
+
+# Afficher les résultats du modèle
+summary(model)
+```
+
+---
+
+# Régression linéaire avec R (suite)
+
+**Solution:**
+
+3.
+
+
+```
+# 
+# Call:
+# lm(formula = Salnty ~ T_degC, data = dataset)
+# 
+# Residuals:
+#     Min      1Q  Median      3Q     Max 
+# -1.9073 -0.6835 -0.0875  0.5806  3.2904 
+# 
+# Coefficients:
+#             Estimate Std. Error t value Pr(&gt;|t|)    
+# (Intercept) 35.29073    0.81704  43.193  &lt; 2e-16 ***
+# T_degC       0.27376    0.05344   5.123 1.51e-06 ***
+# ---
+# Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+# 
+# Residual standard error: 0.9707 on 98 degrees of freedom
+# Multiple R-squared:  0.2112,	Adjusted R-squared:  0.2032 
+# F-statistic: 26.24 on 1 and 98 DF,  p-value: 1.508e-06
+```
+
+---
+
+# Régression linéaire avec R (suite)
+
+**Solution:**
+
+4.
+
+.pull-left[
+
+```r
+#Homoscédasticité
+plot(model, which = 3)
+```
+
+&lt;img src="Analyse_de_données_sous_R_files/figure-html/unnamed-chunk-20-1.png" width="432" style="display: block; margin: auto;" /&gt;
+]
+.pull-right[
+
+```r
+#Homoscédasticité
+car::ncvTest(model)
+# Non-constant Variance Score Test 
+# Variance formula: ~ fitted.values 
+# Chisquare = 1.609083, Df = 1, p = 0.20462
+```
+]
+
+---
+
+# Régression linéaire avec R (suite)
+
+**Solution:**
+
+4.
+
+.pull-left[
+
+```r
+#Normalité
+plot(model,2)
+```
+
+&lt;img src="Analyse_de_données_sous_R_files/figure-html/unnamed-chunk-22-1.png" width="432" style="display: block; margin: auto;" /&gt;
+]
+
+.pull-right[
+
+```r
+#Normalité
+shapiro.test(residuals(model))
+# 
+# 	Shapiro-Wilk normality test
+# 
+# data:  residuals(model)
+# W = 0.9748, p-value = 0.05204
+```
+]
+
+---
+
+# Régression linéaire avec R (suite)
+
+**Solution:**
+
+4.
+
+
+```r
+#Evaluation des points aberrants
+plot(model,5)
+```
+
+&lt;img src="Analyse_de_données_sous_R_files/figure-html/unnamed-chunk-24-1.png" width="432" style="display: block; margin: auto;" /&gt;
+
+---
+
+# Régression linéaire avec R (suite)
+
+**Solution:**
+
+5.
+
+.pull-left[
+&lt;u&gt;Equation du modèle:&lt;/u&gt; `\(Salnty = TdegC \times 0.27 + 35.29\)` 
+
+&lt;u&gt;Interprétation:&lt;/u&gt;Le coefficient de régression `\(\beta_1\)` = 0.27 est significatif (p = 1.51e-6; t = 5.123), ainsi que `\(\beta_0\)` = 35.29 (p &lt; 2e-16; t = 43.193). 20% de la variabilité de *Salnty* est expliquée par *T_degC*.
+]
+
+.pull-right[
+
+```r
+plot(Salnty~T_degC, dataset)
+abline(model)
+```
+
+&lt;img src="Analyse_de_données_sous_R_files/figure-html/unnamed-chunk-25-1.png" width="432" style="display: block; margin: auto;" /&gt;
+]
 
 ---
 
@@ -399,7 +607,7 @@ Dans cet exercice, nous allons nous concentrer sur la relation entre la tempéra
 
 ## Cas d'étude
 
-&gt; Nous souhaitons analyser ici la relation entre le maximum journalier de la concentration en ozone (en `\(\mu/m^3\)`) et la température à différentes heures de la journée, la projection du vent sur l'axe Est-Ouest à différentes heures de la journée et la concentration maximale de la veille du jour considéré.
+&gt; Nous souhaitons analyser ici la relation entre le maximum journalier de la concentration en ozone (en `\(\mu/m^3\)`) et la température, la nébulosité, la projection du vent sur l'axe Est-Ouest à différentes heures de la journée et la concentration maximale de la veille du jour considéré.
 
 ---
 
@@ -450,7 +658,7 @@ ggpairs(ozone.m)
 ]
 
 .pull-right[
-&lt;img src="Analyse_de_données_sous_R_files/figure-html/unnamed-chunk-17-1.png" width="432" style="display: block; margin: auto;" /&gt;
+&lt;img src="Analyse_de_données_sous_R_files/figure-html/unnamed-chunk-28-1.png" width="432" style="display: block; margin: auto;" /&gt;
 ]
 
 ---
@@ -467,7 +675,7 @@ scatterplotMatrix(ozone.m)
 ]
 
 .pull-right[
-&lt;img src="Analyse_de_données_sous_R_files/figure-html/unnamed-chunk-19-1.png" width="720" style="display: block; margin: auto;" /&gt;
+&lt;img src="Analyse_de_données_sous_R_files/figure-html/unnamed-chunk-30-1.png" width="720" style="display: block; margin: auto;" /&gt;
 ]
 
 ---
@@ -529,7 +737,7 @@ choix &lt;- regsubsets(maxO3 ~ ., data = ozone.m,
 plot(choix, scale = "bic")
 ```
 
-&lt;img src="Analyse_de_données_sous_R_files/figure-html/unnamed-chunk-22-1.png" width="432" style="display: block; margin: auto;" /&gt;
+&lt;img src="Analyse_de_données_sous_R_files/figure-html/unnamed-chunk-33-1.png" width="432" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -572,7 +780,7 @@ library(performance)
 check_model(reg.fin)
 ```
 
-&lt;img src="Analyse_de_données_sous_R_files/figure-html/unnamed-chunk-24-1.png" width="432" style="display: block; margin: auto;" /&gt;
+&lt;img src="Analyse_de_données_sous_R_files/figure-html/unnamed-chunk-35-1.png" width="432" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -646,10 +854,168 @@ Dans cet exercice, nous allons étudier la relation entre une variable dépendan
 
 6. Prédiction: Trouver le prix pour une voiture avec 150 horsepower, un curb weight de 3000, une engine size de 200 et une highway mpg de 30
 
-<div class="countdown" id="timer_eac79616" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
+<div class="countdown" id="timer_a7214d8b" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
 <div class="countdown-controls"><button class="countdown-bump-down">&minus;</button><button class="countdown-bump-up">&plus;</button></div>
 <code class="countdown-time"><span class="countdown-digits minutes">10</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
 </div>
+
+---
+
+# Régression linéaire multiple (suite)
+
+**Solution:**
+
+1.
+
+
+```r
+# Import du dataset
+auto &lt;- read.csv("../../exercices/data/auto.csv", header= TRUE, sep=",", check.names = FALSE)
+# Sélection des variables d'intérêt
+dataset &lt;- auto[,c("price", "horsepower", "curb-weight", "engine-size", "highway-mpg")]
+dataset$horsepower &lt;- as.integer(dataset$horsepower)
+dataset$price &lt;- as.integer(dataset$price)
+dataset &lt;- na.omit(dataset)
+```
+
+---
+
+# Régression linéaire multiple (suite)
+
+2.
+
+
+```r
+library(ggplot2)
+p1 &lt;- ggplot(data = dataset, aes(x = horsepower, 
+                           y = price)) +
+  geom_point()
+
+p2 &lt;- ggplot(data = dataset, aes(x = `curb-weight`, 
+                           y = price)) +
+  geom_point()
+
+p3 &lt;- ggplot(data = dataset, aes(x = `engine-size`, 
+                           y = price)) +
+  geom_point()
+
+p4 &lt;- ggplot(data = dataset, aes(x = `highway-mpg`, 
+                           y = price)) +
+  geom_point()
+
+gridExtra::grid.arrange(p1, p2, p3, p4, ncol = 2)
+```
+
+---
+
+# Régression linéaire multiple (suite)
+
+2.
+
+&lt;img src="Analyse_de_données_sous_R_files/figure-html/unnamed-chunk-41-1.png" width="432" style="display: block; margin: auto;" /&gt;
+
+---
+
+# Régression linéaire multiple (suite)
+
+3.
+
+
+```r
+# Ajustement du modèle
+model &lt;- lm(price ~ horsepower + `curb-weight` + `engine-size` + `highway-mpg`, data=dataset)
+```
+
+---
+
+# Régression linéaire multiple (suite)
+
+4.
+
+
+```r
+performance::check_normality(model)
+# Warning: Non-normality of residuals detected (p &lt; .001).
+performance::check_heteroscedasticity(model)
+# Warning: Heteroscedasticity (non-constant error variance) detected (p &lt; .001).
+
+# Appliquer une transformation de la réponse
+model &lt;- lm(1/price ~ horsepower + `curb-weight` + `engine-size` + `highway-mpg`, data=dataset)
+
+performance::check_normality(model)
+# OK: residuals appear as normally distributed (p = 0.220).
+performance::check_heteroscedasticity(model)
+# OK: Error variance appears to be homoscedastic (p = 0.327).
+```
+
+---
+
+# Régression linéaire multiple (suite)
+
+5.
+
+
+```r
+# Appliquer une transformation de la réponse
+model &lt;- lm(1/price ~ horsepower + `curb-weight` + `engine-size` + `highway-mpg`, data=dataset)
+summary(model)
+# 
+# Call:
+# lm(formula = 1/price ~ horsepower + `curb-weight` + `engine-size` + 
+#     `highway-mpg`, data = dataset)
+# 
+# Residuals:
+#        Min         1Q     Median         3Q        Max 
+# -5.298e-05 -1.090e-05  1.077e-06  9.643e-06  5.828e-05 
+# 
+# Coefficients:
+#                 Estimate Std. Error t value Pr(&gt;|t|)    
+# (Intercept)    2.450e-04  2.249e-05  10.894  &lt; 2e-16 ***
+# horsepower    -4.060e-07  7.545e-08  -5.381 2.12e-07 ***
+# `curb-weight` -5.984e-08  5.737e-09 -10.430  &lt; 2e-16 ***
+# `engine-size`  2.396e-07  7.210e-08   3.324  0.00106 ** 
+# `highway-mpg`  5.423e-07  3.800e-07   1.427  0.15513    
+# ---
+# Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+# 
+# Residual standard error: 1.796e-05 on 194 degrees of freedom
+# Multiple R-squared:  0.8239,	Adjusted R-squared:  0.8203 
+# F-statistic: 226.9 on 4 and 194 DF,  p-value: &lt; 2.2e-16
+```
+
+---
+
+# Régression linéaire multiple (suite)
+
+5.
+
+&lt;u&gt;Interprétation:&lt;/u&gt;Les résultats montrent que toutes les variables explicatives ont des coefficients significatifs sauf la variable highway-mpg qui n'est pas significative avec une valeur de p de 0,15513.
+
+- Le coefficient de détermination (R²) de 0,8239 indique que le modèle explique 82,39% de la variabilité de la variable réponse. Le F-statistic de 226,9 avec un p-value très faible indique que le modèle est globalement significatif.
+
+---
+
+# Régression linéaire multiple (suite)
+
+6.
+
+
+```r
+# Prédiction du prix original
+horsepower &lt;- 150
+curb_weight &lt;- 3000
+engine_size &lt;- 200
+highway_mpg &lt;- 30
+
+# Utilisation de l'équation pour prédire 1/price
+prediction &lt;- 2.450e-04 - 4.060e-07 * horsepower - 5.984e-08 * curb_weight + 2.396e-07 * engine_size + 5.423e-07 * highway_mpg
+
+# Inverse de la fonction inverse pour obtenir le prix original
+prix &lt;- 1 / prediction
+
+prix
+# [1] 14541.44
+```
 
 ---
 
@@ -725,7 +1091,7 @@ boxplot(Poids ~ Sexe,
         data = data, xlab = "Sexe", ylab = "Poids")
 ```
 
-&lt;img src="Analyse_de_données_sous_R_files/figure-html/unnamed-chunk-31-1.png" width="468" style="display: block; margin: auto;" /&gt;
+&lt;img src="Analyse_de_données_sous_R_files/figure-html/unnamed-chunk-49-1.png" width="468" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -840,10 +1206,121 @@ On accepte `\(H_0\)` selon laquelle les femelles sont plus légères que les mâ
 
 4. Interprétez les résultats et concluez si les scores de mathématiques diffèrent significativement en fonction du sexe.
 
-<div class="countdown" id="timer_0c39e38b" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
+<div class="countdown" id="timer_ef4e75f6" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
 <div class="countdown-controls"><button class="countdown-bump-down">&minus;</button><button class="countdown-bump-up">&plus;</button></div>
 <code class="countdown-time"><span class="countdown-digits minutes">05</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
 </div>
+
+---
+
+# Test de Student (suite)
+
+**Solution:**
+
+1.
+
+
+```r
+# Importer les données
+data &lt;- read.csv("../../presentation/data/math.csv")
+
+# Afficher les premières lignes du dataset
+head(data)
+#   math_score gender
+# 1         62      F
+# 2         71      M
+# 3         58      F
+# 4         69      M
+# 5         77      M
+# 6         83      M
+```
+---
+
+# Test de Student (suite)
+
+1.
+
+.pull-left[
+
+```r
+# Résumé statistique
+summary(data)
+#    math_score       gender         
+#  Min.   :56.00   Length:114        
+#  1st Qu.:67.00   Class :character  
+#  Median :72.00   Mode  :character  
+#  Mean   :72.39                     
+#  3rd Qu.:78.00                     
+#  Max.   :88.00
+```
+]
+
+.pull-right[
+
+```r
+# Boxplot des scores de mathématiques en fonction du sexe
+boxplot(math_score ~ gender, data = data)
+```
+
+&lt;img src="Analyse_de_données_sous_R_files/figure-html/unnamed-chunk-56-1.png" width="432" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+# Test de Student (suite)
+
+2.
+
+
+```r
+# Test de normalité pour les scores des femmes
+shapiro.test(data$math_score[data$gender == "F"])
+# 
+# 	Shapiro-Wilk normality test
+# 
+# data:  data$math_score[data$gender == "F"]
+# W = 0.9775, p-value = 0.413
+
+# Test de normalité pour les scores des hommes
+shapiro.test(data$math_score[data$gender == "M"])
+# 
+# 	Shapiro-Wilk normality test
+# 
+# data:  data$math_score[data$gender == "M"]
+# W = 0.98672, p-value = 0.7502
+```
+
+---
+
+# Test de Student (suite)
+
+3.
+
+
+```r
+t.test(math_score ~ data$gender, data = data)
+# 
+# 	Welch Two Sample t-test
+# 
+# data:  math_score by data$gender
+# t = -3.2617, df = 106.25, p-value = 0.001489
+# alternative hypothesis: true difference in means between group F and group M is not equal to 0
+# 95 percent confidence interval:
+#  -6.912219 -1.685987
+# sample estimates:
+# mean in group F mean in group M 
+#        70.09434        74.39344
+```
+
+---
+
+# Test de Student (suite)
+
+4.
+
+&lt;u&gt;Interprétation:&lt;/u&gt;Le modèle Welch Two Sample t-test permet de déterminer s'il y a une différence significative entre les scores de mathématiques des hommes et des femmes. Dans ce cas, la statistique de test t a une valeur de -3.2617 avec un degré de liberté (df) de 106.25 et une p-value de 0.001489.
+
+- On peut donc conclure qu'il y a une différence significative entre les scores de mathématiques des deux groupes.
 
 ---
 
@@ -936,7 +1413,7 @@ summary(ozone[,c("maxO3", "pluie")])
 boxplot(maxO3~pluie, data = ozone)
 ```
 
-&lt;img src="Analyse_de_données_sous_R_files/figure-html/unnamed-chunk-38-1.png" width="432" style="display: block; margin: auto;" /&gt;
+&lt;img src="Analyse_de_données_sous_R_files/figure-html/unnamed-chunk-61-1.png" width="432" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -1084,7 +1561,7 @@ summary(ozone[,c("maxO3", "vent", "pluie")])
 boxplot(maxO3~vent*pluie, data = ozone)
 ```
 
-&lt;img src="Analyse_de_données_sous_R_files/figure-html/unnamed-chunk-44-1.png" width="720" style="display: block; margin: auto;" /&gt;
+&lt;img src="Analyse_de_données_sous_R_files/figure-html/unnamed-chunk-67-1.png" width="720" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -1101,7 +1578,7 @@ interaction.plot(ozone$pluie, ozone$vent, ozone$maxO3,
                  xlab = "pluie", bty = "n")
 ```
 
-&lt;img src="Analyse_de_données_sous_R_files/figure-html/unnamed-chunk-45-1.png" width="576" style="display: block; margin: auto;" /&gt;
+&lt;img src="Analyse_de_données_sous_R_files/figure-html/unnamed-chunk-68-1.png" width="576" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -1242,7 +1719,7 @@ boxplot(Oxyg~EspS, data = crustace)
 abline(h = median(crustace$Oxyg))
 ```
 
-&lt;img src="Analyse_de_données_sous_R_files/figure-html/unnamed-chunk-50-1.png" width="720" style="display: block; margin: auto;" /&gt;
+&lt;img src="Analyse_de_données_sous_R_files/figure-html/unnamed-chunk-73-1.png" width="720" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -1310,7 +1787,7 @@ model &lt;- lmer(Oxyg ~ Temper + (1|EspS), data = crustace)
 plot(allEffects(model))
 ```
 
-&lt;img src="Analyse_de_données_sous_R_files/figure-html/unnamed-chunk-54-1.png" width="432" style="display: block; margin: auto;" /&gt;
+&lt;img src="Analyse_de_données_sous_R_files/figure-html/unnamed-chunk-77-1.png" width="432" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -1331,7 +1808,7 @@ ggplot(crustace, aes(x = Temper, y = predicted, group = as.factor(EspS), color =
   ggtitle("Effet de la température sur l'oxygène par espèce")
 ```
 
-&lt;img src="Analyse_de_données_sous_R_files/figure-html/unnamed-chunk-55-1.png" width="432" style="display: block; margin: auto;" /&gt;
+&lt;img src="Analyse_de_données_sous_R_files/figure-html/unnamed-chunk-78-1.png" width="432" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -1351,10 +1828,134 @@ ggplot(crustace, aes(x = Temper, y = predicted, group = as.factor(EspS), color =
 6. Interprétation.
 7. Représentation graphique.
 
-<div class="countdown" id="timer_8182b74d" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
+<div class="countdown" id="timer_04e05e89" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
 <div class="countdown-controls"><button class="countdown-bump-down">&minus;</button><button class="countdown-bump-up">&plus;</button></div>
-<code class="countdown-time"><span class="countdown-digits minutes">20</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
+<code class="countdown-time"><span class="countdown-digits minutes">10</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
 </div>
+
+---
+
+# ANOVA pour plans mixtes (suite)
+
+**Solution:**
+1.
+
+
+```r
+data("sleepstudy")
+str(sleepstudy)
+# 'data.frame':	180 obs. of  3 variables:
+#  $ Reaction: num  250 259 251 321 357 ...
+#  $ Days    : num  0 1 2 3 4 5 6 7 8 9 ...
+#  $ Subject : Factor w/ 18 levels "308","309","310",..: 1 1 1 1 1 1 1 1 1 1 ...
+```
+
+---
+
+# ANOVA pour plans mixtes (suite)
+
+2.
+
+.pull-left[
+
+```r
+summary(sleepstudy)
+#     Reaction          Days        Subject   
+#  Min.   :194.3   Min.   :0.0   308    : 10  
+#  1st Qu.:255.4   1st Qu.:2.0   309    : 10  
+#  Median :288.7   Median :4.5   310    : 10  
+#  Mean   :298.5   Mean   :4.5   330    : 10  
+#  3rd Qu.:336.8   3rd Qu.:7.0   331    : 10  
+#  Max.   :466.4   Max.   :9.0   332    : 10  
+#                                (Other):120
+```
+]
+
+.pull-right[
+
+```r
+plot(sleepstudy$Days, sleepstudy$Reaction, 
+     xlab = "Days", ylab = "Reaction", main = "Sleep Study")
+```
+
+&lt;img src="Analyse_de_données_sous_R_files/figure-html/unnamed-chunk-82-1.png" width="432" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+# ANOVA pour plans mixtes (suite)
+
+3.
+
+
+```r
+model1 &lt;- lm(Reaction ~ Days, data = sleepstudy)
+model2 &lt;- lmer(Reaction ~ Days + (1|Subject), data = sleepstudy)
+model3 &lt;- lmer(Reaction ~ Days + (1+Days|Subject), data = sleepstudy)
+```
+
+---
+
+# ANOVA pour plans mixtes (suite)
+
+4.
+
+
+```r
+anova(model2, model1, model3)
+# Data: sleepstudy
+# Models:
+# model1: Reaction ~ Days
+# model2: Reaction ~ Days + (1 | Subject)
+# model3: Reaction ~ Days + (1 + Days | Subject)
+#        npar    AIC    BIC  logLik deviance   Chisq Df Pr(&gt;Chisq)    
+# model1    3 1906.3 1915.9 -950.15   1900.3                          
+# model2    4 1802.1 1814.8 -897.04   1794.1 106.214  1  &lt; 2.2e-16 ***
+# model3    6 1763.9 1783.1 -875.97   1751.9  42.139  2  7.072e-10 ***
+# ---
+# Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+```
+
+&lt;u&gt;Interprétation:&lt;/u&gt; Mettre l'effet *Sujet* en aléatoire améliore significativement le modèle (p &lt; 2.2e-16), mais moindre que l'interaction.
+
+---
+
+# ANOVA pour plans mixtes (suite)
+
+6.
+
+
+```r
+anova(model2, type = 2)
+# Type II Analysis of Variance Table with Satterthwaite's method
+#      Sum Sq Mean Sq NumDF DenDF F value    Pr(&gt;F)    
+# Days 162703  162703     1   161   169.4 &lt; 2.2e-16 ***
+# ---
+# Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+```
+
+&lt;u&gt;Interprétation:&lt;/u&gt; Nous constatons que l'effet fixe *Jour* est significatif, il existe bien un effet de privation de sommeil sur le temps de réaction des sujets.
+
+---
+
+# ANOVA pour plans mixtes (suite)
+
+7.
+
+
+```r
+library(ggplot2)
+# Obtenir les prédictions pour chaque sujet
+sleepstudy$predicted &lt;- fitted(model2)
+# Tracer un graphique en ligne pour chaque espèce
+ggplot(sleepstudy, aes(x = Days, y = predicted, group = as.factor(Subject), color = as.factor(Subject))) +
+  geom_line() +
+  xlab("Days") +
+  ylab("Temps de réaction prédit") +
+  ggtitle("Effet de privation de sommeil sur différents sujets")
+```
+
+&lt;img src="Analyse_de_données_sous_R_files/figure-html/unnamed-chunk-86-1.png" width="432" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -1382,7 +1983,7 @@ ggplot(crustace, aes(x = Temper, y = predicted, group = as.factor(EspS), color =
 
 - **Poisson** est une distribution discrète avec un seul paramètre, `\(\lambda\)` (lambda), qui détermine la moyenne et la variance de la distribution:
 
-&lt;img src="Analyse_de_données_sous_R_files/figure-html/unnamed-chunk-57-1.png" width="1080" style="display: block; margin: auto;" /&gt;
+&lt;img src="Analyse_de_données_sous_R_files/figure-html/unnamed-chunk-87-1.png" width="1080" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -1394,7 +1995,7 @@ ggplot(crustace, aes(x = Temper, y = predicted, group = as.factor(EspS), color =
 - N'a qu'un paramètre, `\(p\)`, la probabilité de succès
 
 &lt;br&gt;
-&lt;img src="Analyse_de_données_sous_R_files/figure-html/unnamed-chunk-58-1.png" width="1080" style="display: block; margin: auto;" /&gt;
+&lt;img src="Analyse_de_données_sous_R_files/figure-html/unnamed-chunk-88-1.png" width="1080" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -1407,7 +2008,7 @@ Lorsqu'il y a plusieurs épreuves (chacune avec un succès/échec), la loi de Be
 - Inclut le paramètre additionel `\(n\)`, le nombre d'épreuves
 - Prédit la probabilité d'observer une certaine proportion de succès, `\(p\)`, sur le nombre total d'épreuves, `\(n\)`
 
-&lt;img src="Analyse_de_données_sous_R_files/figure-html/unnamed-chunk-59-1.png" width="1080" style="display: block; margin: auto;" /&gt;
+&lt;img src="Analyse_de_données_sous_R_files/figure-html/unnamed-chunk-89-1.png" width="1080" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -1630,7 +2231,7 @@ segments(x0=GRAPH[1], y0=c(Prob1_SE_inf), x1 = GRAPH[1], y1 = c(Prob1_SE_sup))
 segments(x0=GRAPH[2], y0=c(Prob2_SE_inf), x1 = GRAPH[2], y1 = c(Prob2_SE_sup))
 ```
 
-&lt;img src="Analyse_de_données_sous_R_files/figure-html/unnamed-chunk-68-1.png" width="432" style="display: block; margin: auto;" /&gt;
+&lt;img src="Analyse_de_données_sous_R_files/figure-html/unnamed-chunk-98-1.png" width="432" style="display: block; margin: auto;" /&gt;
 
 ---
 ## Test de signification statistique
@@ -1766,7 +2367,7 @@ ggplot(fruit_data,aes(nb_fruits))+
 ]
 
 .pull-right[
-&lt;img src="Analyse_de_données_sous_R_files/figure-html/unnamed-chunk-74-1.png" width="432" style="display: block; margin: auto;" /&gt;
+&lt;img src="Analyse_de_données_sous_R_files/figure-html/unnamed-chunk-104-1.png" width="432" style="display: block; margin: auto;" /&gt;
 ]
 
 ---
@@ -1862,7 +2463,7 @@ ggplot() +
 ## Prédiction et représentation graphique (suite)
 
 
-&lt;img src="Analyse_de_données_sous_R_files/figure-html/unnamed-chunk-78-1.png" width="432" style="display: block; margin: auto;" /&gt;
+&lt;img src="Analyse_de_données_sous_R_files/figure-html/unnamed-chunk-108-1.png" width="432" style="display: block; margin: auto;" /&gt;
 
 
 ---
@@ -1877,10 +2478,135 @@ ggplot() +
 2. Visualisez les données pour comprendre la relation entre la survie des plantes et les différentes variables disponibles.
 3. Formulez un modèle GLM pour évaluer les effets des traitements, de la hauteur, du diamètre et de la quantité de lumière sur la survie des plantes. Quelle distribution serait la plus appropriée pour ce modèle ? Justifiez votre choix.
 
-<div class="countdown" id="timer_8f67d600" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
-<div class="countdown-controls"><button class="countdown-bump-down">&minus;</button><button class="countdown-bump-up">&plus;</button></div>
-<code class="countdown-time"><span class="countdown-digits minutes">20</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
-</div>
+---
+
+# GLM (suite)
+
+**Solution:**
+
+1.
+
+
+```r
+plantes &lt;- read.csv("../../presentation/data/plantes.csv", header = TRUE)
+head(plantes)
+#   Plante Traitement Temps  Hauteur Diametre  Lumiere Survie
+# 1      1          A     0 32.62457 1.879294 3901.510      1
+# 2      2          A     0 33.11017 1.708230 4200.486      1
+# 3      3          A     0 29.51657 1.929816 5079.874      1
+# 4      4          A     0 29.62368 2.029342 4677.254      0
+# 5      5          A     0 35.09579 2.324724 5146.417      0
+# 6      6          A     0 33.55801 2.182242 7305.062      1
+```
+
+---
+
+# GLM (suite)
+
+2.
+
+
+```r
+# Chargez la bibliothèque ggplot2 pour les graphiques
+library(ggplot2)
+
+# Tracé d'un boxplot pour la relation entre la hauteur de la plante et la survie des plantes
+p1 &lt;- ggplot(data = plantes, aes(x = as.factor(Survie), y = Hauteur)) +
+  geom_boxplot() +
+  labs(x = "Survie", y = "Hauteur de la plante (cm)") +
+  ggtitle("Relation entre la hauteur de la plante et la survie")
+
+# Tracé d'un boxplot pour la relation entre la quantité de lumière reçue et la survie des plantes
+p2 &lt;- ggplot(data = plantes, aes(x = as.factor(Survie), y = Lumiere)) +
+  geom_boxplot() +
+  labs(x = "Survie", y = "Lumière reçue (lux)") +
+  ggtitle("Relation entre la lumière reçue et la survie")
+
+# Tracé d'un boxplot pour la relation entre le diamètre du tronc et la survie des plantes
+p3 &lt;- ggplot(data = plantes, aes(x = as.factor(Survie), y = Diametre)) +
+  geom_boxplot() +
+  labs(y = "Diamètre du tronc (cm)", x = "Survie") +
+  ggtitle("Relation entre le diamètre du tronc et la survie")
+
+gridExtra::grid.arrange(p1, p2, p3, ncol = 3)
+
+```
+
+---
+
+# GLM (suite)
+
+2.
+
+&lt;img src="Analyse_de_données_sous_R_files/figure-html/unnamed-chunk-111-1.png" width="1080" style="display: block; margin: auto;" /&gt;
+
+---
+
+# GLM (suite)
+
+3.
+
+
+```r
+model1 &lt;- glm(Survie ~ Traitement + Hauteur + Diametre + Lumiere, data = plantes, 
+    family = binomial)
+summary(model1)
+# 
+# Call:
+# glm(formula = Survie ~ Traitement + Hauteur + Diametre + Lumiere, 
+#     family = binomial, data = plantes)
+# 
+# Deviance Residuals: 
+#     Min       1Q   Median       3Q      Max  
+# -2.0813   0.3344   0.5817   0.7127   1.4104  
+# 
+# Coefficients:
+#               Estimate Std. Error z value Pr(&gt;|z|)  
+# (Intercept)  1.7067026  3.1024998   0.550   0.5822  
+# TraitementB  0.1127151  0.5601961   0.201   0.8405  
+# TraitementC  0.3605765  0.5841883   0.617   0.5371  
+# Hauteur      0.0959802  0.0473097   2.029   0.0425 *
+# Diametre    -2.3038915  1.1431974  -2.015   0.0439 *
+# Lumiere      0.0002386  0.0002261   1.055   0.2912  
+# ---
+# Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+# 
+# (Dispersion parameter for binomial family taken to be 1)
+# 
+#     Null deviance: 127.96  on 119  degrees of freedom
+# Residual deviance: 117.26  on 114  degrees of freedom
+# AIC: 129.26
+# 
+# Number of Fisher Scoring iterations: 4
+```
+
+---
+
+# GLM (suite)
+
+3.
+
+
+```r
+anova(model1, test = "Chi")
+# Analysis of Deviance Table
+# 
+# Model: binomial, link: logit
+# 
+# Response: Survie
+# 
+# Terms added sequentially (first to last)
+# 
+# 
+#            Df Deviance Resid. Df Resid. Dev Pr(&gt;Chi)  
+# NULL                         119     127.96           
+# Traitement  2   0.2872       117     127.67  0.86623  
+# Hauteur     1   5.2699       116     122.40  0.02170 *
+# Diametre    1   4.0005       115     118.40  0.04549 *
+# Lumiere     1   1.1404       114     117.26  0.28556  
+# ---
+# Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+```
 
 ---
 
@@ -2103,10 +2829,68 @@ A partir de l'exemple du cas d'étude précédent:
 
 2. Connaissons le régime alimentaire des dauphins et l'abondance des proies dans les différentes zones, nous formulons l'hypothèse que la proportion de dauphins par rapport aux autres mammifères doit être supérieure dans la zone peu profonde par rapport à la zone profonde.
 
-<div class="countdown" id="timer_9692efc9" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
-<div class="countdown-controls"><button class="countdown-bump-down">&minus;</button><button class="countdown-bump-up">&plus;</button></div>
-<code class="countdown-time"><span class="countdown-digits minutes">10</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
-</div>
+---
+
+## Test de proportions (suite)
+
+**Solution**
+
+1.
+
+
+```r
+matri &lt;- c(117, 104, 39, 44)
+dim(matri) = c(2,2)
+matri
+#      [,1] [,2]
+# [1,]  117   39
+# [2,]  104   44
+
+prop.test(matri)
+# 
+# 	2-sample test for equality of proportions with continuity correction
+# 
+# data:  matri
+# X-squared = 0.63427, df = 1, p-value = 0.4258
+# alternative hypothesis: two.sided
+# 95 percent confidence interval:
+#  -0.05948405  0.15407864
+# sample estimates:
+#    prop 1    prop 2 
+# 0.7500000 0.7027027
+```
+
+---
+
+## Test de proportions (suite)
+
+1.
+
+&lt;u&gt;interprétation:&lt;/u&gt;Le test de proportions avec correction de continuité ne permet pas de montrer une différence significative entre la proportion de dauphins en zone peu profonde et celle en zone moyennement profonde (p= 0.43; `\(\chi^2 = 0.63; ddl = 1\)`).
+
+---
+
+## Test de proportions (suite)
+
+2.
+
+
+```r
+prop.test(c(117,149), c((117+39),(149+94)), alternative = "greater")
+# 
+# 	2-sample test for equality of proportions with continuity correction
+# 
+# data:  c(117, 149) out of c((117 + 39), (149 + 94))
+# X-squared = 7.4007, df = 1, p-value = 0.00326
+# alternative hypothesis: greater
+# 95 percent confidence interval:
+#  0.05480434 1.00000000
+# sample estimates:
+#    prop 1    prop 2 
+# 0.7500000 0.6131687
+```
+
+&lt;u&gt;interprétation:&lt;/u&gt;Conformément à l'hypothèse, en zone peu profonde la proprtion de dauphins (75%) est supérieure à celle observée en zone profonde (61.3%). De plus cette différence est significative (p=3.26.10^-3; `\(\chi^2\)` = 23.07; ddl = 1; test unilatéral de cmparaison de proprtion avec correction de continuité)
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>

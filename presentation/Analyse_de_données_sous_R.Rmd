@@ -300,6 +300,157 @@ countdown(minutes = 8, seconds = 00)
 
 ---
 
+# Régression linéaire avec R (suite)
+
+**Solution:**
+
+1.
+
+```{r, echo=TRUE}
+# Importer le fichier csv dans R
+dataset <- read.csv("../../exercices/data/bottle.csv")
+head(dataset)
+```
+
+---
+
+# Régression linéaire avec R (suite)
+
+**Solution:**
+
+2.
+
+.pull-left[
+```{r, echo=TRUE}
+# Exploration des variables
+str(dataset); summary(dataset)
+```
+]
+
+.pull-right[
+```{r, echo=TRUE, fig.height=4}
+library(ggplot2)
+ggplot(data = dataset, aes(x = T_degC, 
+                           y = Salnty)) +
+  geom_point()
+```
+]
+
+---
+
+# Régression linéaire avec R (suite)
+
+**Solution:**
+
+3.
+
+```{r, echo=TRUE, eval=FALSE}
+# Ajuster un modèle linéaire simple pour évaluer 
+# la corrélation entre 
+# T_degC et Salnty
+model <- lm(Salnty ~ T_degC, data = dataset)
+
+# Afficher les résultats du modèle
+summary(model)
+```
+
+---
+
+# Régression linéaire avec R (suite)
+
+**Solution:**
+
+3.
+
+```{r, echo=FALSE}
+# Ajuster un modèle linéaire simple pour évaluer la corrélation 
+# entre T_degC et Salnty
+model <- lm(Salnty ~ T_degC, data = dataset)
+
+# Afficher les résultats du modèle
+summary(model)
+```
+
+---
+
+# Régression linéaire avec R (suite)
+
+**Solution:**
+
+4.
+
+.pull-left[
+```{r, echo=TRUE}
+#Homoscédasticité
+plot(model, which = 3)
+
+```
+]
+.pull-right[
+```{r, echo = TRUE}
+#Homoscédasticité
+car::ncvTest(model)
+```
+]
+
+---
+
+# Régression linéaire avec R (suite)
+
+**Solution:**
+
+4.
+
+.pull-left[
+```{r, echo = TRUE}
+#Normalité
+plot(model,2)
+```
+]
+
+.pull-right[
+```{r, echo = TRUE}
+#Normalité
+shapiro.test(residuals(model))
+```
+]
+
+---
+
+# Régression linéaire avec R (suite)
+
+**Solution:**
+
+4.
+
+```{r, echo = TRUE, fig.height=5}
+#Evaluation des points aberrants
+plot(model,5)
+```
+
+---
+
+# Régression linéaire avec R (suite)
+
+**Solution:**
+
+5.
+
+.pull-left[
+<u>Equation du modèle:</u> $Salnty = TdegC \times 0.27 + 35.29$ 
+
+<u>Interprétation:</u>Le coefficient de régression $\beta_1$ = 0.27 est significatif (p = 1.51e-6; t = 5.123), ainsi que $\beta_0$ = 35.29 (p < 2e-16; t = 43.193). 20% de la variabilité de *Salnty* est expliquée par *T_degC*.
+]
+
+.pull-right[
+```{r, echo = TRUE}
+plot(Salnty~T_degC, dataset)
+abline(model)
+```
+]
+
+---
+
 # Régression linéaire multiple
 
 ## Formulation du modèle
@@ -330,7 +481,7 @@ $$y_i = \beta_0 + \beta_1x_{i1} + \beta_2x_{i2} + ... + \beta_px_{ip} + \epsilon
 
 ## Cas d'étude
 
-> Nous souhaitons analyser ici la relation entre le maximum journalier de la concentration en ozone (en $\mu/m^3$) et la température à différentes heures de la journée, la projection du vent sur l'axe Est-Ouest à différentes heures de la journée et la concentration maximale de la veille du jour considéré.
+> Nous souhaitons analyser ici la relation entre le maximum journalier de la concentration en ozone (en $\mu/m^3$) et la température, la nébulosité, la projection du vent sur l'axe Est-Ouest à différentes heures de la journée et la concentration maximale de la veille du jour considéré.
 
 ---
 
@@ -488,6 +639,150 @@ countdown(minutes = 10, seconds = 00)
 
 ---
 
+# Régression linéaire multiple (suite)
+
+**Solution:**
+
+1.
+
+```{r, echo=TRUE}
+# Import du dataset
+auto <- read.csv("../../exercices/data/auto.csv", header= TRUE, sep=",", check.names = FALSE)
+# Sélection des variables d'intérêt
+dataset <- auto[,c("price", "horsepower", "curb-weight", "engine-size", "highway-mpg")]
+dataset$horsepower <- as.integer(dataset$horsepower)
+dataset$price <- as.integer(dataset$price)
+dataset <- na.omit(dataset)
+```
+
+---
+
+# Régression linéaire multiple (suite)
+
+2.
+
+```{r, echo=TRUE, eval=FALSE}
+library(ggplot2)
+p1 <- ggplot(data = dataset, aes(x = horsepower, 
+                           y = price)) +
+  geom_point()
+
+p2 <- ggplot(data = dataset, aes(x = `curb-weight`, 
+                           y = price)) +
+  geom_point()
+
+p3 <- ggplot(data = dataset, aes(x = `engine-size`, 
+                           y = price)) +
+  geom_point()
+
+p4 <- ggplot(data = dataset, aes(x = `highway-mpg`, 
+                           y = price)) +
+  geom_point()
+
+gridExtra::grid.arrange(p1, p2, p3, p4, ncol = 2)
+```
+
+---
+
+# Régression linéaire multiple (suite)
+
+2.
+
+```{r, echo=FALSE, eval=TRUE}
+library(ggplot2)
+p1 <- ggplot(data = dataset, aes(x = horsepower, 
+                           y = price)) +
+  geom_point()
+
+p2 <- ggplot(data = dataset, aes(x = `curb-weight`, 
+                           y = price)) +
+  geom_point()
+
+p3 <- ggplot(data = dataset, aes(x = `engine-size`, 
+                           y = price)) +
+  geom_point()
+
+p4 <- ggplot(data = dataset, aes(x = `highway-mpg`, 
+                           y = price)) +
+  geom_point()
+
+gridExtra::grid.arrange(p1, p2, p3, p4, ncol = 2)
+```
+
+---
+
+# Régression linéaire multiple (suite)
+
+3.
+
+```{r, echo=TRUE}
+# Ajustement du modèle
+model <- lm(price ~ horsepower + `curb-weight` + `engine-size` + `highway-mpg`, data=dataset)
+```
+
+---
+
+# Régression linéaire multiple (suite)
+
+4.
+
+```{r, echo=TRUE}
+performance::check_normality(model)
+performance::check_heteroscedasticity(model)
+
+# Appliquer une transformation de la réponse
+model <- lm(1/price ~ horsepower + `curb-weight` + `engine-size` + `highway-mpg`, data=dataset)
+
+performance::check_normality(model)
+performance::check_heteroscedasticity(model)
+```
+
+---
+
+# Régression linéaire multiple (suite)
+
+5.
+
+```{r, echo=TRUE}
+# Appliquer une transformation de la réponse
+model <- lm(1/price ~ horsepower + `curb-weight` + `engine-size` + `highway-mpg`, data=dataset)
+summary(model)
+```
+
+---
+
+# Régression linéaire multiple (suite)
+
+5.
+
+<u>Interprétation:</u>Les résultats montrent que toutes les variables explicatives ont des coefficients significatifs sauf la variable highway-mpg qui n'est pas significative avec une valeur de p de 0,15513.
+
+- Le coefficient de détermination (R²) de 0,8239 indique que le modèle explique 82,39% de la variabilité de la variable réponse. Le F-statistic de 226,9 avec un p-value très faible indique que le modèle est globalement significatif.
+
+---
+
+# Régression linéaire multiple (suite)
+
+6.
+
+```{r, echo=TRUE}
+# Prédiction du prix original
+horsepower <- 150
+curb_weight <- 3000
+engine_size <- 200
+highway_mpg <- 30
+
+# Utilisation de l'équation pour prédire 1/price
+prediction <- 2.450e-04 - 4.060e-07 * horsepower - 5.984e-08 * curb_weight + 2.396e-07 * engine_size + 5.423e-07 * highway_mpg
+
+# Inverse de la fonction inverse pour obtenir le prix original
+prix <- 1 / prediction
+
+prix
+```
+
+---
+
 # Test de Student
 
 ## Utilisation
@@ -633,6 +928,76 @@ knitr::include_graphics("../images/defi.jpg")
 library(countdown)
 countdown(minutes = 5, seconds = 00)
 ```
+
+---
+
+# Test de Student (suite)
+
+**Solution:**
+
+1.
+
+```{r, echo=TRUE}
+# Importer les données
+data <- read.csv("../../presentation/data/math.csv")
+
+# Afficher les premières lignes du dataset
+head(data)
+
+```
+---
+
+# Test de Student (suite)
+
+1.
+
+.pull-left[
+```{r, echo=TRUE}
+# Résumé statistique
+summary(data)
+```
+]
+
+.pull-right[
+```{r, echo=TRUE}
+# Boxplot des scores de mathématiques en fonction du sexe
+boxplot(math_score ~ gender, data = data)
+```
+]
+
+---
+
+# Test de Student (suite)
+
+2.
+
+```{r, echo=TRUE}
+# Test de normalité pour les scores des femmes
+shapiro.test(data$math_score[data$gender == "F"])
+
+# Test de normalité pour les scores des hommes
+shapiro.test(data$math_score[data$gender == "M"])
+```
+
+---
+
+# Test de Student (suite)
+
+3.
+
+```{r, echo=TRUE}
+t.test(math_score ~ data$gender, data = data)
+```
+
+---
+
+# Test de Student (suite)
+
+4.
+
+<u>Interprétation:</u>Le modèle Welch Two Sample t-test permet de déterminer s'il y a une différence significative entre les scores de mathématiques des hommes et des femmes. Dans ce cas, la statistique de test t a une valeur de -3.2617 avec un degré de liberté (df) de 106.25 et une p-value de 0.001489.
+
+- On peut donc conclure qu'il y a une différence significative entre les scores de mathématiques des deux groupes.
 
 ---
 
@@ -1031,7 +1396,92 @@ knitr::include_graphics("../images/defi.jpg")
 
 ```{r, echo=FALSE}
 library(countdown)
-countdown(minutes = 20, seconds = 00)
+countdown(minutes = 10, seconds = 00)
+```
+
+---
+
+# ANOVA pour plans mixtes (suite)
+
+**Solution:**
+1.
+
+```{r, echo=TRUE}
+data("sleepstudy")
+str(sleepstudy)
+```
+
+---
+
+# ANOVA pour plans mixtes (suite)
+
+2.
+
+.pull-left[
+```{r, echo=TRUE}
+summary(sleepstudy)
+```
+]
+
+.pull-right[
+```{r, echo=TRUE}
+plot(sleepstudy$Days, sleepstudy$Reaction, 
+     xlab = "Days", ylab = "Reaction", main = "Sleep Study")
+```
+]
+
+---
+
+# ANOVA pour plans mixtes (suite)
+
+3.
+
+```{r, echo=TRUE}
+model1 <- lm(Reaction ~ Days, data = sleepstudy)
+model2 <- lmer(Reaction ~ Days + (1|Subject), data = sleepstudy)
+model3 <- lmer(Reaction ~ Days + (1+Days|Subject), data = sleepstudy)
+```
+
+---
+
+# ANOVA pour plans mixtes (suite)
+
+4.
+
+```{r, echo=TRUE}
+anova(model2, model1, model3)
+```
+
+<u>Interprétation:</u> Mettre l'effet *Sujet* en aléatoire améliore significativement le modèle (p < 2.2e-16), mais moindre que l'interaction.
+
+---
+
+# ANOVA pour plans mixtes (suite)
+
+6.
+
+```{r, echo=TRUE}
+anova(model2, type = 2)
+```
+
+<u>Interprétation:</u> Nous constatons que l'effet fixe *Jour* est significatif, il existe bien un effet de privation de sommeil sur le temps de réaction des sujets.
+
+---
+
+# ANOVA pour plans mixtes (suite)
+
+7.
+
+```{r, echo=TRUE}
+library(ggplot2)
+# Obtenir les prédictions pour chaque sujet
+sleepstudy$predicted <- fitted(model2)
+# Tracer un graphique en ligne pour chaque espèce
+ggplot(sleepstudy, aes(x = Days, y = predicted, group = as.factor(Subject), color = as.factor(Subject))) +
+  geom_line() +
+  xlab("Days") +
+  ylab("Temps de réaction prédit") +
+  ggtitle("Effet de privation de sommeil sur différents sujets")
 ```
 
 ---
@@ -1487,9 +1937,103 @@ knitr::include_graphics("../images/defi.jpg")
 2. Visualisez les données pour comprendre la relation entre la survie des plantes et les différentes variables disponibles.
 3. Formulez un modèle GLM pour évaluer les effets des traitements, de la hauteur, du diamètre et de la quantité de lumière sur la survie des plantes. Quelle distribution serait la plus appropriée pour ce modèle ? Justifiez votre choix.
 
-```{r, echo=FALSE}
-library(countdown)
-countdown(minutes = 20, seconds = 00)
+---
+
+# GLM (suite)
+
+**Solution:**
+
+1.
+
+```{r, echo=TRUE}
+plantes <- read.csv("../../presentation/data/plantes.csv", header = TRUE)
+head(plantes)
+```
+
+---
+
+# GLM (suite)
+
+2.
+
+```{r, echo=TRUE, eval=FALSE}
+# Chargez la bibliothèque ggplot2 pour les graphiques
+library(ggplot2)
+
+# Tracé d'un boxplot pour la relation entre la hauteur de la plante et la survie des plantes
+p1 <- ggplot(data = plantes, aes(x = as.factor(Survie), y = Hauteur)) +
+  geom_boxplot() +
+  labs(x = "Survie", y = "Hauteur de la plante (cm)") +
+  ggtitle("Relation entre la hauteur de la plante et la survie")
+
+# Tracé d'un boxplot pour la relation entre la quantité de lumière reçue et la survie des plantes
+p2 <- ggplot(data = plantes, aes(x = as.factor(Survie), y = Lumiere)) +
+  geom_boxplot() +
+  labs(x = "Survie", y = "Lumière reçue (lux)") +
+  ggtitle("Relation entre la lumière reçue et la survie")
+
+# Tracé d'un boxplot pour la relation entre le diamètre du tronc et la survie des plantes
+p3 <- ggplot(data = plantes, aes(x = as.factor(Survie), y = Diametre)) +
+  geom_boxplot() +
+  labs(y = "Diamètre du tronc (cm)", x = "Survie") +
+  ggtitle("Relation entre le diamètre du tronc et la survie")
+
+gridExtra::grid.arrange(p1, p2, p3, ncol = 3)
+
+```
+
+---
+
+# GLM (suite)
+
+2.
+
+```{r, echo=FALSE, fig.width=15}
+# Chargez la bibliothèque ggplot2 pour les graphiques
+library(ggplot2)
+
+# Tracé d'un boxplot pour la relation entre la hauteur de la plante et la survie des plantes
+p1 <- ggplot(data = plantes, aes(x = as.factor(Survie), y = Hauteur)) +
+  geom_boxplot() +
+  labs(x = "Survie", y = "Hauteur de la plante (cm)") +
+  ggtitle("Relation entre la hauteur de la plante et la survie")
+
+# Tracé d'un boxplot pour la relation entre la quantité de lumière reçue et la survie des plantes
+p2 <- ggplot(data = plantes, aes(x = as.factor(Survie), y = Lumiere)) +
+  geom_boxplot() +
+  labs(x = "Survie", y = "Lumière reçue (lux)") +
+  ggtitle("Relation entre la lumière reçue et la survie")
+
+# Tracé d'un boxplot pour la relation entre le diamètre du tronc et la survie des plantes
+p3 <- ggplot(data = plantes, aes(x = as.factor(Survie), y = Diametre)) +
+  geom_boxplot() +
+  labs(y = "Diamètre du tronc (cm)", x = "Survie") +
+  ggtitle("Relation entre le diamètre du tronc et la survie")
+
+gridExtra::grid.arrange(p1, p2, p3, ncol = 3)
+
+```
+
+---
+
+# GLM (suite)
+
+3.
+
+```{r, echo=TRUE}
+model1 <- glm(Survie ~ Traitement + Hauteur + Diametre + Lumiere, data = plantes, 
+    family = binomial)
+summary(model1)
+```
+
+---
+
+# GLM (suite)
+
+3.
+
+```{r, echo=TRUE}
+anova(model1, test = "Chi")
 ```
 
 ---
@@ -1673,7 +2217,38 @@ A partir de l'exemple du cas d'étude précédent:
 
 2. Connaissons le régime alimentaire des dauphins et l'abondance des proies dans les différentes zones, nous formulons l'hypothèse que la proportion de dauphins par rapport aux autres mammifères doit être supérieure dans la zone peu profonde par rapport à la zone profonde.
 
-```{r, echo=FALSE}
-library(countdown)
-countdown(minutes = 10, seconds = 00)
+---
+
+## Test de proportions (suite)
+
+**Solution**
+
+1.
+
+```{r, echo=TRUE}
+matri <- c(117, 104, 39, 44)
+dim(matri) = c(2,2)
+matri
+
+prop.test(matri)
 ```
+
+---
+
+## Test de proportions (suite)
+
+1.
+
+<u>interprétation:</u>Le test de proportions avec correction de continuité ne permet pas de montrer une différence significative entre la proportion de dauphins en zone peu profonde et celle en zone moyennement profonde (p= 0.43; $\chi^2 = 0.63; ddl = 1$).
+
+---
+
+## Test de proportions (suite)
+
+2.
+
+```{r, echo=TRUE}
+prop.test(c(117,149), c((117+39),(149+94)), alternative = "greater")
+```
+
+<u>interprétation:</u>Conformément à l'hypothèse, en zone peu profonde la proprtion de dauphins (75%) est supérieure à celle observée en zone profonde (61.3%). De plus cette différence est significative (p=3.26.10^-3; $\chi^2$ = 23.07; ddl = 1; test unilatéral de cmparaison de proprtion avec correction de continuité)
