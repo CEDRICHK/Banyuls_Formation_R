@@ -109,7 +109,7 @@ top:1em;right:1em;
   
   - Il peut-être nécessaire de centrer réduire les variables.
   
-  - Le principe est de faire la racine carrée de la somme des carrés des différences entre les coordonnées des points
+  - Le principe ....
 
 - **La distance de Bray-Curtis:**
 
@@ -297,21 +297,82 @@ rect.hclust(ClustOis, k=4,
   
   - Comment interprétez-vous les résultats obtenus ?
 
-<div class="countdown" id="timer_31baeef9" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
-<div class="countdown-controls"><button class="countdown-bump-down">&minus;</button><button class="countdown-bump-up">&plus;</button></div>
-<code class="countdown-time"><span class="countdown-digits minutes">08</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
-</div>
+---
+
+# CAH
+
+**Solution:**
+
+
+```r
+
+# Charger le dataset "USArrests"
+data(USArrests)
+head(USArrests)
+#            Murder Assault UrbanPop Rape
+# Alabama      13.2     236       58 21.2
+# Alaska       10.0     263       48 44.5
+# Arizona       8.1     294       80 31.0
+# Arkansas      8.8     190       50 19.5
+# California    9.0     276       91 40.6
+# Colorado      7.9     204       78 38.7
+```
+
+---
+
+# CAH (suite)
+
+
+```r
+library(vegan)
+
+# Standardiser les variables
+USArrests_standard &lt;- scale(USArrests)
+
+# Calculer la matrice des distances
+distances &lt;- vegdist(USArrests_standard, method = "euclidean")
+
+# Réaliser la CAH
+cluster &lt;- hclust(distances, method = "ward.D2")
+```
+
+---
+
+# CAH (suite)
+
+
+```r
+inertie &lt;- sort(cluster$height, decreasing = TRUE)
+plot(inertie, type = "s", xaxt = "n")
+```
+
+&lt;img src="Modèles_multivariées_pour_l-analyse_de_données_sous_R_files/figure-html/unnamed-chunk-10-1.png" width="432" style="display: block; margin: auto;" /&gt;
+
+---
+
+# CAH (suite)
+
+
+```r
+plot(cluster,
+     hang = -1,
+     labels = row.names(USArrests))
+rect.hclust(cluster, k=4, 
+            border = "black")
+```
+
+&lt;img src="Modèles_multivariées_pour_l-analyse_de_données_sous_R_files/figure-html/unnamed-chunk-11-1.png" width="720" style="display: block; margin: auto;" /&gt;
 
 
 ---
 
 # Méthodes d'ordination sans contrainte
 
-- Nous allons examiner 4 méthodes **d'ordination sans contraintes**:
+- Nous allons examiner 5 méthodes **d'ordination sans contraintes**:
 
   - L'**A**nalyse en **C**omposantes **P**rincipales (ACP)
   
-  - L'**A**nalyse **F**actorielle des **C**orrespondancs (AFC)
+  - L'**A**nalyse **F**actorielle des **C**orrespondances (AFC)
   
   - L'**A**nalyse des **C**orrespondances **M**ultiples (ACM)
   
@@ -331,7 +392,7 @@ rect.hclust(ClustOis, k=4,
 
   - Faire le bilan des corrélations entre variables;
   
-  - Evaluer ls ressemblances et différences entre individus;
+  - Evaluer les ressemblances et différences entre individus;
   
   - Etudier les relations entre les individus et les variables.
 
@@ -400,7 +461,7 @@ USArrests_standard &lt;- scale(USArrests)
 table.value(cor(USArrests_standard))
 ```
 
-&lt;img src="Modèles_multivariées_pour_l-analyse_de_données_sous_R_files/figure-html/unnamed-chunk-10-1.png" width="432" style="display: block; margin: auto;" /&gt;
+&lt;img src="Modèles_multivariées_pour_l-analyse_de_données_sous_R_files/figure-html/unnamed-chunk-13-1.png" width="432" style="display: block; margin: auto;" /&gt;
 ]
 
 .pull-right[
@@ -410,7 +471,7 @@ table.value(cor(USArrests_standard))
 pairs(USArrests_standard)
 ```
 
-&lt;img src="Modèles_multivariées_pour_l-analyse_de_données_sous_R_files/figure-html/unnamed-chunk-11-1.png" width="432" style="display: block; margin: auto;" /&gt;
+&lt;img src="Modèles_multivariées_pour_l-analyse_de_données_sous_R_files/figure-html/unnamed-chunk-14-1.png" width="432" style="display: block; margin: auto;" /&gt;
 ]
 
 ---
@@ -431,13 +492,26 @@ pairs(USArrests_standard)
 
 
 ```r
-pcaUSArrests &lt;- dudi.pca(USArrests, scannf = FALSE)
+pcaUSArrests &lt;- dudi.pca(USArrests)
 inertia.dudi(pcaUSArrests)
 ```
 
 ---
 
 ### Choix du nombre d'axes à conserver (suite)
+
+
+```
+# Inertia information:
+# Call: inertia.dudi(x = pcaUSArrests)
+# 
+# Decomposition of total inertia:
+#     inertia     cum  cum(%)
+# Ax1  2.4802   2.480   62.01
+# Ax2  0.9898   3.470   86.75
+# Ax3  0.3566   3.827   95.66
+# Ax4  0.1734   4.000  100.00
+```
 
 &lt;img src="../images/inertia_pca.png" width="256" style="display: block; margin: auto;" /&gt;
 
@@ -458,11 +532,10 @@ L'analyse des variables se déroule de la façon suivante :
 .pull-left[
 
 ```r
-pcaUSArrests &lt;- dudi.pca(USArrests, scannf = FALSE)
 s.corcircle(pcaUSArrests$co)
 ```
 
-&lt;img src="Modèles_multivariées_pour_l-analyse_de_données_sous_R_files/figure-html/unnamed-chunk-15-1.png" width="432" style="display: block; margin: auto;" /&gt;
+&lt;img src="Modèles_multivariées_pour_l-analyse_de_données_sous_R_files/figure-html/unnamed-chunk-18-1.png" width="432" style="display: block; margin: auto;" /&gt;
 ]
 
 .pull-right[
@@ -474,9 +547,9 @@ En revanche, c'est *UrbanPop* qui explique majoritairement la variabilité de la
 
 ### Interprétation de l'espace factoriel (suite)
 
-- Nous pouvons afficher également la valeur des **$\cos²**.
+- Nous pouvons afficher également la valeur des `\(\cos²\)`.
 
-- Plus la valeur du **$\cos²** d'une variable sur un axe est élevée, plus la variable contribue à l'axe.
+- Plus la valeur du `\(\cos²\)` d'une variable sur un axe est élevée, plus la variable contribue à l'axe.
 
 
 
@@ -517,7 +590,7 @@ scatter(pcaUSArrests,
         yax = 2)
 ```
 
-&lt;img src="Modèles_multivariées_pour_l-analyse_de_données_sous_R_files/figure-html/unnamed-chunk-17-1.png" width="432" style="display: block; margin: auto;" /&gt;
+&lt;img src="Modèles_multivariées_pour_l-analyse_de_données_sous_R_files/figure-html/unnamed-chunk-20-1.png" width="432" style="display: block; margin: auto;" /&gt;
 
 ```
 # NULL
@@ -531,7 +604,7 @@ s.value(pcaUSArrests$li,
         scale(USArrests$Murder))
 ```
 
-&lt;img src="Modèles_multivariées_pour_l-analyse_de_données_sous_R_files/figure-html/unnamed-chunk-18-1.png" width="432" style="display: block; margin: auto;" /&gt;
+&lt;img src="Modèles_multivariées_pour_l-analyse_de_données_sous_R_files/figure-html/unnamed-chunk-21-1.png" width="432" style="display: block; margin: auto;" /&gt;
 ]
 
 ---
@@ -560,7 +633,7 @@ s.value(pcaUSArrests$li,
 
 ```r
 #ACP sur les variables actives
-pcaUSArrests &lt;- dudi.pca(USArrests, scannf = FALSE)
+pcaUSArrests &lt;- readRDS(file = "../../pcaUSArrests.rds")
 
 #Création d'une variable supplémentaire
 score &lt;- as.numeric(apply(USArrests, MARGIN = 1, sum))
@@ -571,7 +644,7 @@ symbols(0, 0, circles = 1, inches = FALSE, add = TRUE)
 s.arrow(supcol(pcaUSArrests, data.frame(scalewt(score)))$co, label = "SCORE", add.p = TRUE, clabel = 1.1)
 ```
 
-&lt;img src="Modèles_multivariées_pour_l-analyse_de_données_sous_R_files/figure-html/unnamed-chunk-19-1.png" width="432" style="display: block; margin: auto;" /&gt;
+&lt;img src="Modèles_multivariées_pour_l-analyse_de_données_sous_R_files/figure-html/unnamed-chunk-22-1.png" width="432" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -593,16 +666,27 @@ s.arrow(supcol(pcaUSArrests, data.frame(scalewt(score)))$co, label = "SCORE", ad
 pcaUSArrests &lt;- readRDS(file = "../../pcaUSArrests.rds")
 
 # Chargement des individus supplémentaires
-IndSup &lt;- data.frame(Murder = , Assault = , UrbanPop = , Rape = )
-row.names(IndSup)
+IndSup &lt;- data.frame(Murder = 7, Assault = 159, UrbanPop = 66, Rape = 20)
+row.names(IndSup) &lt;- "FR"
 LocaSup &lt;- suprow(pcaUSArrests, IndSup)
 
 #Combine les individus
 pcaUSArrests$li &lt;- rbind(pcaUSArrests$li, LocaSup$lisup)
 
 #Graphique
-scatter(pcaUSArrests, posieig = "none", xax = 1, yax = 2)
+scatter(pcaUSArrests, xax = 1, yax = 2)
 ```
+
+---
+
+#### Cas d'étude
+
+&lt;img src="Modèles_multivariées_pour_l-analyse_de_données_sous_R_files/figure-html/unnamed-chunk-24-1.png" width="432" style="display: block; margin: auto;" /&gt;
+
+```
+# NULL
+```
+
 
 ---
 
@@ -622,11 +706,120 @@ scatter(pcaUSArrests, posieig = "none", xax = 1, yax = 2)
   
 5. Analyse des résultats.
 
+---
 
-<div class="countdown" id="timer_01a27441" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
-<div class="countdown-controls"><button class="countdown-bump-down">&minus;</button><button class="countdown-bump-up">&plus;</button></div>
-<code class="countdown-time"><span class="countdown-digits minutes">10</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
-</div>
+# L'Analyse en composantes principales (ACP)
+
+**Solution:**
+
+
+```r
+##### 1 ######
+data("iris")
+head(iris)
+#   Sepal.Length Sepal.Width Petal.Length Petal.Width Species
+# 1          5.1         3.5          1.4         0.2  setosa
+# 2          4.9         3.0          1.4         0.2  setosa
+# 3          4.7         3.2          1.3         0.2  setosa
+# 4          4.6         3.1          1.5         0.2  setosa
+# 5          5.0         3.6          1.4         0.2  setosa
+# 6          5.4         3.9          1.7         0.4  setosa
+```
+
+---
+
+# L'ACP (suite)
+
+**Solution:**
+
+
+```r
+####2#######
+iris_vars &lt;- iris[,1:4]
+head(iris_vars)
+#   Sepal.Length Sepal.Width Petal.Length Petal.Width
+# 1          5.1         3.5          1.4         0.2
+# 2          4.9         3.0          1.4         0.2
+# 3          4.7         3.2          1.3         0.2
+# 4          4.6         3.1          1.5         0.2
+# 5          5.0         3.6          1.4         0.2
+# 6          5.4         3.9          1.7         0.4
+```
+
+
+```r
+####3#####
+iris_scaled &lt;- scale(iris_vars)
+```
+
+---
+
+# L'ACP (suite)
+
+**Solution:**
+
+
+
+```r
+####4
+iris_acp &lt;- dudi.pca(iris_scaled, scannf = FALSE, nf = 2)
+```
+
+.pull-left[
+
+```r
+#####5
+s.corcircle(iris_acp$co)
+```
+
+&lt;img src="Modèles_multivariées_pour_l-analyse_de_données_sous_R_files/figure-html/unnamed-chunk-29-1.png" width="432" style="display: block; margin: auto;" /&gt;
+]
+
+.pull-right[
+
+```r
+cos2 &lt;- inertia.dudi(iris_acp, col.inertia = TRUE)
+cos2$col.rel
+#                  Axis1       Axis2
+# Sepal.Length  79.24004 -13.0198208
+# Sepal.Width  -21.17313 -77.9188012
+# Petal.Length  98.31817  -0.0548271
+# Petal.Width   93.11844  -0.4095980
+```
+]
+
+---
+
+# L'ACP (suite)
+
+**Solution:**
+
+.pull-left[
+
+```r
+#######5
+scatter(iris_acp, 
+        posieig="none", 
+        xax = 1, 
+        yax = 2)
+```
+
+&lt;img src="Modèles_multivariées_pour_l-analyse_de_données_sous_R_files/figure-html/unnamed-chunk-31-1.png" width="432" style="display: block; margin: auto;" /&gt;
+
+```
+# NULL
+```
+]
+
+.pull-right[
+
+```r
+s.label(iris_acp$li, label = rownames(iris), clabel = 0.75)
+s.class(iris_acp$li, iris$Species, add.plot = TRUE)
+```
+
+&lt;img src="Modèles_multivariées_pour_l-analyse_de_données_sous_R_files/figure-html/unnamed-chunk-32-1.png" width="432" style="display: block; margin: auto;" /&gt;
+]
 
 ---
 
@@ -663,7 +856,7 @@ scatter(pcaUSArrests, posieig = "none", xax = 1, yax = 2)
 
 ```r
 library(ade4)
-Ois &lt;- read.csv("../data/Oiseaux.csv",
+Ois &lt;- read.csv("../../presentation/data/Oiseaux.csv",
                 sep = ";", header = TRUE)
 str(Ois)
 # 'data.frame':	75 obs. of  2 variables:
@@ -711,7 +904,7 @@ table.value(tableOis, col.labels = colnames(tableOis),
             csize = 0.75, clegend = 0.75)
 ```
 
-&lt;img src="Modèles_multivariées_pour_l-analyse_de_données_sous_R_files/figure-html/unnamed-chunk-24-1.png" width="432" style="display: block; margin: auto;" /&gt;
+&lt;img src="Modèles_multivariées_pour_l-analyse_de_données_sous_R_files/figure-html/unnamed-chunk-35-1.png" width="432" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -719,14 +912,15 @@ table.value(tableOis, col.labels = colnames(tableOis),
 
 
 ```r
-afc1 &lt;- dudi.coa(as.data.frame.matrix(tableOis), scannf = FALSE)
+afc1 &lt;- dudi.coa(as.data.frame.matrix(tableOis))
 ```
 
 #### Affichage de l'inertie
 
 
 ```r
-afc1 &lt;- dudi.coa(as.data.frame.matrix(tableOis), scannf = FALSE)
+afc1 &lt;- readRDS("../../afc1.rds")
+
 #Afficher l'inertie
 inertia.dudi(afc1)
 # Inertia information:
@@ -749,7 +943,7 @@ inertia.dudi(afc1)
 scatter(afc1, posieig = "bottomleft", clab.row = 1, clab.col = 0.75)
 ```
 
-&lt;img src="Modèles_multivariées_pour_l-analyse_de_données_sous_R_files/figure-html/unnamed-chunk-27-1.png" width="432" style="display: block; margin: auto;" /&gt;
+&lt;img src="Modèles_multivariées_pour_l-analyse_de_données_sous_R_files/figure-html/unnamed-chunk-38-1.png" width="432" style="display: block; margin: auto;" /&gt;
 ]
 
 .pull-right[
@@ -792,11 +986,89 @@ Certaine espèces apprécient un milieu plutôt qu'un autre tandis que certaines
 
 4. Visualisez les résultats de l'AFC.
 
+---
 
-<div class="countdown" id="timer_5beba45d" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
-<div class="countdown-controls"><button class="countdown-bump-down">&minus;</button><button class="countdown-bump-up">&plus;</button></div>
-<code class="countdown-time"><span class="countdown-digits minutes">08</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
-</div>
+# L'Analyse factorielle des correspondances (AFC)
+
+**Solution:**
+
+
+```r
+####1
+data(HairEyeColor)
+head(HairEyeColor)
+# , , Sex = Male
+# 
+#        Eye
+# Hair    Brown Blue Hazel Green
+#   Black    32   11    10     3
+#   Brown    53   50    25    15
+#   Red      10   10     7     7
+#   Blond     3   30     5     8
+# 
+# , , Sex = Female
+# 
+#        Eye
+# Hair    Brown Blue Hazel Green
+#   Black    36    9     5     2
+#   Brown    66   34    29    14
+#   Red      16    7     7     7
+#   Blond     4   64     5     8
+```
+
+---
+
+# L'AFC (suite)
+
+**Solution:**
+
+
+```r
+####2
+hair_eye_male &lt;- HairEyeColor[,,1]
+hair_eye_male
+#        Eye
+# Hair    Brown Blue Hazel Green
+#   Black    32   11    10     3
+#   Brown    53   50    25    15
+#   Red      10   10     7     7
+#   Blond     3   30     5     8
+```
+
+---
+
+# L'AFC (suite)
+
+**Solution:**
+
+
+```r
+####3
+afc_male &lt;- dudi.coa(as.data.frame.matrix(hair_eye_male), scannf = FALSE, nf = 2)
+inertia.dudi(afc_male)
+# Inertia information:
+# Call: inertia.dudi(x = afc_male)
+# 
+# Decomposition of total inertia:
+#       inertia     cum  cum(%)
+# Ax1 0.1342878  0.1343   90.76
+# Ax2 0.0132752  0.1476   99.73
+# Ax3 0.0003951  0.1480  100.00
+```
+
+---
+
+# L'AFC (suite)
+
+**Solution:**
+
+
+```r
+######4
+scatter(afc_male, posieig = "bottomleft", clab.row = 1, clab.col = 0.75)
+```
+
+&lt;img src="Modèles_multivariées_pour_l-analyse_de_données_sous_R_files/figure-html/unnamed-chunk-43-1.png" width="432" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -852,14 +1124,45 @@ str(ours)
 
 
 ```r
-acm1 &lt;- dudi.acm(ours[,1:8], scannf = FALSE)
+acm1 &lt;- dudi.acm(ours[,1:8])
 ```
 
 #### Affichage de l'inertie
 
 
 ```r
-acm1 &lt;- dudi.acm(ours[,1:8], scannf = FALSE)
+acm1 &lt;- readRDS("../../acm1.rds")
+inertia.dudi(acm1)
+# Inertia information:
+# Call: inertia.dudi(x = acm1)
+# 
+# Decomposition of total inertia:
+#       inertia     cum  cum(%)
+# Ax1  0.428310  0.4283   21.42
+# Ax2  0.278278  0.7066   35.33
+# Ax3  0.250110  0.9567   47.83
+# Ax4  0.188768  1.1455   57.27
+# Ax5  0.173300  1.3188   65.94
+# Ax6  0.164822  1.4836   74.18
+# Ax7  0.117065  1.6007   80.03
+# Ax8  0.084973  1.6856   84.28
+# Ax9  0.075813  1.7614   88.07
+# Ax10 0.058155  1.8196   90.98
+# Ax11 0.054441  1.8740   93.70
+# Ax12 0.047601  1.9216   96.08
+# Ax13 0.028391  1.9500   97.50
+# Ax14 0.026237  1.9763   98.81
+# Ax15 0.016874  1.9931   99.66
+# Ax16 0.006861  2.0000  100.00
+```
+
+---
+
+#### Affichage de l'inertie (suite)
+
+
+```r
+acm1 &lt;- readRDS("../../acm1.rds")
 inertia.dudi(acm1)
 # Inertia information:
 # Call: inertia.dudi(x = acm1)
@@ -894,7 +1197,7 @@ inertia.dudi(acm1)
 scatter(acm1)
 ```
 
-&lt;img src="Modèles_multivariées_pour_l-analyse_de_données_sous_R_files/figure-html/unnamed-chunk-33-1.png" width="432" style="display: block; margin: auto;" /&gt;
+&lt;img src="Modèles_multivariées_pour_l-analyse_de_données_sous_R_files/figure-html/unnamed-chunk-48-1.png" width="432" style="display: block; margin: auto;" /&gt;
 ]
 
 .pull-right[
@@ -937,7 +1240,7 @@ s.label(acm1$li, clabel = 0, pch = 20)
 s.class(acm1$li, ours[,9], add.plot = TRUE)
 ```
 
-&lt;img src="Modèles_multivariées_pour_l-analyse_de_données_sous_R_files/figure-html/unnamed-chunk-35-1.png" width="432" style="display: block; margin: auto;" /&gt;
+&lt;img src="Modèles_multivariées_pour_l-analyse_de_données_sous_R_files/figure-html/unnamed-chunk-50-1.png" width="432" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -945,7 +1248,7 @@ s.class(acm1$li, ours[,9], add.plot = TRUE)
 
 &lt;img src="../images/defi.jpg" width="10%" style="display: block; margin: auto auto auto 0;" /&gt;
 
-&lt;u&gt;Jeu de données:&lt;/u&gt; `Poison` Ce jeu de données fait référence à une enquête réalisée auprès d’un échantillon d’enfants de l’école primaire qui ont souffert d’intoxication alimentaire. Ils ont été interrogés sur leurs symptômes et sur ce qu’ils ont mangé.
+&lt;u&gt;Jeu de données:&lt;/u&gt;Poison Ce jeu de données fait référence à une enquête réalisée auprès d’un échantillon d’enfants de l’école primaire qui ont souffert d’intoxication alimentaire. Ils ont été interrogés sur leurs symptômes et sur ce qu’ils ont mangé. 
 
 1. Chargez le jeu de données.
 
@@ -953,10 +1256,82 @@ s.class(acm1$li, ours[,9], add.plot = TRUE)
 
 3. Visualisez les résultats de l'ACM.
 
-<div class="countdown" id="timer_851283b8" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
+<div class="countdown" id="timer_2ecadf04" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
 <div class="countdown-controls"><button class="countdown-bump-down">&minus;</button><button class="countdown-bump-up">&plus;</button></div>
 <code class="countdown-time"><span class="countdown-digits minutes">05</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
 </div>
+
+---
+
+# L'Analyse des correspondances multiples (ACM)
+
+**Solution:**
+
+
+
+```r
+### 1 ###
+library(FactoMineR)
+data("poison")
+```
+
+
+```r
+### 2 ###
+library(ade4)
+res.acm &lt;- dudi.acm(poison[,5:15], scannf = FALSE, nf = 2)
+inertia.dudi(res.acm)
+# Inertia information:
+# Call: inertia.dudi(x = res.acm)
+# 
+# Decomposition of total inertia:
+#      inertia     cum  cum(%)
+# Ax1  0.33523  0.3352   33.52
+# Ax2  0.12914  0.4644   46.44
+# Ax3  0.10735  0.5717   57.17
+# Ax4  0.09588  0.6676   66.76
+# Ax5  0.07883  0.7464   74.64
+# Ax6  0.07109  0.8175   81.75
+# Ax7  0.06017  0.8777   87.77
+# Ax8  0.05577  0.9335   93.35
+# Ax9  0.04121  0.9747   97.47
+# Ax10 0.01304  0.9877   98.77
+# Ax11 0.01229  1.0000  100.00
+```
+
+---
+
+# ACM (suite)
+
+**Solution:**
+
+.pull-left[
+
+```r
+scatter(res.acm)
+```
+
+&lt;img src="Modèles_multivariées_pour_l-analyse_de_données_sous_R_files/figure-html/unnamed-chunk-54-1.png" width="432" style="display: block; margin: auto;" /&gt;
+]
+
+.pull-right[
+
+```r
+res.acm$cr
+#                    RS1          RS2
+# Nausea     0.256200730 5.280258e-02
+# Vomiting   0.344201648 2.511604e-01
+# Abdominals 0.845115652 6.215864e-04
+# Fever      0.784678768 1.747903e-02
+# Diarrhae   0.799467973 4.342953e-06
+# Potato     0.028862615 3.957543e-01
+# Fish       0.007136678 2.726507e-02
+# Mayo       0.382974888 3.465726e-02
+# Courgette  0.015267181 4.464145e-01
+# Cheese     0.194418058 5.347760e-02
+# Icecream   0.029221204 1.409011e-01
+```
+]
 
 ---
 
@@ -1001,7 +1376,7 @@ plot(ClustAfc, hang = -1, labels = oisPA[,1], xlab = "", sub = "")
 rect.hclust(ClustAfc, k = 3, border = "black")
 ```
 
-&lt;img src="Modèles_multivariées_pour_l-analyse_de_données_sous_R_files/figure-html/unnamed-chunk-40-1.png" width="432" style="display: block; margin: auto;" /&gt;
+&lt;img src="Modèles_multivariées_pour_l-analyse_de_données_sous_R_files/figure-html/unnamed-chunk-59-1.png" width="432" style="display: block; margin: auto;" /&gt;
 ]
 
 .pull-right[
@@ -1011,7 +1386,7 @@ inertie2 &lt;- sort(ClustAfc$height, decreasing = TRUE)
 plot(inertie2, type = "s", xaxt = "n", ylab = "Inertie", xlab = "Nombre de groupes")
 ```
 
-&lt;img src="Modèles_multivariées_pour_l-analyse_de_données_sous_R_files/figure-html/unnamed-chunk-41-1.png" width="432" style="display: block; margin: auto;" /&gt;
+&lt;img src="Modèles_multivariées_pour_l-analyse_de_données_sous_R_files/figure-html/unnamed-chunk-60-1.png" width="432" style="display: block; margin: auto;" /&gt;
 ]
 
 ---
@@ -1057,7 +1432,7 @@ s.label(afc2$co, clabel = 0.75, add.plot = TRUE)
 s.class(afc2$li, as.factor(CutClustAfc), axesell = FALSE, add.plot = TRUE)
 ```
 
-&lt;img src="Modèles_multivariées_pour_l-analyse_de_données_sous_R_files/figure-html/unnamed-chunk-43-1.png" width="432" style="display: block; margin: auto;" /&gt;
+&lt;img src="Modèles_multivariées_pour_l-analyse_de_données_sous_R_files/figure-html/unnamed-chunk-62-1.png" width="432" style="display: block; margin: auto;" /&gt;
 ]
 
 .pull-right[
@@ -1068,7 +1443,9 @@ Le plan factoriel montre comment les espèces sont inféodés à certains milieu
 
 # L'analyse Hill-Smith
 
-- Etudier les relations entre variables et de positionner les individus.
+- Etudier les relations entre variables et éventuellement de positionner les individus.
+
+- Traiter des variables de types différents: variables quantitatives, qualitatives.
 
 ---
 
@@ -1091,7 +1468,7 @@ Les étapes sont les mêmes que celles d'une ACP.
 
 ```r
 library(ade4)
-donnees &lt;- read.csv("../data/enquete.csv", stringsAsFactors = TRUE)
+donnees &lt;- read.csv("../../presentation/data/enquete.csv", stringsAsFactors = TRUE)
 str(donnees)
 # 'data.frame':	100 obs. of  9 variables:
 #  $ age            : int  20 20 27 19 23 28 22 21 23 26 ...
@@ -1111,10 +1488,10 @@ str(donnees)
 
 
 ```r
-pcaEnq &lt;- dudi.mix(df = donnees, scannf = FALSE, nf = 4)
-inertia.dudi(pcaEnq)
+HSEnq &lt;- dudi.mix(df = donnees, scannf = FALSE, nf = 4)
+inertia.dudi(HSEnq)
 # Inertia information:
-# Call: inertia.dudi(x = pcaEnq)
+# Call: inertia.dudi(x = HSEnq)
 # 
 # Decomposition of total inertia:
 #      inertia     cum  cum(%)
@@ -1141,10 +1518,10 @@ inertia.dudi(pcaEnq)
 .pull-left[
 
 ```r
-s.corcircle(pcaEnq$co)
+s.corcircle(HSEnq$co)
 ```
 
-&lt;img src="Modèles_multivariées_pour_l-analyse_de_données_sous_R_files/figure-html/unnamed-chunk-46-1.png" width="432" style="display: block; margin: auto;" /&gt;
+&lt;img src="Modèles_multivariées_pour_l-analyse_de_données_sous_R_files/figure-html/unnamed-chunk-65-1.png" width="432" style="display: block; margin: auto;" /&gt;
 ]
 
 .pull-right[
@@ -1160,10 +1537,10 @@ s.corcircle(pcaEnq$co)
 .pull-left[
 
 ```r
-s.corcircle(pcaEnq$co[,3:4])
+s.corcircle(HSEnq$co[,3:4])
 ```
 
-&lt;img src="Modèles_multivariées_pour_l-analyse_de_données_sous_R_files/figure-html/unnamed-chunk-47-1.png" width="432" style="display: block; margin: auto;" /&gt;
+&lt;img src="Modèles_multivariées_pour_l-analyse_de_données_sous_R_files/figure-html/unnamed-chunk-66-1.png" width="432" style="display: block; margin: auto;" /&gt;
 ]
 
 .pull-right[
@@ -1178,10 +1555,10 @@ s.corcircle(pcaEnq$co[,3:4])
 
 
 ```r
-scatter(pcaEnq, row.plab.cex = 1, col.plab.cex = 1.5)
+scatter(HSEnq, row.plab.cex = 1, col.plab.cex = 1.5)
 ```
 
-&lt;img src="Modèles_multivariées_pour_l-analyse_de_données_sous_R_files/figure-html/unnamed-chunk-48-1.png" width="432" style="display: block; margin: auto;" /&gt;
+&lt;img src="Modèles_multivariées_pour_l-analyse_de_données_sous_R_files/figure-html/unnamed-chunk-67-1.png" width="432" style="display: block; margin: auto;" /&gt;
 
 
 ---
@@ -1198,10 +1575,72 @@ scatter(pcaEnq, row.plab.cex = 1, col.plab.cex = 1.5)
 
 3. Analysez les résultats.
 
-<div class="countdown" id="timer_c209cfc5" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
-<div class="countdown-controls"><button class="countdown-bump-down">&minus;</button><button class="countdown-bump-up">&plus;</button></div>
-<code class="countdown-time"><span class="countdown-digits minutes">10</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
-</div>
+---
+
+# L'analyse Hill-Smith
+
+**Solution:**
+
+
+```r
+data(mtcars)
+```
+
+
+```r
+res &lt;- dudi.mix(df = mtcars, scannf = FALSE, nf = 2)
+inertia.dudi(res)
+# Inertia information:
+# Call: inertia.dudi(x = res)
+# 
+# Decomposition of total inertia:
+#      inertia     cum  cum(%)
+# Ax1  6.60840   6.608   60.08
+# Ax2  2.65047   9.259   84.17
+# Ax3  0.62720   9.886   89.87
+# Ax4  0.26960  10.156   92.32
+# Ax5  0.22345  10.379   94.36
+# Ax6  0.21160  10.591   96.28
+# Ax7  0.13526  10.726   97.51
+# Ax8  0.12290  10.849   98.63
+# Ax9  0.07705  10.926   99.33
+# Ax10 0.05204  10.978   99.80
+# Ax11 0.02204  11.000  100.00
+```
+
+---
+
+# L'analyse Hill-Smith
+
+**Solution:**
+
+.pull-left[
+
+```r
+s.corcircle(res$co)
+```
+
+&lt;img src="Modèles_multivariées_pour_l-analyse_de_données_sous_R_files/figure-html/unnamed-chunk-70-1.png" width="432" style="display: block; margin: auto;" /&gt;
+]
+
+.pull-right[
+&lt;u&gt;Interprétation:&lt;/u&gt;
+nous pouvons voir que les variables les plus importantes pour la formation de l'axe principal CS1 sont "mpg", "cyl" et "disp", tandis que les variables les plus importantes pour la formation de l'axe principal CS2 sont "qsec", "am" et "gear".
+Ces résultats suggèrent que ces variables sont les plus pertinentes pour discriminer les différentes voitures dans le jeu de données "mtcars" en fonction de leurs caractéristiques.
+]
+
+---
+
+# L'analyse Hill-Smith
+
+**Solution:**
+
+
+```r
+scatter(res, row.plab.cex = 1, col.plab.cex = 1.5)
+```
+
+&lt;img src="Modèles_multivariées_pour_l-analyse_de_données_sous_R_files/figure-html/unnamed-chunk-71-1.png" width="432" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -1229,7 +1668,7 @@ Mettre en évidence une relation entre les métriques observées d'une part et l
 ```r
 library(vegan)
 
-df1 &lt;- read.table("../data/nrn.txt", header = TRUE)
+df1 &lt;- read.table("../../presentation/data/nrn.txt", header = TRUE)
 cT &lt;- as.character(df1[,5])
 aR &lt;- as.character(df1[,6])
 df2 &lt;- df1[,1:4]
@@ -1258,7 +1697,7 @@ plot(NMDS1, NMDS2, col = cT, pch = cT, cex=1)
 plot(NMDS1, NMDS2, col = aR, pch = aR, cex=1)
 ```
 
-&lt;img src="Modèles_multivariées_pour_l-analyse_de_données_sous_R_files/figure-html/unnamed-chunk-52-1.png" width="432" style="display: block; margin: auto;" /&gt;
+&lt;img src="Modèles_multivariées_pour_l-analyse_de_données_sous_R_files/figure-html/unnamed-chunk-74-1.png" width="432" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -1270,7 +1709,7 @@ plot(NMDS1, NMDS2, col = aR, pch = aR, cex=1)
 # [1] "stress:  0.0229843352766943"
 ```
 
-&lt;img src="Modèles_multivariées_pour_l-analyse_de_données_sous_R_files/figure-html/unnamed-chunk-53-1.png" width="432" style="display: block; margin: auto;" /&gt;
+&lt;img src="Modèles_multivariées_pour_l-analyse_de_données_sous_R_files/figure-html/unnamed-chunk-75-1.png" width="432" style="display: block; margin: auto;" /&gt;
 ]
 
 .pull-right[
@@ -1294,10 +1733,121 @@ plot(NMDS1, NMDS2, col = aR, pch = aR, cex=1)
 
 3. Interprétez et Visualisez les résultats.
 
-<div class="countdown" id="timer_ebc093ca" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
-<div class="countdown-controls"><button class="countdown-bump-down">&minus;</button><button class="countdown-bump-up">&plus;</button></div>
-<code class="countdown-time"><span class="countdown-digits minutes">10</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
-</div>
+---
+
+# Le Positionnement multidimensionnel non métrique (NMDS)
+
+**Solution:**
+
+1.
+
+
+```r
+orders &lt;- read.csv("../../presentation/data/condensed_order.csv", header = TRUE)
+head(orders)
+#   siteID  namedLocation         collectDate Amphipoda Coleoptera Diptera
+# 1   ARIK ARIK.AOS.reach 2014-07-14 17:51:00         0         42     210
+# 2   ARIK ARIK.AOS.reach 2014-09-29 18:20:00         0          5      54
+# 3   ARIK ARIK.AOS.reach 2015-03-25 17:15:00         0          7     336
+# 4   ARIK ARIK.AOS.reach 2015-07-14 14:55:00         0         14      80
+# 5   ARIK ARIK.AOS.reach 2016-03-31 15:41:00         0          2     210
+# 6   ARIK ARIK.AOS.reach 2016-07-13 15:24:00         0         43     647
+#   Ephemeroptera Hemiptera Trichoptera Trombidiformes Tubificida decimalLatitude
+# 1            27        27           0              6         20        39.75821
+# 2             9         2           0              1          0        39.75821
+# 3             2         1          11             59         13        39.75821
+# 4             1         1           0              1          1        39.75821
+# 5             0         0           4              4         34        39.75821
+# 6            38         3           1             16         77        39.75821
+#   decimalLongitude aquaticSiteType elevation
+# 1        -102.4471          stream    1179.5
+# 2        -102.4471          stream    1179.5
+# 3        -102.4471          stream    1179.5
+# 4        -102.4471          stream    1179.5
+# 5        -102.4471          stream    1179.5
+# 6        -102.4471          stream    1179.5
+aST &lt;- as.factor(orders$aquaticSiteType)
+```
+
+---
+
+# NMDS (suite)
+
+**Solution:**
+
+2.
+
+
+```r
+library(vegan)
+nmds_results &lt;- metaMDS(comm = orders[,4:11], k = 2)
+# Square root transformation
+# Wisconsin double standardization
+# Run 0 stress 0.177015 
+# Run 1 stress 0.1899947 
+# Run 2 stress 0.1796246 
+# Run 3 stress 0.2123813 
+# Run 4 stress 0.1756999 
+# ... New best solution
+# ... Procrustes: rmse 0.0131783  max resid 0.1268439 
+# Run 5 stress 0.1770699 
+# Run 6 stress 0.1801316 
+# Run 7 stress 0.1798794 
+# Run 8 stress 0.1776373 
+# Run 9 stress 0.183962 
+# Run 10 stress 0.1883123 
+# Run 11 stress 0.1811635 
+# Run 12 stress 0.1775188 
+# Run 13 stress 0.1813383 
+# Run 14 stress 0.1848728 
+# Run 15 stress 0.22142 
+# Run 16 stress 0.1799285 
+# Run 17 stress 0.1809663 
+# Run 18 stress 0.1798768 
+# Run 19 stress 0.1762788 
+# Run 20 stress 0.1855427 
+# *** Best solution was not repeated -- monoMDS stopping criteria:
+#      1: no. of iterations &gt;= maxit
+#     16: stress ratio &gt; sratmax
+#      3: scale factor of the gradient &lt; sfgrmin
+```
+
+---
+
+# NMDS (suite)
+
+**Solution:**
+
+3.
+
+
+```r
+print(paste("stress: ", nmds_results$stress))
+# [1] "stress:  0.175699935328721"
+NMDS1 &lt;- nmds_results$points[,1]; NMDS2 &lt;- nmds_results$points[,2]
+par(mfrow=c(1,3))
+stressplot(nmds_results, p.col = "black", l.col = "grey", cex=1)
+ord1 &lt;- ordiplot(nmds_results, type = "none")
+points(ord1, "sites", pch=21, col="lightgrey", bg="lightgrey")
+text(ord1, "species", col="black", cex=1)
+plot(NMDS1, NMDS2, col = aST, cex=1)
+```
+
+&lt;img src="Modèles_multivariées_pour_l-analyse_de_données_sous_R_files/figure-html/unnamed-chunk-78-1.png" width="432" style="display: block; margin: auto;" /&gt;
+
+---
+
+# NMDS (suite)
+
+**Solution:**
+
+3.
+
+En regardant le NMDS, nous voyons que les points noirs (lacs) sont davantage associés aux amphipodes et aux hémiptères. En revanche, les points rouges (ruisseaux) sont davantage associés aux Coléoptères, Éphéméroptères, Trombidiformes et Trichoptères.
+
+Tubificida et Diptera sont situés là où des points noirs (lacs) et rouges (ruisseaux) se trouvent dans le même espace, ce qui implique que ces ordres sont probablement associés à la fois aux ruisseaux et aux lacs.
+
+
 
 ---
 
@@ -1338,7 +1888,7 @@ plot(NMDS1, NMDS2, col = aR, pch = aR, cex=1)
 
 
 ```r
-donnees &lt;- read.table("../data/ronfle.txt", header = TRUE)
+donnees &lt;- read.table("../../presentation/data/ronfle.txt", header = TRUE)
 summary(donnees)
 #       age            poids            taille          alcool     
 #  Min.   :23.00   Min.   : 42.00   Min.   :158.0   Min.   : 0.00  
@@ -1433,10 +1983,100 @@ predict.group &lt;- predict(mod.complet, newdata = new_df)
 
 5. Évaluez la précision du modèle en comparant les prédictions avec les classes réelles de l'ensemble de test
 
-<div class="countdown" id="timer_e8a1c76a" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
-<div class="countdown-controls"><button class="countdown-bump-down">&minus;</button><button class="countdown-bump-up">&plus;</button></div>
-<code class="countdown-time"><span class="countdown-digits minutes">10</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
-</div>
+---
+
+# Analyse discriminante linéaire
+
+**Solution:**
+
+1.
+
+
+```r
+data(iris)
+```
+
+---
+
+# Analyse discriminante linéaire (suite)
+
+**Solution:**
+
+2.
+
+
+```r
+set.seed(123)
+index &lt;- sample(1:nrow(iris), round(nrow(iris)*0.7))
+train_data &lt;- iris[index,]
+test_data &lt;- iris[-index,]
+```
+
+---
+
+# Analyse discriminante linéaire (suite)
+
+**Solution:**
+
+
+3.
+
+
+```r
+library(MASS)
+lda_model &lt;- lda(Species ~ Sepal.Length + Sepal.Width, data = train_data)
+lda_model
+# Call:
+# lda(Species ~ Sepal.Length + Sepal.Width, data = train_data)
+# 
+# Prior probabilities of groups:
+#     setosa versicolor  virginica 
+#  0.3428571  0.3047619  0.3523810 
+# 
+# Group means:
+#            Sepal.Length Sepal.Width
+# setosa         4.966667    3.394444
+# versicolor     5.971875    2.787500
+# virginica      6.586486    2.948649
+# 
+# Coefficients of linear discriminants:
+#                    LD1        LD2
+# Sepal.Length -1.998438 -0.7102618
+# Sepal.Width   2.476442 -2.0450242
+# 
+# Proportion of trace:
+#    LD1    LD2 
+# 0.9735 0.0265
+```
+
+---
+
+# Analyse discriminante linéaire (suite)
+
+**Solution:**
+
+4.
+
+
+```r
+predictions &lt;- predict(lda_model, newdata = test_data)
+conf_matrix &lt;- table(predictions$class, test_data$Species)
+conf_matrix
+#             
+#              setosa versicolor virginica
+#   setosa         14          0         0
+#   versicolor      0         14         2
+#   virginica       0          4        11
+```
+
+5.
+
+
+```r
+accuracy &lt;- sum(diag(conf_matrix))/sum(conf_matrix)
+accuracy
+# [1] 0.8666667
+```
 
 ---
 
@@ -1467,7 +2107,7 @@ predict.group &lt;- predict(mod.complet, newdata = new_df)
 ```r
 
 # Charger le jeu de données
-fishes &lt;- read.csv("../data/fishes.csv")
+fishes &lt;- read.csv("../../presentation/data/fishes.csv")
 
 Resp &lt;- fishes[,c(2:7)]
 Expl &lt;- fishes[,c(8:11)]
@@ -1480,36 +2120,32 @@ Expl &lt;- fishes[,c(8:11)]
 
 ```r
 library(vegan)
-res.rda &lt;- vegan::rda(Resp, Expl)
+res.rda &lt;- vegan::rda(Expl, Resp)
 head(summary(res.rda, display = NULL))
 # 
 # Call:
-# rda(X = Resp, Y = Expl) 
+# rda(X = Expl, Y = Resp) 
 # 
 # Partitioning of variance:
-#               Inertia Proportion
-# Total         112.889    1.00000
-# Constrained   108.341    0.95971
-# Unconstrained   4.548    0.04029
+#                Inertia Proportion
+# Total         9.900000  1.0000000
+# Constrained   9.895037  0.9994987
+# Unconstrained 0.004963  0.0005013
 # 
 # Eigenvalues, and their contribution to the variance 
 # 
 # Importance of components:
-#                          RDA1    RDA2    RDA3     PC1     PC2       PC3
-# Eigenvalue            74.5227 24.9420 8.87611 4.18878 0.31386 0.0370370
-# Proportion Explained   0.6601  0.2209 0.07863 0.03711 0.00278 0.0003281
-# Cumulative Proportion  0.6601  0.8811 0.95971 0.99682 0.99960 0.9999250
-#                             PC4
-# Eigenvalue            8.463e-03
-# Proportion Explained  7.497e-05
-# Cumulative Proportion 1.000e+00
+#                         RDA1    RDA2   RDA3       PC1
+# Eigenvalue            9.3892 0.38209 0.1238 0.0049629
+# Proportion Explained  0.9484 0.03859 0.0125 0.0005013
+# Cumulative Proportion 0.9484 0.98699 0.9995 1.0000000
 # 
 # Accumulated constrained eigenvalues
 # Importance of components:
-#                          RDA1    RDA2    RDA3
-# Eigenvalue            74.5227 24.9420 8.87611
-# Proportion Explained   0.6879  0.2302 0.08193
-# Cumulative Proportion  0.6879  0.9181 1.00000
+#                         RDA1    RDA2    RDA3
+# Eigenvalue            9.3892 0.38209 0.12380
+# Proportion Explained  0.9489 0.03861 0.01251
+# Cumulative Proportion 0.9489 0.98749 1.00000
 # 
 # Scaling 2 for species and site scores
 # * Species are scaled proportional to eigenvalues
@@ -1521,9 +2157,9 @@ head(summary(res.rda, display = NULL))
 
 ### Réaliser une RDA
 
-- Variance de Y expliquée par X représente 95.97% .
+- Variance de Y expliquée par X représente 99% .
 
-- Variance de Y non expliquée par X représente 4%.
+- Variance de Y non expliquée par X représente 0.01%.
 
 ---
 
@@ -1533,10 +2169,10 @@ head(summary(res.rda, display = NULL))
 ```r
 RsquareAdj(res.rda)
 # $r.squared
-# [1] 0.9597113
+# [1] 0.9994987
 # 
 # $adj.r.squared
-# [1] 0.9395669
+# [1] 0.9984961
 ```
 
 ### Significativité d'une RDA
@@ -1548,10 +2184,10 @@ anova.cca(res.rda, permutations = 1000)
 # Permutation: free
 # Number of permutations: 1000
 # 
-# Model: rda(X = Resp, Y = Expl)
+# Model: rda(X = Expl, Y = Resp)
 #          Df Variance      F   Pr(&gt;F)    
-# Model     3  108.341 47.642 0.000999 ***
-# Residual  6    4.548                    
+# Model     6    9.895 996.91 0.000999 ***
+# Residual  3    0.005                    
 # ---
 # Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ```
@@ -1568,7 +2204,7 @@ ordiplot(res.rda,
          type = "text")
 ```
 
-&lt;img src="Modèles_multivariées_pour_l-analyse_de_données_sous_R_files/figure-html/unnamed-chunk-64-1.png" width="432" style="display: block; margin: auto;" /&gt;
+&lt;img src="Modèles_multivariées_pour_l-analyse_de_données_sous_R_files/figure-html/unnamed-chunk-92-1.png" width="432" style="display: block; margin: auto;" /&gt;
 ]
 
 .pull-right[
@@ -1579,7 +2215,7 @@ ordiplot(res.rda,
          type = "text")
 ```
 
-&lt;img src="Modèles_multivariées_pour_l-analyse_de_données_sous_R_files/figure-html/unnamed-chunk-65-1.png" width="432" style="display: block; margin: auto;" /&gt;
+&lt;img src="Modèles_multivariées_pour_l-analyse_de_données_sous_R_files/figure-html/unnamed-chunk-93-1.png" width="432" style="display: block; margin: auto;" /&gt;
 ]
 
 
@@ -1605,10 +2241,164 @@ ordiplot(res.rda,
 
 ---
 
-<div class="countdown" id="timer_db4dc77d" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
-<div class="countdown-controls"><button class="countdown-bump-down">&minus;</button><button class="countdown-bump-up">&plus;</button></div>
-<code class="countdown-time"><span class="countdown-digits minutes">10</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
-</div>
+# Analyse canonique de redondances
+
+**Solution:**
+
+1.
+
+
+```r
+data &lt;- read.csv("../../presentation/data/breast-cancer-wisconsin.csv", header = TRUE)
+```
+
+2.
+
+
+```r
+data &lt;- data[, -1]
+```
+
+---
+
+# Analyse canonique de redondances (suite)
+
+**Solution:**
+
+3.
+
+
+```r
+data$Class &lt;- factor(data$Class, levels = c(2,4), labels = c("benign", "malignant"))
+data$Bare_Nuclei &lt;- as.integer(data$Bare_Nuclei)
+data2 &lt;- na.omit(data)
+```
+
+4.
+
+
+```r
+vars &lt;- c("Clump_Thickness", "Uniformity_of_Cell_Size", "Uniformity_of_Cell_Shape", "Marginal_Adhesion", "Single_Epithelial_Cell_Size", "Bare_Nuclei", "Bland_Chromatin", "Normal_Nucleoli", "Mitoses")
+```
+
+---
+
+# Analyse canonique de redondances (suite)
+
+**Solution:**
+
+5.
+
+
+```r
+library(vegan)
+rda_result &lt;- rda(data2[,vars], data2$Class)
+head(summary(rda_result, display = NULL))
+# 
+# Call:
+# rda(X = data2[, vars], Y = data2$Class) 
+# 
+# Partitioning of variance:
+#               Inertia Proportion
+# Total           71.03     1.0000
+# Constrained     40.67     0.5726
+# Unconstrained   30.36     0.4274
+# 
+# Eigenvalues, and their contribution to the variance 
+# 
+# Importance of components:
+#                          RDA1    PC1     PC2     PC3     PC4     PC5     PC6
+# Eigenvalue            40.6693 9.1075 4.75973 4.00351 3.08037 2.76732 2.44606
+# Proportion Explained   0.5726 0.1282 0.06701 0.05636 0.04337 0.03896 0.03444
+# Cumulative Proportion  0.5726 0.7008 0.76779 0.82415 0.86752 0.90648 0.94091
+#                           PC7     PC8     PC9
+# Eigenvalue            1.79528 1.59562 0.80613
+# Proportion Explained  0.02527 0.02246 0.01135
+# Cumulative Proportion 0.96619 0.98865 1.00000
+# 
+# Accumulated constrained eigenvalues
+# Importance of components:
+#                        RDA1
+# Eigenvalue            40.67
+# Proportion Explained   1.00
+# Cumulative Proportion  1.00
+# 
+# Scaling 2 for species and site scores
+# * Species are scaled proportional to eigenvalues
+# * Sites are unscaled: weighted dispersion equal on all dimensions
+# * General scaling constant of scores:
+summary(rda_result)[[1]]
+#                                 RDA1        PC1        PC2         PC3
+# Clump_Thickness             3.549188 -0.6260252 -0.9186874  3.06035527
+# Uniformity_of_Cell_Size     4.428671 -2.4324755 -0.4363070  0.30687109
+# Uniformity_of_Cell_Shape    4.323779 -2.2491414 -0.3085072  0.50811123
+# Marginal_Adhesion           3.561461 -2.1167665  1.5213358 -0.73373651
+# Single_Epithelial_Cell_Size 2.703910 -1.6429238 -0.3838759 -0.03050765
+# Bare_Nuclei                 5.276974 -0.8572285  3.0419334  0.93378047
+# Bland_Chromatin             3.269611 -1.4997741  0.3724717 -0.18322996
+# Normal_Nucleoli             3.861869 -2.3702264 -1.2555765 -1.11090472
+# Mitoses                     1.291520 -1.0350061 -0.4343789 -0.09122975
+#                                    PC4        PC5
+# Clump_Thickness              0.3416558 -1.0999942
+# Uniformity_of_Cell_Size     -0.8439076  0.9737923
+# Uniformity_of_Cell_Shape    -0.5273051  1.0895671
+# Marginal_Adhesion           -1.0888911 -1.9189462
+# Single_Epithelial_Cell_Size -0.5751511  0.5553870
+# Bare_Nuclei                  1.2602669  0.6055944
+# Bland_Chromatin              0.1565354  0.2835204
+# Normal_Nucleoli              2.2685136 -0.4873684
+# Mitoses                     -0.4031421 -0.7443102
+```
+
+---
+
+
+```r
+RsquareAdj(rda_result)
+# $r.squared
+# [1] 0.5725586
+# 
+# $adj.r.squared
+# [1] 0.5719309
+```
+
+
+```r
+anova.cca(res.rda, permutations = 1000)
+# Permutation test for rda under reduced model
+# Permutation: free
+# Number of permutations: 1000
+# 
+# Model: rda(X = Expl, Y = Resp)
+#          Df Variance      F   Pr(&gt;F)    
+# Model     6    9.895 996.91 0.000999 ***
+# Residual  3    0.005                    
+# ---
+# Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+```
+
+---
+
+.pull-left[
+
+```r
+ordiplot(rda_result,
+         scaling = 1,
+         type = "text")
+```
+
+&lt;img src="Modèles_multivariées_pour_l-analyse_de_données_sous_R_files/figure-html/unnamed-chunk-101-1.png" width="432" style="display: block; margin: auto;" /&gt;
+]
+
+.pull-right[
+
+```r
+ordiplot(rda_result,
+         scaling = 2,
+         type = "text")
+```
+
+&lt;img src="Modèles_multivariées_pour_l-analyse_de_données_sous_R_files/figure-html/unnamed-chunk-102-1.png" width="432" style="display: block; margin: auto;" /&gt;
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>

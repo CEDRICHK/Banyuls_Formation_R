@@ -72,7 +72,7 @@ xaringanExtra::use_logo(image_url = "logo_cnrs.png")
   
   - Il peut-être nécessaire de centrer réduire les variables.
   
-  - Le principe est de faire la racine carrée de la somme des carrés des différences entre les coordonnées des points
+  - Le principe ....
 
 - **La distance de Bray-Curtis:**
 
@@ -230,9 +230,56 @@ knitr::include_graphics("../images/defi.jpg")
   
   - Comment interprétez-vous les résultats obtenus ?
 
-```{r, echo=FALSE}
-library(countdown)
-countdown(minutes = 8, seconds = 00)
+---
+
+# CAH
+
+**Solution:**
+
+```{r, echo=TRUE}
+
+# Charger le dataset "USArrests"
+data(USArrests)
+head(USArrests)
+
+```
+
+---
+
+# CAH (suite)
+
+```{r, echo=TRUE}
+library(vegan)
+
+# Standardiser les variables
+USArrests_standard <- scale(USArrests)
+
+# Calculer la matrice des distances
+distances <- vegdist(USArrests_standard, method = "euclidean")
+
+# Réaliser la CAH
+cluster <- hclust(distances, method = "ward.D2")
+```
+
+---
+
+# CAH (suite)
+
+```{r, echo=TRUE}
+inertie <- sort(cluster$height, decreasing = TRUE)
+plot(inertie, type = "s", xaxt = "n")
+```
+
+---
+
+# CAH (suite)
+
+```{r, echo=TRUE, fig.width=10}
+plot(cluster,
+     hang = -1,
+     labels = row.names(USArrests))
+rect.hclust(cluster, k=4, 
+            border = "black")
 ```
 
 
@@ -240,11 +287,11 @@ countdown(minutes = 8, seconds = 00)
 
 # Méthodes d'ordination sans contrainte
 
-- Nous allons examiner 4 méthodes **d'ordination sans contraintes**:
+- Nous allons examiner 5 méthodes **d'ordination sans contraintes**:
 
   - L'**A**nalyse en **C**omposantes **P**rincipales (ACP)
   
-  - L'**A**nalyse **F**actorielle des **C**orrespondancs (AFC)
+  - L'**A**nalyse **F**actorielle des **C**orrespondances (AFC)
   
   - L'**A**nalyse des **C**orrespondances **M**ultiples (ACM)
   
@@ -264,7 +311,7 @@ countdown(minutes = 8, seconds = 00)
 
   - Faire le bilan des corrélations entre variables;
   
-  - Evaluer ls ressemblances et différences entre individus;
+  - Evaluer les ressemblances et différences entre individus;
   
   - Etudier les relations entre les individus et les variables.
 
@@ -356,7 +403,7 @@ pairs(USArrests_standard)
   - Critère de **Kaiser**.
 
 ```{r, echo=TRUE, eval=FALSE}
-pcaUSArrests <- dudi.pca(USArrests, scannf = FALSE)
+pcaUSArrests <- dudi.pca(USArrests)
 inertia.dudi(pcaUSArrests)
 ```
 
@@ -365,7 +412,7 @@ inertia.dudi(pcaUSArrests)
 ### Choix du nombre d'axes à conserver (suite)
 
 ```{r, echo=FALSE}
-#readRDS(file = "../../inertia_pca.rds")
+readRDS(file = "../../inertia_pca.rds")
 knitr::include_graphics("../images/inertia_pca.png")
 ```
 
@@ -382,12 +429,11 @@ L'analyse des variables se déroule de la façon suivante :
 3. On étudie les corrélations entre variables.
 
 ```{r, echo=FALSE, include=FALSE}
-#pcaUSArrests <- readRDS(file = "../../pcaUSArrests.rds")
+pcaUSArrests <- readRDS(file = "../../pcaUSArrests.rds")
 ```
 
 .pull-left[
 ```{r, echo=TRUE, fig.height=4}
-pcaUSArrests <- dudi.pca(USArrests, scannf = FALSE)
 s.corcircle(pcaUSArrests$co)
 ```
 ]
@@ -401,9 +447,9 @@ En revanche, c'est *UrbanPop* qui explique majoritairement la variabilité de la
 
 ### Interprétation de l'espace factoriel (suite)
 
-- Nous pouvons afficher également la valeur des **$\cos²**.
+- Nous pouvons afficher également la valeur des $\cos²$.
 
-- Plus la valeur du **$\cos²** d'une variable sur un axe est élevée, plus la variable contribue à l'axe.
+- Plus la valeur du $\cos²$ d'une variable sur un axe est élevée, plus la variable contribue à l'axe.
 
 
 ```{r, echo=TRUE}
@@ -468,9 +514,9 @@ s.value(pcaUSArrests$li,
 
 #### Cas d'étude
 
-```{r, echo=TRUE}
+```{r, echo=TRUE, fig.height=5}
 #ACP sur les variables actives
-pcaUSArrests <- dudi.pca(USArrests, scannf = FALSE)
+pcaUSArrests <- readRDS(file = "../../pcaUSArrests.rds")
 
 #Création d'une variable supplémentaire
 score <- as.numeric(apply(USArrests, MARGIN = 1, sum))
@@ -495,13 +541,33 @@ s.arrow(supcol(pcaUSArrests, data.frame(scalewt(score)))$co, label = "SCORE", ad
 
 #### Cas d'étude
 
-```{r, echo=TRUE, eval=FALSE}
+```{r, echo=TRUE, echo = TRUE, eval=FALSE}
 # ACP sur les individus actifs
 pcaUSArrests <- readRDS(file = "../../pcaUSArrests.rds")
 
 # Chargement des individus supplémentaires
-IndSup <- data.frame(Murder = , Assault = , UrbanPop = , Rape = )
-row.names(IndSup)
+IndSup <- data.frame(Murder = 7, Assault = 159, UrbanPop = 66, Rape = 20)
+row.names(IndSup) <- "FR"
+LocaSup <- suprow(pcaUSArrests, IndSup)
+
+#Combine les individus
+pcaUSArrests$li <- rbind(pcaUSArrests$li, LocaSup$lisup)
+
+#Graphique
+scatter(pcaUSArrests, xax = 1, yax = 2)
+```
+
+---
+
+#### Cas d'étude
+
+```{r, echo=TRUE, echo = FALSE, eval=TRUE}
+# ACP sur les individus actifs
+pcaUSArrests <- readRDS(file = "../../pcaUSArrests.rds")
+
+# Chargement des individus supplémentaires
+IndSup <- data.frame(Murder = 7, Assault = 159, UrbanPop = 66, Rape = 20)
+row.names(IndSup) <- "FR"
 LocaSup <- suprow(pcaUSArrests, IndSup)
 
 #Combine les individus
@@ -510,6 +576,7 @@ pcaUSArrests$li <- rbind(pcaUSArrests$li, LocaSup$lisup)
 #Graphique
 scatter(pcaUSArrests, posieig = "none", xax = 1, yax = 2)
 ```
+
 
 ---
 
@@ -531,11 +598,83 @@ knitr::include_graphics("../images/defi.jpg")
   
 5. Analyse des résultats.
 
+---
 
-```{r, echo=FALSE}
-library(countdown)
-countdown(minutes = 10, seconds = 00)
+# L'Analyse en composantes principales (ACP)
+
+**Solution:**
+
+```{r, echo=TRUE}
+##### 1 ######
+data("iris")
+head(iris)
 ```
+
+---
+
+# L'ACP (suite)
+
+**Solution:**
+
+```{r, echo=TRUE}
+####2#######
+iris_vars <- iris[,1:4]
+head(iris_vars)
+```
+
+```{r, echo=TRUE}
+####3#####
+iris_scaled <- scale(iris_vars)
+```
+
+---
+
+# L'ACP (suite)
+
+**Solution:**
+
+
+```{r, echo=TRUE}
+####4
+iris_acp <- dudi.pca(iris_scaled, scannf = FALSE, nf = 2)
+```
+
+.pull-left[
+```{r, echo=TRUE, fig.height=4}
+#####5
+s.corcircle(iris_acp$co)
+```
+]
+
+.pull-right[
+```{r, echo=TRUE}
+cos2 <- inertia.dudi(iris_acp, col.inertia = TRUE)
+cos2$col.rel
+```
+]
+
+---
+
+# L'ACP (suite)
+
+**Solution:**
+
+.pull-left[
+```{r, echo=TRUE, fig.height=4}
+#######5
+scatter(iris_acp, 
+        posieig="none", 
+        xax = 1, 
+        yax = 2)
+```
+]
+
+.pull-right[
+```{r, echo=TRUE, }
+s.label(iris_acp$li, label = rownames(iris), clabel = 0.75)
+s.class(iris_acp$li, iris$Species, add.plot = TRUE)
+```
+]
 
 ---
 
@@ -571,7 +710,7 @@ countdown(minutes = 10, seconds = 00)
 
 ```{r, echo=TRUE}
 library(ade4)
-Ois <- read.csv("../data/Oiseaux.csv",
+Ois <- read.csv("../../presentation/data/Oiseaux.csv",
                 sep = ";", header = TRUE)
 str(Ois)
 head(Ois)
@@ -600,13 +739,14 @@ table.value(tableOis, col.labels = colnames(tableOis),
 ### Réalisation de l'AFC
 
 ```{r, echo=TRUE, eval=FALSE}
-afc1 <- dudi.coa(as.data.frame.matrix(tableOis), scannf = FALSE)
+afc1 <- dudi.coa(as.data.frame.matrix(tableOis))
 ```
 
 #### Affichage de l'inertie
 
 ```{r, echo=TRUE}
-afc1 <- dudi.coa(as.data.frame.matrix(tableOis), scannf = FALSE)
+afc1 <- readRDS("../../afc1.rds")
+
 #Afficher l'inertie
 inertia.dudi(afc1)
 ```
@@ -656,10 +796,51 @@ knitr::include_graphics("../images/defi.jpg")
 
 4. Visualisez les résultats de l'AFC.
 
+---
 
-```{r, echo=FALSE}
-library(countdown)
-countdown(minutes = 8, seconds = 00)
+# L'Analyse factorielle des correspondances (AFC)
+
+**Solution:**
+
+```{r, echo = TRUE}
+####1
+data(HairEyeColor)
+head(HairEyeColor)
+```
+
+---
+
+# L'AFC (suite)
+
+**Solution:**
+
+```{r, echo = TRUE}
+####2
+hair_eye_male <- HairEyeColor[,,1]
+hair_eye_male
+```
+
+---
+
+# L'AFC (suite)
+
+**Solution:**
+
+```{r, echo = TRUE}
+####3
+afc_male <- dudi.coa(as.data.frame.matrix(hair_eye_male), scannf = FALSE, nf = 2)
+inertia.dudi(afc_male)
+```
+
+---
+
+# L'AFC (suite)
+
+**Solution:**
+
+```{r, echo=TRUE}
+######4
+scatter(afc_male, posieig = "bottomleft", clab.row = 1, clab.col = 0.75)
 ```
 
 ---
@@ -703,13 +884,22 @@ str(ours)
 ### Réalisation de l'ACM
 
 ```{r, echo=TRUE, eval=FALSE}
-acm1 <- dudi.acm(ours[,1:8], scannf = FALSE)
+acm1 <- dudi.acm(ours[,1:8])
 ```
 
 #### Affichage de l'inertie
 
 ```{r, echo=TRUE}
-acm1 <- dudi.acm(ours[,1:8], scannf = FALSE)
+acm1 <- readRDS("../../acm1.rds")
+inertia.dudi(acm1)
+```
+
+---
+
+#### Affichage de l'inertie (suite)
+
+```{r, echo=TRUE}
+acm1 <- readRDS("../../acm1.rds")
 inertia.dudi(acm1)
 ```
 
@@ -760,7 +950,7 @@ s.class(acm1$li, ours[,9], add.plot = TRUE)
 knitr::include_graphics("../images/defi.jpg")
 ```
 
-<u>Jeu de données:</u> `Poison` Ce jeu de données fait référence à une enquête réalisée auprès d’un échantillon d’enfants de l’école primaire qui ont souffert d’intoxication alimentaire. Ils ont été interrogés sur leurs symptômes et sur ce qu’ils ont mangé.
+<u>Jeu de données:</u>Poison Ce jeu de données fait référence à une enquête réalisée auprès d’un échantillon d’enfants de l’école primaire qui ont souffert d’intoxication alimentaire. Ils ont été interrogés sur leurs symptômes et sur ce qu’ils ont mangé. 
 
 1. Chargez le jeu de données.
 
@@ -772,6 +962,44 @@ knitr::include_graphics("../images/defi.jpg")
 library(countdown)
 countdown(minutes = 5, seconds = 00)
 ```
+
+---
+
+# L'Analyse des correspondances multiples (ACM)
+
+**Solution:**
+
+
+```{r, echo=TRUE}
+### 1 ###
+library(FactoMineR)
+data("poison")
+```
+
+```{r, echo=TRUE}
+### 2 ###
+library(ade4)
+res.acm <- dudi.acm(poison[,5:15], scannf = FALSE, nf = 2)
+inertia.dudi(res.acm)
+```
+
+---
+
+# ACM (suite)
+
+**Solution:**
+
+.pull-left[
+```{r, echo=TRUE}
+scatter(res.acm)
+```
+]
+
+.pull-right[
+```{r, echo=TRUE}
+res.acm$cr
+```
+]
 
 ---
 
@@ -849,7 +1077,9 @@ Le plan factoriel montre comment les espèces sont inféodés à certains milieu
 
 # L'analyse Hill-Smith
 
-- Etudier les relations entre variables et de positionner les individus.
+- Etudier les relations entre variables et éventuellement de positionner les individus.
+
+- Traiter des variables de types différents: variables quantitatives, qualitatives.
 
 ---
 
@@ -871,7 +1101,7 @@ Les étapes sont les mêmes que celles d'une ACP.
 
 ```{r, echo=TRUE}
 library(ade4)
-donnees <- read.csv("../data/enquete.csv", stringsAsFactors = TRUE)
+donnees <- read.csv("../../presentation/data/enquete.csv", stringsAsFactors = TRUE)
 str(donnees)
 ```
 
@@ -880,8 +1110,8 @@ str(donnees)
 ### Réalisation de l'analyse et visualisation de l'inertie
 
 ```{r, echo=TRUE}
-pcaEnq <- dudi.mix(df = donnees, scannf = FALSE, nf = 4)
-inertia.dudi(pcaEnq)
+HSEnq <- dudi.mix(df = donnees, scannf = FALSE, nf = 4)
+inertia.dudi(HSEnq)
 ```
 
 ---
@@ -890,7 +1120,7 @@ inertia.dudi(pcaEnq)
 
 .pull-left[
 ```{r, echo=TRUE}
-s.corcircle(pcaEnq$co)
+s.corcircle(HSEnq$co)
 ```
 ]
 
@@ -906,7 +1136,7 @@ s.corcircle(pcaEnq$co)
 
 .pull-left[
 ```{r, echo=TRUE}
-s.corcircle(pcaEnq$co[,3:4])
+s.corcircle(HSEnq$co[,3:4])
 ```
 ]
 
@@ -921,7 +1151,7 @@ s.corcircle(pcaEnq$co[,3:4])
 ### Représentation des individus
 
 ```{r, echo=TRUE}
-scatter(pcaEnq, row.plab.cex = 1, col.plab.cex = 1.5)
+scatter(HSEnq, row.plab.cex = 1, col.plab.cex = 1.5)
 ```
 
 
@@ -941,9 +1171,47 @@ knitr::include_graphics("../images/defi.jpg")
 
 3. Analysez les résultats.
 
-```{r, echo=FALSE}
-library(countdown)
-countdown(minutes = 10, seconds = 00)
+---
+
+# L'analyse Hill-Smith
+
+**Solution:**
+
+```{r, echo=TRUE}
+data(mtcars)
+```
+
+```{r, echo=TRUE}
+res <- dudi.mix(df = mtcars, scannf = FALSE, nf = 2)
+inertia.dudi(res)
+```
+
+---
+
+# L'analyse Hill-Smith
+
+**Solution:**
+
+.pull-left[
+```{r, echo=TRUE}
+s.corcircle(res$co)
+```
+]
+
+.pull-right[
+<u>Interprétation:</u>
+nous pouvons voir que les variables les plus importantes pour la formation de l'axe principal CS1 sont "mpg", "cyl" et "disp", tandis que les variables les plus importantes pour la formation de l'axe principal CS2 sont "qsec", "am" et "gear".
+Ces résultats suggèrent que ces variables sont les plus pertinentes pour discriminer les différentes voitures dans le jeu de données "mtcars" en fonction de leurs caractéristiques.
+]
+
+---
+
+# L'analyse Hill-Smith
+
+**Solution:**
+
+```{r, echo =TRUE}
+scatter(res, row.plab.cex = 1, col.plab.cex = 1.5)
 ```
 
 ---
@@ -971,7 +1239,7 @@ Mettre en évidence une relation entre les métriques observées d'une part et l
 ```{r, echo=TRUE}
 library(vegan)
 
-df1 <- read.table("../data/nrn.txt", header = TRUE)
+df1 <- read.table("../../presentation/data/nrn.txt", header = TRUE)
 cT <- as.character(df1[,5])
 aR <- as.character(df1[,6])
 df2 <- df1[,1:4]
@@ -1039,10 +1307,65 @@ knitr::include_graphics("../images/defi.jpg")
 
 3. Interprétez et Visualisez les résultats.
 
-```{r, echo=FALSE}
-library(countdown)
-countdown(minutes = 10, seconds = 00)
+---
+
+# Le Positionnement multidimensionnel non métrique (NMDS)
+
+**Solution:**
+
+1.
+
+```{r, echo=TRUE}
+orders <- read.csv("../../presentation/data/condensed_order.csv", header = TRUE)
+head(orders)
+aST <- as.factor(orders$aquaticSiteType)
 ```
+
+---
+
+# NMDS (suite)
+
+**Solution:**
+
+2.
+
+```{r, echo=TRUE}
+library(vegan)
+nmds_results <- metaMDS(comm = orders[,4:11], k = 2)
+```
+
+---
+
+# NMDS (suite)
+
+**Solution:**
+
+3.
+
+```{r, echo = TRUE, fig.height=3}
+print(paste("stress: ", nmds_results$stress))
+NMDS1 <- nmds_results$points[,1]; NMDS2 <- nmds_results$points[,2]
+par(mfrow=c(1,3))
+stressplot(nmds_results, p.col = "black", l.col = "grey", cex=1)
+ord1 <- ordiplot(nmds_results, type = "none")
+points(ord1, "sites", pch=21, col="lightgrey", bg="lightgrey")
+text(ord1, "species", col="black", cex=1)
+plot(NMDS1, NMDS2, col = aST, cex=1)
+```
+
+---
+
+# NMDS (suite)
+
+**Solution:**
+
+3.
+
+En regardant le NMDS, nous voyons que les points noirs (lacs) sont davantage associés aux amphipodes et aux hémiptères. En revanche, les points rouges (ruisseaux) sont davantage associés aux Coléoptères, Éphéméroptères, Trombidiformes et Trichoptères.
+
+Tubificida et Diptera sont situés là où des points noirs (lacs) et rouges (ruisseaux) se trouvent dans le même espace, ce qui implique que ces ordres sont probablement associés à la fois aux ruisseaux et aux lacs.
+
+
 
 ---
 
@@ -1082,7 +1405,7 @@ countdown(minutes = 10, seconds = 00)
 ### Importer les données
 
 ```{r, echo=TRUE}
-donnees <- read.table("../data/ronfle.txt", header = TRUE)
+donnees <- read.table("../../presentation/data/ronfle.txt", header = TRUE)
 summary(donnees)
 ```
 
@@ -1153,9 +1476,67 @@ knitr::include_graphics("../images/defi.jpg")
 
 5. Évaluez la précision du modèle en comparant les prédictions avec les classes réelles de l'ensemble de test
 
-```{r, echo=FALSE}
-library(countdown)
-countdown(minutes = 10, seconds = 00)
+---
+
+# Analyse discriminante linéaire
+
+**Solution:**
+
+1.
+
+```{r, echo=TRUE}
+data(iris)
+```
+
+---
+
+# Analyse discriminante linéaire (suite)
+
+**Solution:**
+
+2.
+
+```{r, echo=TRUE}
+set.seed(123)
+index <- sample(1:nrow(iris), round(nrow(iris)*0.7))
+train_data <- iris[index,]
+test_data <- iris[-index,]
+```
+
+---
+
+# Analyse discriminante linéaire (suite)
+
+**Solution:**
+
+
+3.
+
+```{r, echo=TRUE}
+library(MASS)
+lda_model <- lda(Species ~ Sepal.Length + Sepal.Width, data = train_data)
+lda_model
+```
+
+---
+
+# Analyse discriminante linéaire (suite)
+
+**Solution:**
+
+4.
+
+```{r, echo=TRUE}
+predictions <- predict(lda_model, newdata = test_data)
+conf_matrix <- table(predictions$class, test_data$Species)
+conf_matrix
+```
+
+5.
+
+```{r, echo=TRUE}
+accuracy <- sum(diag(conf_matrix))/sum(conf_matrix)
+accuracy
 ```
 
 ---
@@ -1186,7 +1567,7 @@ countdown(minutes = 10, seconds = 00)
 ```{r, echo=TRUE}
 
 # Charger le jeu de données
-fishes <- read.csv("../data/fishes.csv")
+fishes <- read.csv("../../presentation/data/fishes.csv")
 
 Resp <- fishes[,c(2:7)]
 Expl <- fishes[,c(8:11)]
@@ -1198,7 +1579,7 @@ Expl <- fishes[,c(8:11)]
 
 ```{r, echo=TRUE}
 library(vegan)
-res.rda <- vegan::rda(Resp, Expl)
+res.rda <- vegan::rda(Expl, Resp)
 head(summary(res.rda, display = NULL))
 ```
 
@@ -1206,9 +1587,9 @@ head(summary(res.rda, display = NULL))
 
 ### Réaliser une RDA
 
-- Variance de Y expliquée par X représente 95.97% .
+- Variance de Y expliquée par X représente 99% .
 
-- Variance de Y non expliquée par X représente 4%.
+- Variance de Y non expliquée par X représente 0.01%.
 
 ---
 
@@ -1269,7 +1650,80 @@ knitr::include_graphics("../images/defi.jpg")
 
 ---
 
-```{r, echo=FALSE}
-library(countdown)
-countdown(minutes = 10, seconds = 00)
+# Analyse canonique de redondances
+
+**Solution:**
+
+1.
+
+```{r, echo = TRUE}
+data <- read.csv("../../presentation/data/breast-cancer-wisconsin.csv", header = TRUE)
+```
+
+2.
+
+```{r, echo = TRUE}
+data <- data[, -1]
+```
+
+---
+
+# Analyse canonique de redondances (suite)
+
+**Solution:**
+
+3.
+
+```{r, echo=TRUE}
+data$Class <- factor(data$Class, levels = c(2,4), labels = c("benign", "malignant"))
+data$Bare_Nuclei <- as.integer(data$Bare_Nuclei)
+data2 <- na.omit(data)
+```
+
+4.
+
+```{r, echo=TRUE}
+vars <- c("Clump_Thickness", "Uniformity_of_Cell_Size", "Uniformity_of_Cell_Shape", "Marginal_Adhesion", "Single_Epithelial_Cell_Size", "Bare_Nuclei", "Bland_Chromatin", "Normal_Nucleoli", "Mitoses")
+```
+
+---
+
+# Analyse canonique de redondances (suite)
+
+**Solution:**
+
+5.
+
+```{r, echo=TRUE}
+library(vegan)
+rda_result <- rda(data2[,vars], data2$Class)
+head(summary(rda_result, display = NULL))
+summary(rda_result)[[1]]
+```
+
+---
+
+```{r, echo=TRUE}
+RsquareAdj(rda_result)
+```
+
+```{r, echo=TRUE}
+anova.cca(res.rda, permutations = 1000)
+```
+
+---
+
+.pull-left[
+```{r, echo=TRUE}
+ordiplot(rda_result,
+         scaling = 1,
+         type = "text")
+```
+]
+
+.pull-right[
+```{r, echo=TRUE}
+ordiplot(rda_result,
+         scaling = 2,
+         type = "text")
 ```
